@@ -2,7 +2,7 @@
 import type { MenuItem } from "emdash";
 import logoLight from "../assets/brand/check-climate-lockup.png";
 import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
-import { CONTACT_EMAIL, SECTIONS, SOCIAL_LINKS } from "../utils/site";
+import { SECTIONS, siteConfig } from "../utils/site";
 
 interface Props {
 	siteTitle: string;
@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { siteTitle, sections, items } = Astro.props;
+const { contactEmail, socials } = await siteConfig();
 const year = new Date().getFullYear();
 const sectionItems = (sections.length > 0
 	? sections.filter((item) => item.url && item.url !== "/")
@@ -48,7 +49,7 @@ const sectionItems = (sections.length > 0
 			</p>
 			<p>
 				For questions, concerns, adverts or climate claim submissions, email{" "}
-				<a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+				<a href={`mailto:${contactEmail}`}>{contactEmail}</a>
 			</p>
 		</div>
 
@@ -65,7 +66,7 @@ const sectionItems = (sections.length > 0
 				<a href={item.url ?? "/"}>{item.label}</a>
 			))}
 			<h2 class="site-footer__follow">Follow</h2>
-			{SOCIAL_LINKS.map((link) => (
+			{socials.map((link) => (
 				<a href={link.href} rel="noopener noreferrer">{link.label}</a>
 			))}
 			<a href="/feed/">RSS feed</a>

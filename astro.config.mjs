@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import { hyperdrive, kvCache, r2 } from "@emdash-cms/cloudflare";
 import emdash from "emdash/astro";
 import { defineConfig, sessionDrivers } from "astro/config";
+import { fileURLToPath } from "node:url";
 import { Features } from "lightningcss";
 import { loadEnv } from "vite";
 
@@ -11,6 +12,24 @@ const mode = process.env.NODE_ENV === "production" ? "production" : "development
 const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 
 const siteUrl = env.EMDASH_SITE_URL || "https://www.checkclimate.africa";
+
+/**
+ * Native plugins that live in this repo. The descriptor is plain data, so the
+ * config never imports the plugin's runtime (which pulls in EmDash). Keep the
+ * id, version and entrypoint in step with plugins/site-settings/src/index.ts,
+ * and the entrypoint in step with the alias below.
+ */
+const localPlugins = [
+	{
+		id: "checkclimate-site-settings",
+		displayName: "Site settings",
+		description:
+			"Contact address, claim inbox, social profiles and the weather city. Editable in the admin.",
+		version: "1.0.0",
+		format: "native",
+		entrypoint: "@checkclimate/plugin-site-settings",
+	},
+];
 
 /**
  * Public routes only. Anything session-dependent (search, forms, `/admin`,
@@ -73,6 +92,15 @@ export default defineConfig({
 		// every POST (the claim form), /admin, /_emdash/*, /404.
 	},
 	vite: {
+		// The plugin entrypoints in `localPlugins` are in-repo, so they are
+		// resolved by alias instead of a published package.
+		resolve: {
+			alias: {
+				"@checkclimate/plugin-site-settings": fileURLToPath(
+					new URL("./plugins/site-settings/src/index.ts", import.meta.url),
+				),
+			},
+		},
 		// `pg` (node-postgres) is CommonJS. The Workers build inlines it, but the
 		// dev runner otherwise externalises node_modules and evaluates them with
 		// `require`, which workerd does not provide. Pre-bundle it for SSR so dev
@@ -106,6 +134,7 @@ export default defineConfig({
 			}),
 			storage: r2({ binding: "MEDIA" }),
 			objectCache: kvCache({ binding: "CACHE", defaultTtl: 86_400 }),
+			plugins: localPlugins,
 			siteUrl,
 			toolbar: "client",
 		}),

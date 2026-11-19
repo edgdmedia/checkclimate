@@ -6,7 +6,7 @@ import CategoryNav from "./CategoryNav.astro";
 import Icon from "./Icon.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import WeatherWidget from "./WeatherWidget.astro";
-import { CLAIM_URL, SEARCH_URL, SOCIAL_LINKS } from "../utils/site";
+import { CLAIM_URL, SEARCH_URL, siteConfig } from "../utils/site";
 import { formatDateline } from "../utils/locale";
 
 interface Props {
@@ -16,6 +16,7 @@ interface Props {
 }
 
 const { siteTitle, siteTagline, items } = Astro.props;
+const { socials } = await siteConfig();
 const today = new Date();
 ---
 
@@ -31,7 +32,7 @@ const today = new Date();
 			<div class="topbar__right">
 				<ThemeToggle />
 				<nav class="topbar__social" aria-label="Social">
-					{SOCIAL_LINKS.map((link) => (
+					{socials.map((link) => (
 						<a href={link.href} rel="noopener noreferrer">{link.label}</a>
 					))}
 				</nav>

@@ -1,0 +1,246 @@
+---
+/**
+ * Reader comments: EmDash's list and form, themed to the design.
+ *
+ * Moderation is a collection setting (posts are held for review), and the
+ * form carries the same Turnstile widget as the claim form. EmDash verifies
+ * the token server side whenever TURNSTILE_SECRET_KEY is set, and always
+ * ships a honeypot.
+ */
+import { CommentForm, Comments } from "emdash/ui/comments";
+import { turnstileSiteKey } from "../utils/turnstile";
+
+interface Props {
+	collection: string;
+	contentId: string;
+}
+
+const { collection, contentId } = Astro.props;
+const siteKey = turnstileSiteKey();
+---
+
+<section class="comments" aria-labelledby="comments-title">
+	<Comments collection={collection} contentId={contentId} threaded />
+
+	<div class="comments__panel">
+		<h2 id="comments-title" class="comments__title">Leave a reply</h2>
+		<p class="comments__hint">
+			Your email address will not be published. Comments are read before they
+			appear. Required fields are marked *
+		</p>
+		<CommentForm
+			collection={collection}
+			contentId={contentId}
+			turnstileSiteKey={siteKey}
+			labels={{
+				name: "Full name *",
+				email: "Email *",
+				comment: "Comment *",
+				submit: "Post comment",
+				submitting: "Sending…",
+				published: "Thanks — your comment is published.",
+				pending: "Thanks — your comment is waiting for review.",
+				error: "We could not post that. Please try again.",
+			}}
+		/>
+	</div>
+</section>
+
+<style>
+	.comments {
+		margin-top: 48px;
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+	}
+
+	.comments__panel {
+		padding: 28px;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		background: var(--surface-raised);
+	}
+
+	.comments__title {
+		margin: 0 0 4px;
+		font-size: 22px;
+		line-height: 28px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.comments__hint {
+		margin: 0 0 20px;
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--ink-muted);
+	}
+
+	/* EmDash ships unstyled comment markup; these are its class names. */
+	.comments :global(.ec-comments-heading) {
+		margin: 0 0 14px;
+		font-size: 20px;
+		line-height: 26px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.comments :global(.ec-comments-list),
+	.comments :global(.ec-comment-replies) {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+
+	.comments :global(.ec-comment-replies) {
+		margin-top: 16px;
+		padding-left: 20px;
+		border-left: 2px solid var(--border);
+	}
+
+	.comments :global(.ec-comment) {
+		padding: 18px;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		background: var(--surface-raised);
+	}
+
+	.comments :global(.ec-comment-header) {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-bottom: 8px;
+	}
+
+	.comments :global(.ec-comment-author) {
+		font-size: 15px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.comments :global(.ec-comment-badge) {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		padding: 2px 8px;
+		border-radius: var(--radius-pill);
+		background: var(--brand-amber);
+		color: #000000;
+	}
+
+	.comments :global(.ec-comment-date) {
+		font-size: 13px;
+		color: var(--ink-meta);
+	}
+
+	.comments :global(.ec-comment-body) {
+		font-size: 16px;
+		line-height: 26px;
+		color: var(--ink-body);
+	}
+
+	.comments :global(.ec-comment-body p) {
+		margin: 0 0 10px;
+	}
+
+	.comments :global(.ec-comment-actions) {
+		margin-top: 10px;
+	}
+
+	.comments :global(.ec-reaction) {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 12px;
+		border-radius: var(--radius-pill);
+		border: 1px solid var(--border-strong);
+		background: transparent;
+		color: var(--ink-muted);
+		font: 500 13px var(--font-display);
+		cursor: pointer;
+	}
+
+	.comments :global(.ec-comment-form-fields) {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.comments :global(.ec-comment-form-field) {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 500;
+		color: var(--ink);
+	}
+
+	.comments :global(.ec-comment-form-field:has(textarea)) {
+		grid-column: 1 / -1;
+	}
+
+	.comments :global(.ec-comment-form input),
+	.comments :global(.ec-comment-form textarea) {
+		padding: 10px 12px;
+		border-radius: var(--radius-small);
+		border: 1px solid var(--border-strong);
+		background: var(--surface-raised);
+		color: var(--ink);
+		font: 400 16px/24px var(--font-display);
+	}
+
+	.comments :global(.ec-comment-form input[type="text"]),
+	.comments :global(.ec-comment-form input[type="email"]) {
+		height: 44px;
+		padding-block: 0;
+	}
+
+	.comments :global(.ec-comment-form textarea) {
+		resize: vertical;
+		min-height: 112px;
+	}
+
+	.comments :global(.ec-comment-form-submit) {
+		margin-top: 16px;
+		height: 44px;
+		padding-inline: 22px;
+		border: 0;
+		border-radius: var(--radius-pill);
+		background: var(--brand-forest);
+		color: #ffffff;
+		font: 700 15px var(--font-display);
+		cursor: pointer;
+	}
+
+	.comments :global(.ec-comment-form-status) {
+		margin-top: 12px;
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--ink-body);
+	}
+
+	.comments :global(.ec-comment-user-info) {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin-bottom: 14px;
+		font-size: 14px;
+		color: var(--ink-muted);
+	}
+
+	@media (max-width: 600px) {
+		.comments__panel {
+			padding: 20px;
+		}
+
+		.comments :global(.ec-comment-form-fields) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

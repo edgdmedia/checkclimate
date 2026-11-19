@@ -1,0 +1,158 @@
+---
+/**
+ * The public face of /admin/: a branded door, not the CMS itself. EmDash's
+ * admin lives at /_emdash/admin and needs a passkey or magic link; this page
+ * is what old WordPress bookmarks and /login land on.
+ *
+ * Noindex in both the meta tag and the header, so crawlers see it whichever
+ * way they look.
+ */
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import logoLight from "../../assets/brand/check-climate-lockup.png";
+import logoDark from "../../assets/brand/check-climate-lockup-reverse.png";
+
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+const adminUrl = "/_emdash/admin";
+---
+
+<Base title="Newsroom sign in" robots="noindex, nofollow">
+	<section class="admin-door">
+		<div class="wrap admin-door__inner">
+			<img
+				src={logoLight.src}
+				width={logoLight.width}
+				height={logoLight.height}
+				alt="Check Climate Africa"
+				class="admin-door__logo admin-door__logo--light"
+			/>
+			<img
+				src={logoDark.src}
+				width={logoDark.width}
+				height={logoDark.height}
+				alt=""
+				class="admin-door__logo admin-door__logo--dark"
+			/>
+			<span class="admin-door__eyebrow">For the newsroom</span>
+			<h1 class="admin-door__title">Sign in to the desk</h1>
+			<p class="admin-door__lede">
+				Writers and editors sign in with a passkey, or a magic link sent to
+				their email. Readers never need an account.
+			</p>
+			<div class="admin-door__actions">
+				<a href={adminUrl} class="admin-door__cta">
+					<Icon name="arrow-right" size={18} />
+					Open the admin
+				</a>
+				<a href="/" class="admin-door__link">Back to the site</a>
+			</div>
+			<p class="admin-door__note">
+				No account yet? Ask an editor to invite you — access is by
+				invitation only.
+			</p>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.admin-door {
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		padding-block: 64px 72px;
+	}
+
+	.admin-door__inner {
+		max-width: 720px;
+	}
+
+	.admin-door__logo {
+		display: block;
+		width: auto;
+		height: 44px;
+		margin-bottom: 32px;
+	}
+
+	.admin-door__logo--dark {
+		display: none;
+	}
+
+	[data-theme="dark"] .admin-door__logo--light {
+		display: none;
+	}
+
+	[data-theme="dark"] .admin-door__logo--dark {
+		display: block;
+	}
+
+	.admin-door__eyebrow {
+		display: block;
+		font-size: 13px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: var(--brand-amber);
+	}
+
+	.admin-door__title {
+		margin: 12px 0;
+		font-size: 44px;
+		line-height: 50px;
+		font-weight: 900;
+		letter-spacing: -0.01em;
+	}
+
+	.admin-door__lede {
+		margin: 0;
+		font-size: 17px;
+		line-height: 27px;
+		color: var(--on-image);
+		max-width: 560px;
+	}
+
+	.admin-door__actions {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		flex-wrap: wrap;
+		margin-top: 32px;
+	}
+
+	.admin-door__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		height: 52px;
+		padding-inline: 26px;
+		border-radius: var(--radius-pill);
+		background: var(--brand-amber);
+		color: #000000;
+		font-size: 17px;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.admin-door__link {
+		color: var(--on-brand);
+		font-weight: 700;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.admin-door__note {
+		margin: 28px 0 0;
+		font-size: 14px;
+		line-height: 22px;
+		color: var(--on-image);
+	}
+
+	@media (max-width: 600px) {
+		.admin-door {
+			padding-block: 44px 52px;
+		}
+
+		.admin-door__title {
+			font-size: 32px;
+			line-height: 38px;
+		}
+	}
+</style>

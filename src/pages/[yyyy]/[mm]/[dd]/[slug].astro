@@ -19,7 +19,7 @@ import {
 } from "../../../../utils/content";
 import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
-import { CommentForm, Comments } from "emdash/ui/comments";
+import Comments from "../../../../components/Comments.astro";
 import AtAGlance from "../../../../components/AtAGlance.astro";
 import Base from "../../../../layouts/Base.astro";
 import Breadcrumb from "../../../../components/Breadcrumb.astro";
@@ -31,7 +31,7 @@ import StoryCard from "../../../../components/StoryCard.astro";
 import StoryMedia from "../../../../components/StoryMedia.astro";
 import TagList from "../../../../components/TagList.astro";
 import VerdictPanel from "../../../../components/VerdictPanel.astro";
-import { CONTACT_EMAIL } from "../../../../utils/site";
+import { siteConfig } from "../../../../utils/site";
 
 const { slug } = Astro.params;
 const result = await getEmDashEntry("posts", slug ?? "");
@@ -47,6 +47,7 @@ const date = publishedAt(post);
 const url = absoluteUrl(Astro.url.origin, postPath(post));
 const image = imageUrl(Astro.url.origin, data.featured_image);
 const tags = tagsOf(post);
+const { contactEmail } = await siteConfig();
 
 // Related: same category, minus this story.
 const related = category
@@ -166,7 +167,7 @@ const relatedPosts = (related.entries as Post[])
 				<TagList tags={tags} />
 				<p class="correction">
 					Spotted an error?{" "}
-					<a href={`mailto:${CONTACT_EMAIL}?subject=Correction`}>
+					<a href={`mailto:${contactEmail}?subject=Correction`}>
 						Tell our editors
 					</a>
 					.
@@ -178,11 +179,7 @@ const relatedPosts = (related.entries as Post[])
 					</div>
 				)}
 
-				<section class="comments" aria-labelledby="comments-title">
-					<h2 id="comments-title">Leave a reply</h2>
-					<Comments collection="posts" contentId={data.id} />
-					<CommentForm collection="posts" contentId={data.id} />
-				</section>
+				<Comments collection="posts" contentId={data.id} />
 			</div>
 
 			<aside class="article-side" aria-label="More from Check Climate">
@@ -352,24 +349,6 @@ const relatedPosts = (related.entries as Post[])
 	.correction a {
 		color: var(--link);
 		text-decoration: underline;
-	}
-
-	.comments {
-		margin-top: 48px;
-		padding: 28px;
-		border-radius: var(--radius);
-		border: 1px solid var(--border);
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.comments h2 {
-		margin: 0;
-		font-size: 22px;
-		line-height: 28px;
-		font-weight: 700;
-		color: var(--ink);
 	}
 
 	.related {
