@@ -1,4 +1,4 @@
-/** Shared site constants that are not editable through the CMS yet. */
+/** Shared site constants. Editable ones arrive in phase 4 (site settings). */
 export const CONTACT_EMAIL = "CheckClimateAfrica@gmail.com";
 export const CLAIM_URL = "/submit-a-claim/";
 export const ABOUT_URL = "/about-us/";

@@ -2,10 +2,12 @@
 import type { MenuItem } from "emdash";
 import logoLight from "../assets/brand/check-climate-lockup.png";
 import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
+import CategoryNav from "./CategoryNav.astro";
 import Icon from "./Icon.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import WeatherWidget from "./WeatherWidget.astro";
 import { CLAIM_URL, SEARCH_URL, SOCIAL_LINKS } from "../utils/site";
+import { formatDateline } from "../utils/locale";
 
 interface Props {
 	siteTitle: string;
@@ -14,24 +16,16 @@ interface Props {
 }
 
 const { siteTitle, siteTagline, items } = Astro.props;
-const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
-
-function isCurrent(url: string): boolean {
-	try {
-		const target = new URL(url, Astro.url);
-		if (target.origin !== Astro.url.origin) return false;
-		const path = target.pathname.replace(/\/+$/, "") || "/";
-		return path === currentPath;
-	} catch {
-		return false;
-	}
-}
+const today = new Date();
 ---
 
 <header class="site-header">
 	<div class="topbar">
 		<div class="wrap topbar__inner">
 			<div class="topbar__left">
+				<time class="topbar__date" datetime={today.toISOString()}>
+					{formatDateline(today)}
+				</time>
 				<WeatherWidget />
 			</div>
 			<div class="topbar__right">
@@ -87,19 +81,6 @@ function isCurrent(url: string): boolean {
 			</div>
 		</div>
 
-		<div class="catnav">
-			<nav class="wrap catnav__inner" aria-label="Categories">
-				{items.map((item) => (
-					<a
-						href={item.url ?? "/"}
-						target={item.target ?? undefined}
-						rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-						aria-current={isCurrent(item.url ?? "/") ? "page" : undefined}
-					>
-						{item.label}
-					</a>
-				))}
-			</nav>
-		</div>
+		<CategoryNav items={items} />
 	</div>
 </header>

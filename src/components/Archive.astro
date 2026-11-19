@@ -1,0 +1,335 @@
+---
+/**
+ * Archive template shared by /category/[slug], /tag/[slug], /author/[slug],
+ * /posts and /search: forest header band, topic filters, story rows,
+ * pagination and the sidebar.
+ */
+import type { CacheHint } from "emdash";
+import type { Post } from "../utils/content";
+import { CLAIM_URL, SECTIONS } from "../utils/site";
+import Base from "../layouts/Base.astro";
+import Breadcrumb from "./Breadcrumb.astro";
+import ClaimCard from "./ClaimCard.astro";
+import Icon from "./Icon.astro";
+import Pagination from "./Pagination.astro";
+import StoryCard from "./StoryCard.astro";
+import mark from "../assets/brand/check-climate-mark-simple.png";
+
+interface Filter {
+	label: string;
+	/** Empty for the "All" chip. */
+	slug: string;
+	on: boolean;
+}
+
+interface Props {
+	title: string;
+	description?: string | null;
+	breadcrumbs: Array<{ label: string; href?: string }>;
+	posts: Post[];
+	page: number;
+	hasMore: boolean;
+	basePath: string;
+	countLabel: string;
+	/** Cache hints from the queries that produced this page. */
+	cacheHints?: CacheHint[];
+	/** Show the "Submit a claim" CTA in the header band. */
+	showClaim?: boolean;
+	/** Fact-check topic chips (server-side, `?topic=`). */
+	filters?: Filter[];
+	/** Renders the search form in the band; only the /search route sets it. */
+	searchTerm?: string | null;
+	/** Section to leave out of the "Other sections" sidebar list. */
+	excludeSection?: string | null;
+	/** Show the "Learn to fact-check" panel. */
+	learnPanel?: boolean;
+	empty?: string;
+	seo?: { description?: string | null; robots?: string | null };
+}
+
+const {
+	title,
+	description,
+	breadcrumbs,
+	posts,
+	page,
+	hasMore,
+	basePath,
+	countLabel,
+	cacheHints = [],
+	showClaim = true,
+	filters = [],
+	searchTerm = null,
+	excludeSection,
+	learnPanel = false,
+	empty = "Nothing published here yet.",
+	seo,
+} = Astro.props;
+
+// Content changed at least once, so the route is only cacheable per page.
+if (Astro.cache?.enabled) {
+	for (const hint of cacheHints) Astro.cache.set(hint);
+}
+
+const otherSections = SECTIONS.filter(
+	(section) => section.label !== excludeSection,
+);
+const topic = Astro.url.searchParams.get("topic");
+// Search paginates by query parameter (there is no /search/page/N route).
+const searchQuery = (() => {
+	if (!basePath.startsWith("/search")) return null;
+	const q = Astro.url.searchParams.get("q");
+	return q ? `q=${encodeURIComponent(q)}` : null;
+})();
+function filterHref(slug: string): string {
+	const path = page > 1 ? `${basePath.replace(/\/+$/, "")}/page/${page}/` : basePath;
+	return slug ? `${path}?topic=${encodeURIComponent(slug)}` : path;
+}
+---
+
+<Base
+	title={title}
+	description={seo?.description ?? description}
+	robots={seo?.robots}
+	breadcrumbs={breadcrumbs}
+>
+	<section class="archive-head" aria-labelledby="archive-title">
+		<div class="wrap">
+			<Breadcrumb items={breadcrumbs} onBrand />
+			<div class="archive-head__row">
+				<div>
+					<h1 id="archive-title" class="archive-head__title">{title}</h1>
+					{description && <p class="archive-head__desc">{description}</p>}
+				</div>
+				{showClaim && (
+					<a href={CLAIM_URL} class="archive-head__cta">Submit a claim</a>
+				)}
+			</div>
+			{searchTerm !== null && (
+				<form class="archive-search" action="/search/" method="get" role="search">
+					<label class="sr-only" for="q">Search stories and fact checks</label>
+					<input
+						id="q"
+						type="search"
+						name="q"
+						value={searchTerm}
+						placeholder="Search stories and fact checks"
+						autocomplete="off"
+					/>
+					<button type="submit">
+						<Icon name="search" size={18} />
+						Search
+					</button>
+				</form>
+			)}
+			{filters.length > 0 && (
+				<div role="group" aria-label="Filter by topic" class="archive-filters">
+					{filters.map((filter) => (
+						<a
+							href={filterHref(filter.slug)}
+							rel="nofollow"
+							class:list={[
+								"chip",
+								"chip--on-brand",
+								filter.on && "chip--on-brand-active",
+							]}
+							aria-pressed={filter.on ? "true" : "false"}
+						>
+							{filter.label}
+						</a>
+					))}
+				</div>
+			)}
+		</div>
+	</section>
+
+	<div class="wrap archive-body">
+		<div>
+			<div class="archive-list-head">
+				<span>{countLabel}</span>
+				{topic && (
+					<a class="more" href={filterHref("")}>Clear topic filter</a>
+				)}
+			</div>
+			{posts.length === 0 ? (
+				<div class="empty">
+					{empty} <a href="/">Back to the homepage</a>
+				</div>
+			) : (
+				posts.map((post) => (
+					<StoryCard post={post} variant="row" headingLevel={2} meta />
+				))
+			)}
+			<Pagination
+				basePath={basePath}
+				page={page}
+				hasMore={hasMore}
+				suffix={topic ? `topic=${encodeURIComponent(topic)}` : null}
+				query={searchQuery}
+			/>
+		</div>
+		<aside class="archive-side" aria-label="More from Check Climate">
+			{learnPanel && (
+				<div class="panel">
+					<img src={mark.src} width={44} height={44} alt="" loading="lazy" />
+					<h2 class="panel__title">Learn to fact-check climate claims</h2>
+					<p>
+						Check Climate Africa runs expert-led training in climate
+						fact-checking for journalists, researchers and fact-checkers.
+					</p>
+					<a href="/about-us/" class="more">About Check Climate →</a>
+				</div>
+			)}
+			<ClaimCard />
+			<div>
+				<h2 class="panel__label">Other sections</h2>
+				<div class="chips">
+					{otherSections.map((section) => (
+						<a href={section.href} class="chip">{section.label}</a>
+					))}
+				</div>
+			</div>
+		</aside>
+	</div>
+</Base>
+
+<style>
+	.archive-head {
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		padding-block: 32px 40px;
+	}
+
+	.archive-head__row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 24px;
+		flex-wrap: wrap;
+		margin-top: 18px;
+	}
+
+	.archive-head__title {
+		margin: 0 0 8px;
+		font-size: 48px;
+		line-height: 54px;
+		font-weight: 900;
+		letter-spacing: -0.01em;
+	}
+
+	.archive-head__desc {
+		margin: 0;
+		font-size: 18px;
+		line-height: 28px;
+		color: var(--on-image);
+		max-width: 600px;
+	}
+
+	.archive-head__cta {
+		display: inline-flex;
+		align-items: center;
+		height: 44px;
+		padding-inline: 20px;
+		border-radius: var(--radius-pill);
+		background: var(--brand-amber);
+		color: #000000;
+		font-size: 15px;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.archive-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 26px;
+	}
+
+	.archive-search {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-top: 24px;
+		max-width: 560px;
+	}
+
+	.archive-search input {
+		flex: 1 1 240px;
+		height: 48px;
+		padding-inline: 16px;
+		border-radius: var(--radius);
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		background: rgba(0, 0, 0, 0.18);
+		color: var(--on-brand);
+		font: 400 16px/24px var(--font-display);
+	}
+
+	.archive-search input::placeholder {
+		color: rgba(255, 255, 255, 0.62);
+	}
+
+	.archive-search button {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		height: 48px;
+		padding-inline: 20px;
+		border: 0;
+		border-radius: var(--radius);
+		background: var(--brand-amber);
+		color: #000000;
+		font: 700 15px var(--font-display);
+		cursor: pointer;
+	}
+
+	.chip--on-brand-active {
+		background: var(--brand-amber);
+		border-color: var(--brand-amber);
+		color: #000000;
+	}
+
+	.archive-body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 48px;
+		padding-block: 32px 64px;
+	}
+
+	.archive-list-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding-bottom: 12px;
+		border-bottom: 2px solid var(--ink);
+		font-size: 15px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.archive-side {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.archive-side .panel {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
+	@media (max-width: 900px) {
+		.archive-body {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 600px) {
+		.archive-head__title {
+			font-size: 34px;
+			line-height: 40px;
+		}
+	}
+</style>

@@ -1,0 +1,75 @@
+---
+/**
+ * CategoryNav — the grey bar under the masthead with the primary menu
+ * (Home + seven sections). Social links live in the top bar, as in
+ * design/pages/project/Main.dc.html. Under 900px the categories fold into an
+ * "All sections" disclosure so the page never scrolls sideways.
+ */
+import type { MenuItem } from "emdash";
+import Icon from "./Icon.astro";
+
+interface Props {
+	items: MenuItem[];
+}
+
+const { items } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+
+function isCurrent(url: string): boolean {
+	try {
+		const target = new URL(url, Astro.url);
+		if (target.origin !== Astro.url.origin) return false;
+		const path = target.pathname.replace(/\/+$/, "") || "/";
+		return path === currentPath;
+	} catch {
+		return false;
+	}
+}
+
+const links = items.map((item) => ({
+	label: item.label,
+	href: item.url ?? "/",
+	target: item.target ?? undefined,
+}));
+---
+
+<nav class="catnav" aria-label="Story sections">
+	<div class="wrap catnav__inner">
+		<button
+			type="button"
+			class="catnav__toggle"
+			aria-expanded="false"
+			aria-controls="catnav-list"
+		>
+			All sections
+			<Icon name="chevron-down" size={16} />
+		</button>
+
+		<ul id="catnav-list" class="catnav__list">
+			{links.map((link) => (
+				<li>
+					<a
+						href={link.href}
+						target={link.target}
+						rel={link.target === "_blank" ? "noopener noreferrer" : undefined}
+						aria-current={isCurrent(link.href) ? "page" : undefined}
+					>
+						{link.label}
+					</a>
+				</li>
+			))}
+		</ul>
+	</div>
+</nav>
+
+<script>
+	const toggle = document.querySelector<HTMLButtonElement>(".catnav__toggle");
+	const list = document.getElementById("catnav-list");
+	if (toggle && list) {
+		toggle.addEventListener("click", () => {
+			const open = toggle.getAttribute("aria-expanded") === "true";
+			toggle.setAttribute("aria-expanded", open ? "false" : "true");
+			list.classList.toggle("is-open", !open);
+		});
+	}
+</script>

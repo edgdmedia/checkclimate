@@ -1,0 +1,14 @@
+---
+/**
+ * Search results. EmDash's full-text index is SQLite-only, so this runs the
+ * Postgres ILIKE query in src/utils/search.ts and renders through the same
+ * Archive shell as every other list. Paginates with ?page=N, never cached.
+ */
+import Archive from "../../components/Archive.astro";
+import { pageFromParam, searchView } from "../../utils/archive";
+
+const query = Astro.url.searchParams.get("q")?.trim() ?? "";
+const view = await searchView(query, pageFromParam(Astro.url.searchParams.get("page")));
+---
+
+<Archive {...view} searchTerm={query} />

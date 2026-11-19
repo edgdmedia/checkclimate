@@ -1,0 +1,62 @@
+---
+/**
+ * Category tabs for the Top Stories section. Each tab filters the stories
+ * rendered server-side; the JS only toggles the active panel.
+ */
+interface Tab {
+	label: string;
+	slug: string;
+	count: number;
+}
+
+interface Props {
+	tabs: Tab[];
+}
+
+const { tabs } = Astro.props;
+---
+
+{
+	tabs.length > 0 && (
+		<div role="tablist" aria-label="Top stories by category" class="tabs">
+			{tabs.map((tab, i) => (
+				<button
+					type="button"
+					role="tab"
+					id={`tab-${tab.slug}`}
+					aria-controls={`tabpanel-${tab.slug}`}
+					aria-selected={i === 0 ? "true" : "false"}
+					data-tab={tab.slug}
+				>
+					{tab.label}
+				</button>
+			))}
+		</div>
+	)
+}
+
+<style>
+	.tabs {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	.tabs button {
+		height: 44px;
+		padding-inline: 18px;
+		border-radius: var(--radius-small);
+		border: 1px solid transparent;
+		background: transparent;
+		color: var(--ink-muted);
+		font: 700 16px var(--font-display);
+		cursor: pointer;
+	}
+
+	.tabs button[aria-selected="true"] {
+		background: var(--surface-raised);
+		border-color: var(--border);
+		color: var(--ink);
+		box-shadow: var(--shadow-primary);
+	}
+</style>

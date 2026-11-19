@@ -1,194 +1,293 @@
 ---
+/**
+ * Home page (design: Main). One window of recent posts plus the newest alert
+ * and the tag terms; everything else is assembled from that in memory.
+ */
+import type { Post } from "../utils/content";
 import {
-	getEmDashCollection,
-	getTermsForEntries,
-	getSiteSettings,
+	categoryOf,
+	isFactCheck,
+	kickerOf,
+	postPath,
+	titleWithoutKicker,
+} from "../utils/content";
+import {
+	getSiteSettingsWithCacheHint,
+	getTaxonomyTermsWithCacheHint,
 } from "emdash";
+import { getEmDashCollection } from "emdash";
+import AlertBanner from "../components/AlertBanner.astro";
 import Base from "../layouts/Base.astro";
-import PostCard from "../components/PostCard.astro";
-import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import CategoryTabs from "../components/CategoryTabs.astro";
+import ClaimCard from "../components/ClaimCard.astro";
+import FactCheckBand from "../components/FactCheckBand.astro";
+import HeroStory from "../components/HeroStory.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import StoryCard from "../components/StoryCard.astro";
+import StoryList from "../components/StoryList.astro";
 
-// Limit to what we render (1 featured + 6 grid). The DB does the slicing
-// instead of fetching every post and discarding the tail in JS.
-const POSTS_PER_PAGE = 7;
+const HOME_WINDOW = 24;
 
-const [{ entries: posts, cacheHint }, settings] = await Promise.all([
+const [recent, alert, settings, tagTerms] = await Promise.all([
 	getEmDashCollection("posts", {
 		orderBy: { published_at: "desc" },
-		limit: POSTS_PER_PAGE + 1, // +1 to detect "view all" need
+		limit: HOME_WINDOW,
+		offset: 0,
 	}),
-	getSiteSettings(),
+	getEmDashCollection("posts", {
+		where: { kicker: "alert" },
+		orderBy: { published_at: "desc" },
+		limit: 1,
+		offset: 0,
+	}),
+	getSiteSettingsWithCacheHint(),
+	getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
 ]);
-const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
 
-if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(recent.cacheHint);
+	Astro.cache.set(alert.cacheHint);
+	Astro.cache.set(settings.cacheHint);
+	Astro.cache.set(tagTerms.cacheHint);
+}
 
-// Trim the lookahead post used to detect overflow
-const visiblePosts = posts.slice(0, POSTS_PER_PAGE);
-const hasMorePosts = posts.length > POSTS_PER_PAGE;
+const posts = recent.entries as Post[];
+const alertPost = (alert.entries as Post[])[0];
 
-// Find the first post with a featured image for the hero
-const featuredPost = visiblePosts.find((p) => p.data.featured_image);
-const featuredIndex = featuredPost ? visiblePosts.indexOf(featuredPost) : -1;
+const siteTitle = settings.data?.title ?? "Check Climate Africa";
+const siteTagline =
+	settings.data?.tagline ?? "Disseminating Critical Climate Information";
 
-// Get remaining posts (exclude featured if found, limit to 6 for grid)
-const gridPosts = visiblePosts
-	.filter((_, i) => i !== featuredIndex)
-	.slice(0, 6);
+const [hero, ...rest] = posts;
+const latest = rest.slice(0, 4);
+const factChecks = posts.filter(isFactCheck);
+const news = posts.filter((post) => categoryOf(post)?.slug === "news").slice(0, 6);
 
-// Single batched query for tags across the featured post + grid posts.
-// Avoids the N+1 pattern of calling getEntryTerms() per entry.
-// Bylines are already hydrated on entry.data.bylines by getEmDashCollection.
-const tagEntryIds = [
-	...(featuredPost ? [featuredPost.data.id] : []),
-	...gridPosts.map((p) => p.data.id),
-];
-const tagsByEntry = await getTermsForEntries("posts", tagEntryIds, "tag");
+// Top Stories tabs: one per category that has stories in this window.
+const tabs = posts
+	.map((post) => categoryOf(post))
+	.filter((term, index, all): term is NonNullable<typeof term> =>
+		term ? all.findIndex((other) => other?.slug === term.slug) === index : false,
+	)
+	.slice(0, 5)
+	.map((term) => ({
+		label: term.label,
+		slug: term.slug,
+		count: posts.filter((post) => categoryOf(post)?.slug === term.slug).length,
+	}));
 
-const featuredTags = featuredPost
-	? (tagsByEntry.get(featuredPost.data.id) ?? []).map((t) => ({
-			slug: t.slug,
-			label: t.label,
-		}))
-	: [];
+function storiesFor(slug: string): Post[] {
+	return posts
+		.filter((post) => categoryOf(post)?.slug === slug)
+		.slice(0, 3);
+}
 
-const gridPostsWithTags = gridPosts.map((post) => ({
-	post,
-	tags: (tagsByEntry.get(post.data.id) ?? []).map((t) => ({
-		slug: t.slug,
-		label: t.label,
-	})),
-}));
+const topics = tagTerms.data.slice(0, 10);
+const opinion = factChecks.slice(0, 3);
 ---
 
 <Base title={siteTitle} description={siteTagline}>
-	<header class="band intro">
-		<div class="frame home-intro">
-			<div>
-				<p class="eyebrow">Blog</p>
-				<h1 class="intro__title">{siteTitle}</h1>
-				{siteTagline && <p class="intro__subtitle">{siteTagline}</p>}
-			</div>
-			<a
-				href="/rss.xml"
-				type="application/rss+xml"
-				class="btn btn--ghost btn--sm home-intro__rss"
-			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.75"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<path d="M4 11a9 9 0 0 1 9 9"></path>
-					<path d="M4 4a16 16 0 0 1 16 16"></path>
-					<circle cx="5" cy="19" r="1"></circle>
-				</svg>
-				RSS feed
-			</a>
-		</div>
-	</header>
+	{alertPost && <AlertBanner post={alertPost} />}
 
-	{
-		posts.length === 0 ? (
-			<section class="band section">
-				<div class="frame">
-					<div class="empty-state">
-						<h2 class="empty-state__title">No posts yet</h2>
-						<p class="empty-state__text">
-							Create your first post in the admin panel.
-						</p>
-						<div class="empty-state__actions">
-							<a href="/_emdash/admin/content/posts/new" class="btn">
-								Create a post
-							</a>
-						</div>
+	<section class="wrap lead" aria-label="Lead stories">
+		<div class="lead__grid">
+			{hero ? (
+				<HeroStory post={hero} />
+			) : (
+				<div class="empty">Nothing published yet.</div>
+			)}
+			<StoryList posts={latest} title="Latest" />
+		</div>
+	</section>
+
+	{factChecks.length > 0 && <FactCheckBand posts={posts} />}
+
+	{tabs.length > 0 && (
+		<section class="wrap topstories" aria-labelledby="ts-title">
+			<SectionHeading id="ts-title" title="Top Stories" />
+			<CategoryTabs tabs={tabs} />
+			{tabs.map((tab, index) => (
+				<div
+					id={`tabpanel-${tab.slug}`}
+					role="tabpanel"
+					aria-labelledby={`tab-${tab.slug}`}
+					class="cards"
+					hidden={index !== 0}
+				>
+					{storiesFor(tab.slug).map((post) => (
+						<StoryCard post={post} variant="card" headingLevel={3} />
+					))}
+				</div>
+			))}
+		</section>
+	)}
+
+	<section class="wrap news" aria-labelledby="news-title">
+		<div class="news__grid">
+			<div>
+				<SectionHeading
+					id="news-title"
+					title="News"
+					rule
+					moreHref="/category/news/"
+				/>
+				{news.length === 0 ? (
+					<div class="empty">No news stories in this window.</div>
+				) : (
+					<div class="newslist">
+						{news.map((post) => (
+							<StoryCard post={post} variant="news" headingLevel={3} />
+						))}
+					</div>
+				)}
+			</div>
+			<aside class="news__side" aria-label="Browse">
+				<div class="panel">
+					<h2 class="panel__title">Browse by topic</h2>
+					<div class="chips">
+						{topics.map((tag) => (
+							<a href={`/tag/${tag.slug}/`} class="chip">{tag.label}</a>
+						))}
 					</div>
 				</div>
-			</section>
-		) : (
-			<>
-				{featuredPost && (
-					<section class="band section">
-						<div class="frame">
-							<PostCard
-								post={featuredPost}
-								tags={featuredTags}
-								variant="feature"
-								headingLevel={2}
-								priority
-							/>
-						</div>
-					</section>
-				)}
+				<div class="opinion">
+					<span class="opinion__eyebrow">Opinion</span>
+					{opinion.map((post, index) => (
+						<a
+							href={postPath(post)}
+							class:list={index === 0 ? "opinion__lead" : "opinion__row"}
+						>
+							<strong>{titleWithoutKicker(post)}</strong>
+						</a>
+					))}
+					<a href="/category/opinion/" class="opinion__more">All opinion →</a>
+				</div>
+			</aside>
+		</div>
+	</section>
 
-				{gridPostsWithTags.length > 0 && (
-					<section class="band section" aria-labelledby="latest-posts">
-						<div class="frame">
-							<div class="section-head">
-								<h2 id="latest-posts" class="section-head__title">
-									Latest posts
-								</h2>
-								{hasMorePosts && (
-									<a href="/posts" class="arrow-link">
-										View all<span class="sr-only"> posts</span>
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="1.75"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											aria-hidden="true"
-										>
-											<path d="M5 12h14" />
-											<path d="m12 5 7 7-7 7" />
-										</svg>
-									</a>
-								)}
-							</div>
-							<div class="post-grid">
-								{gridPostsWithTags.map(({ post, tags }) => (
-									<PostCard
-										post={post}
-										tags={tags}
-										variant="card"
-										headingLevel={3}
-									/>
-								))}
-							</div>
-						</div>
-					</section>
-				)}
-			</>
-		)
-	}
+	<section class="wrap submit" aria-label="Send us a claim">
+		<ClaimCard />
+	</section>
 </Base>
 
 <style>
-	.home-intro {
+	.lead {
+		padding-block: 32px 48px;
+	}
+
+	.lead__grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: end;
-		gap: var(--spacing-6) var(--spacing-8);
+		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+		gap: 30px;
 	}
 
-	/* Lifts the pill from the line box's bottom onto the last line's baseline */
-	.home-intro__rss {
-		margin-block-end: var(--spacing-2);
+	.topstories {
+		padding-block: 8px 40px;
 	}
 
-	@media (max-width: 720px) {
-		.home-intro {
+	.topstories :global(.sechead) {
+		margin-bottom: 14px;
+	}
+
+	.news {
+		padding-block: 40px 56px;
+	}
+
+	.news__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 40px;
+	}
+
+	.news__side {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.opinion {
+		padding: 24px;
+		border-radius: var(--radius);
+		background: var(--weather-surface);
+		color: var(--on-brand);
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.opinion__eyebrow {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: var(--brand-amber);
+	}
+
+	.opinion a {
+		color: var(--on-brand);
+		text-decoration: none;
+	}
+
+	.opinion a:hover {
+		color: var(--brand-amber);
+	}
+
+	.opinion__lead strong {
+		font-size: 20px;
+		line-height: 26px;
+		font-weight: 700;
+	}
+
+	.opinion__row {
+		padding-top: 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.opinion__row strong {
+		font-size: 16px;
+		line-height: 22px;
+		font-weight: 500;
+	}
+
+	.opinion__more {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--brand-amber);
+	}
+
+	.submit {
+		padding-bottom: 64px;
+	}
+
+	@media (max-width: 900px) {
+		.lead__grid,
+		.news__grid {
 			grid-template-columns: minmax(0, 1fr);
-		}
-
-		.home-intro__rss {
-			justify-self: start;
-			margin-block-end: 0;
 		}
 	}
 </style>
+
+<script>
+	// Top Stories tabs: every panel is already in the HTML, so switching is a
+	// pure visibility toggle and the page stays cacheable.
+	const tabButtons = document.querySelectorAll<HTMLButtonElement>(
+		'[role="tab"][data-tab]',
+	);
+	for (const button of tabButtons) {
+		button.addEventListener("click", () => {
+			const slug = button.dataset.tab;
+			for (const other of tabButtons) {
+				other.setAttribute(
+					"aria-selected",
+					other === button ? "true" : "false",
+				);
+			}
+			for (const panel of document.querySelectorAll<HTMLElement>(
+				'[role="tabpanel"]',
+			)) {
+				panel.hidden = panel.id !== `tabpanel-${slug}`;
+			}
+		});
+	}
+</script>

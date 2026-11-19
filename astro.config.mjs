@@ -45,21 +45,32 @@ export default defineConfig({
 		provider: cacheCloudflare(),
 	},
 	routeRules: {
+		// Home and the paginated story archives.
 		"/": cachedPage(["posts", "pages"]),
 		"/posts": cachedPage(["posts"]),
+		"/posts/page/[n]": cachedPage(["posts"]),
 		"/[yyyy]/[mm]/[dd]/[slug]": cachedPage(["posts"]),
 		"/category/[slug]": cachedPage(["posts"]),
+		"/category/[slug]/page/[n]": cachedPage(["posts"]),
 		"/tag/[slug]": cachedPage(["posts"]),
+		"/tag/[slug]/page/[n]": cachedPage(["posts"]),
 		"/author/[slug]": cachedPage(["posts"]),
+		"/author/[slug]/page/[n]": cachedPage(["posts"]),
+		// Static pages: /about-us/, /contact-us/ and the generic page route.
 		"/about-us": cachedPage(["pages"]),
 		"/contact-us": cachedPage(["pages"]),
 		"/privacy-policy-2": cachedPage(["pages"]),
 		"/accessibility-statement": cachedPage(["pages"]),
-		"/submit-a-claim": cachedPage(["pages"]),
+		// Feeds and discovery files.
 		"/feed": cachedPage(["posts"]),
 		"/category/[slug]/feed": cachedPage(["posts"]),
 		"/sitemap.xml": cachedPage(["posts", "pages"]),
+		"/sitemap_index.xml": cachedPage(["posts", "pages"]),
 		"/robots.txt": cachedPage(["posts", "pages"]),
+		// Any other single-segment path is a CMS page.
+		"/[slug]": cachedPage(["pages"]),
+		// Not cached on purpose: /search (query dependent), /submit-a-claim and
+		// every POST (the claim form), /admin, /_emdash/*, /404.
 	},
 	vite: {
 		// `pg` (node-postgres) is CommonJS. The Workers build inlines it, but the

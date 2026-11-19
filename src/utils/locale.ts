@@ -24,3 +24,16 @@ export function formatDate(date: Date, month: "long" | "short"): string {
 		day: "numeric",
 	});
 }
+
+/**
+ * The dateline in the top bar: "Monday, 16 November 2026". British order to
+ * match the design; falls back to the site locale when one is configured.
+ */
+export function formatDateline(date: Date): string {
+	return date.toLocaleDateString(getSiteLocale() ?? "en-GB", {
+		weekday: "long",
+		day: "numeric",
+		month: "long",
+		year: "numeric",
+	});
+}

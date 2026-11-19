@@ -1,18 +1,15 @@
 ---
-import Icon from "./Icon.astro";
-
-const today = new Date().toLocaleDateString("en-GB", {
-	weekday: "long",
-	day: "numeric",
-	month: "long",
-	year: "numeric",
-});
+/**
+ * Weather line in the top bar.
+ *
+ * Phase 4 fills this in from Open-Meteo in the browser, so the page itself
+ * stays cacheable at the edge and the Worker spends no CPU on it. Until that
+ * island runs, the line stays hidden rather than showing invented numbers.
+ */
 ---
 
-<div class="topbar__weather weather" data-weather data-weather-city="Lagos">
-	<Icon name="sun" size={16} class="weather__icon" />
-	<span class="weather__temp" data-weather-temp>31°C</span>
-	<span class="weather__place"><span data-weather-city-label>Lagos</span>, NG</span>
-	<span class="weather__detail" data-weather-detail>Humidity 30%</span>
-	<span class="weather__date">{today}</span>
-</div>
+<span class="topbar__weather weather" data-weather hidden>
+	<strong class="weather__temp"></strong>
+	<span class="weather__place"></span>
+	<span class="weather__detail"></span>
+</span>

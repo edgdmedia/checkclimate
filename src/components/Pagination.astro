@@ -1,71 +1,73 @@
 ---
+/**
+ * Numbered pagination for the archives. EmDash's offset queries return
+ * `hasMore` instead of a row count, so the renderer shows the pages it knows
+ * about (1 … current) and offers the next one when there is more.
+ */
 interface Props {
-	/** Path of the first page, e.g. "/posts" */
 	basePath: string;
-	cursor?: string;
-	nextCursor?: string;
+	page: number;
+	hasMore: boolean;
+	/**
+	 * Query string for routes that paginate by parameter instead of by path
+	 * (search). When set, links become `/search/?q=…&page=N`.
+	 */
+	query?: string | null;
+	/** Extra query to carry through `/page/N/` links, e.g. a topic filter. */
+	suffix?: string | null;
 }
 
-const { basePath, cursor, nextCursor } = Astro.props;
+const { basePath, page, hasMore, query = null, suffix = null } = Astro.props;
+const base = basePath.replace(/\/+$/, "");
+const extra = suffix ? `?${suffix}` : "";
+
+function pageUrl(n: number): string {
+	if (query) {
+		return n <= 1
+			? `${base}/?${query}`
+			: `${base}/?${query}&page=${n}`;
+	}
+	return n <= 1 ? `${base}/${extra}` : `${base}/page/${n}/${extra}`;
+}
+
+const numbers = Array.from({ length: Math.min(page, 5) }, (_, i) => {
+	// Show the current page and up to four before it, always starting at 1.
+	const start = Math.max(1, page - 4);
+	return start + i;
+});
+const showGap = page > 5;
 ---
 
 {
-	(cursor || nextCursor) && (
-		<nav class="pagination" aria-label="Pagination">
-			{cursor && (
-				<a href={basePath} class="btn btn--ghost">
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.75"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<path d="M19 12H5" />
-						<path d="m12 19-7-7 7-7" />
-					</svg>
-					First page
+	(page > 1 || hasMore) && (
+		<nav class="pagination" aria-label="Story pages">
+			{page > 1 ? (
+				<a href={pageUrl(page - 1)} class="pagination__prev" rel="prev">
+					← Prev
 				</a>
+			) : (
+				<span class="pagination__prev" aria-hidden="true">
+					← Prev
+				</span>
 			)}
-			{nextCursor && (
+			{showGap && <span class="pagination__gap" aria-hidden="true">…</span>}
+			{numbers.map((n) => (
 				<a
-					href={`${basePath}?cursor=${encodeURIComponent(nextCursor)}`}
-					class="btn btn--ghost pagination__next"
+					href={pageUrl(n)}
+					aria-current={n === page ? "page" : undefined}
 				>
-					Next page
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.75"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<path d="M5 12h14" />
-						<path d="m12 5 7 7-7 7" />
-					</svg>
+					{n}
 				</a>
+			))}
+			{hasMore ? (
+				<a href={pageUrl(page + 1)} class="pagination__next" rel="next">
+					Next →
+				</a>
+			) : (
+				<span class="pagination__next" aria-hidden="true">
+					Next →
+				</span>
 			)}
 		</nav>
 	)
 }
-
-<style>
-	.pagination {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-3);
-		margin-top: var(--spacing-10);
-	}
-
-	.pagination__next {
-		margin-inline-start: auto;
-	}
-
-	.pagination svg:dir(rtl) {
-		scale: -1 1;
-	}
-</style>

@@ -1,0 +1,32 @@
+---
+/** Tag pills: used below articles and on archive sidebars. */
+interface Props {
+	tags: Array<{ slug: string; label: string }>;
+	label?: string;
+}
+
+const { tags, label = "Tags" } = Astro.props;
+---
+
+{
+	tags.length > 0 && (
+		<div class="chips">
+			<span class="chips__label">{label}</span>
+			{tags.map((tag) => (
+				<a href={`/tag/${tag.slug}/`} class="chip">
+					{tag.label}
+				</a>
+			))}
+		</div>
+	)
+}
+
+<style>
+	.chips__label {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--ink);
+		margin-inline-end: 4px;
+		align-self: center;
+	}
+</style>

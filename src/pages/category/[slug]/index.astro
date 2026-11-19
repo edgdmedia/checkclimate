@@ -1,0 +1,11 @@
+---
+import { decodeSlug } from "emdash";
+import Archive from "../../../components/Archive.astro";
+import { categoryView, topicFromUrl } from "../../../utils/archive";
+
+const slug = decodeSlug(Astro.params.slug) ?? "";
+const view = await categoryView(slug, 1, topicFromUrl(Astro.url));
+if (!view) return Astro.rewrite("/404");
+---
+
+<Archive {...view} />
