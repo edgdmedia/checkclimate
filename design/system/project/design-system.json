@@ -1,0 +1,77 @@
+{
+  "v": 3,
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "l",
+      "order": [
+        "check-climate-lockup.png",
+        "check-climate-lockup-reverse.png",
+        "check-climate-mark.png",
+        "check-climate-mark-simple.png",
+        "check-climate-mark-white-bg.jpg",
+        "check-climate-mark-on-forest.jpg"
+      ],
+      "files": {
+        "check-climate-lockup.png": {
+          "name": "check-climate-lockup.png",
+          "blob": "ac6260d9552964b9dbb8ece22a7c67c3",
+          "size": 23338,
+          "type": "image/png"
+        },
+        "check-climate-lockup-reverse.png": {
+          "name": "check-climate-lockup-reverse.png",
+          "blob": "2653fc2b8bd2055271ecbbd2399b5e9f",
+          "size": 33341,
+          "type": "image/png"
+        },
+        "check-climate-mark.png": {
+          "name": "check-climate-mark.png",
+          "blob": "4a626b33b811541e85ea84c08d995225",
+          "size": 30793,
+          "type": "image/png"
+        },
+        "check-climate-mark-white-bg.jpg": {
+          "name": "check-climate-mark-white-bg.jpg",
+          "blob": "9b32353d465555cecc934d4cd14e8b2c",
+          "size": 28692,
+          "type": "image/jpeg"
+        },
+        "check-climate-mark-on-forest.jpg": {
+          "name": "check-climate-mark-on-forest.jpg",
+          "blob": "bf9ea22b5714ed44b47d954503217a6c",
+          "size": 29000,
+          "type": "image/jpeg"
+        },
+        "check-climate-mark-simple.png": {
+          "name": "check-climate-mark-simple.png",
+          "blob": "536d7e4931cb71b50f361653bd539609",
+          "size": 29224,
+          "type": "image/png"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "createdOnFiles": {
+    "at": "2026-11-16T09:05:00Z",
+    "v": 1
+  },
+  "docs": {
+    "sections": []
+  },
+  "groups": [
+    "Logos"
+  ],
+  "lastChange": {
+    "at": "2026-11-16T09:23:00Z",
+    "by": "Olalekan Owonikoko",
+    "note": "Reverse lockup and simple mark set as the dark-mode logo and icon; header swaps by theme",
+    "via": "Claude chat"
+  },
+  "layout": "files",
+  "libraries": [],
+  "namespace": "CheckClimate",
+  "sections": {},
+  "title": "Check Climate Africa"
+}

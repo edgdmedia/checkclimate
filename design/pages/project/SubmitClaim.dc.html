@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Submit a claim</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400&amp;display=swap">
+<style>
+body{margin:0}
+.cc{--brand-forest:#2c572a;--brand-amber:#ffb600;--brand-deep:#003c25;--weather-surface:#2d5a27;--on-image:#f0f2f5;--surface-page:#ffffff;--surface-raised:#ffffff;--surface-muted:#f0f2f5;--ink:#000000;--ink-body:#1a1a1a;--ink-muted:#65676b;--ink-meta:#666666;--border:#e6e6e6;--border-strong:#ced0d4;--field:#ffffff;--link:#2c572a;font-family:"Red Hat Display",sans-serif;background:var(--surface-page);color:var(--ink-body);-webkit-font-smoothing:antialiased}
+.cc.dark{--surface-page:#212121;--surface-raised:#1a1a1a;--surface-muted:#242424;--ink:#ffffff;--ink-body:#c7c5c5;--ink-muted:#9f9f9f;--ink-meta:#878787;--border:#333333;--border-strong:#555555;--field:#1a1a1a;--link:#ffb600}
+.cc *{box-sizing:border-box}
+.cc a{color:inherit;text-decoration:none}
+.cc a.story:hover h5{color:var(--link)}
+.cc :focus-visible{outline:2px solid var(--brand-amber);outline-offset:2px}
+.cc input:focus,.cc textarea:focus,.cc select:focus{border-color:var(--brand-forest);box-shadow:0 0 0 3px rgba(44,87,42,.2);outline:none}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:48px}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.body,.steps{grid-template-columns:minmax(0,1fr)}.h1{font-size:38px !important;line-height:44px !important}}
+@media (max-width:600px){.pair{grid-template-columns:minmax(0,1fr)}.wrap{padding:0 16px}}
+</style>
+</helmet>
+<div class="cc {{themeClass}}" style="width: 100%;">
+<dc-import name="Header" dark="{{dark}}" active="Fact Check" on-set-light="{{setLight}}" on-set-dark="{{setDark}}" hint-size="100%,200px"></dc-import>
+
+<main>
+<section style="background: var(--brand-forest); color: #ffffff; padding: 32px 0 44px;" aria-labelledby="sc-title">
+<div class="wrap">
+<nav aria-label="Breadcrumb" style="font-size: 14px; font-weight: 500; color: var(--on-image); display: flex; gap: 8px;"><a href="Main.dc.html">Home</a><span aria-hidden="true">/</span><a href="Category.dc.html">Fact Check</a><span aria-hidden="true">/</span><span style="color: var(--brand-amber);">Submit a claim</span></nav>
+<span style="display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--brand-amber);"><img src="/_blob/33927b83ef92a3b7be76ef364d9fa28e" alt="" style="width: 22px; height: 22px;">The fact-check desk</span>
+<h1 id="sc-title" class="h1" style="margin: 10px 0 12px; font-size: 50px; line-height: 56px; font-weight: 900; letter-spacing: -.01em; max-width: 860px;">Seen a climate claim you doubt? Send it to us.</h1>
+<p style="margin: 0; font-size: 18px; line-height: 28px; color: var(--on-image); max-width: 680px;">A WhatsApp forward, a viral video, a quote from a public figure: if it is about the climate in Africa, we want to see it.</p>
+<div class="steps" style="margin-top: 32px;">
+<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 10px; background: rgba(0,0,0,.18);"><strong style="flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-amber); color: #000000; font-weight: 900;">1</strong><span style="font-size: 15px; line-height: 22px;"><strong style="display: block; font-size: 16px;">You send the claim</strong>With a link or screenshot if you have one.</span></div>
+<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 10px; background: rgba(0,0,0,.18);"><strong style="flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-amber); color: #000000; font-weight: 900;">2</strong><span style="font-size: 15px; line-height: 22px;"><strong style="display: block; font-size: 16px;">Our desk reviews it</strong>We check it against official sources, data and experts.</span></div>
+<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 10px; background: rgba(0,0,0,.18);"><strong style="flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-amber); color: #000000; font-weight: 900;">3</strong><span style="font-size: 15px; line-height: 22px;"><strong style="display: block; font-size: 16px;">We publish what we find</strong>And email you the fact check if you left an address.</span></div>
+</div>
+</div>
+</section>
+
+<div class="wrap body" style="padding-top: 40px; padding-bottom: 64px;">
+<div>
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form aria-labelledby="form-title" style="padding: 32px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface-raised); display: flex; flex-direction: column; gap: 22px; font-size: 15px; line-height: 20px;">
+<div>
+<h2 id="form-title" style="margin: 0 0 4px; font-size: 26px; line-height: 32px; font-weight: 700; color: var(--ink);">The claim</h2>
+<p style="margin: 0; font-size: 14px; color: var(--ink-muted);">Fields marked * are required. It takes about two minutes.</p>
+</div>
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">What does the claim say? *
+<span style="font-weight: 400; font-size: 14px; color: var(--ink-muted);">Paste the text or describe the video or image in your own words.</span>
+<textarea rows="5" placeholder="e.g. A video says this flooded road is in Lekki, Lagos" style="padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 400 16px/24px 'Red Hat Display', sans-serif; resize: vertical;"></textarea>
+</label>
+<div class="pair">
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Where did you see it? *
+<select style="height: 48px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 500 16px 'Red Hat Display', sans-serif;">
+<option>Choose one</option><option>WhatsApp</option><option>Facebook</option><option>X / Twitter</option><option>TikTok</option><option>YouTube</option><option>Instagram</option><option>A news website</option><option>Radio or TV</option><option>In person</option><option>Somewhere else</option>
+</select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Which country is it about?
+<select style="height: 48px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 500 16px 'Red Hat Display', sans-serif;">
+<option>Choose one</option><option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option><option>Ethiopia</option><option>Sierra Leone</option><option>Another African country</option><option>Africa as a whole</option><option>Outside Africa</option>
+</select>
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Link to the post
+<input type="url" placeholder="https://" style="height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 500 16px 'Red Hat Display', sans-serif;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Screenshot, photo or video
+<span style="display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 10px; border: 2px dashed var(--border-strong); background: var(--surface-muted); font-weight: 500; color: var(--ink-body);">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; color: var(--link);"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+<span>Drop a file here or <u style="color: var(--link); font-weight: 700;">browse</u><br><span style="font-size: 13px; color: var(--ink-muted);">JPG, PNG or MP4, up to 25 MB</span></span>
+<input type="file" accept="image/*,video/*" style="position: absolute; width: 1px; height: 1px; opacity: 0;">
+</span>
+</label>
+
+<div style="height: 1px; background: var(--border);"></div>
+<div>
+<h2 style="margin: 0 0 4px; font-size: 22px; line-height: 28px; font-weight: 700; color: var(--ink);">About you <span style="font-size: 15px; font-weight: 500; color: var(--ink-muted);">(optional)</span></h2>
+<p style="margin: 0; font-size: 14px; color: var(--ink-muted);">Leave an email and we will tell you what we find.</p>
+</div>
+<div class="pair">
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Your name
+<input type="text" autocomplete="name" style="height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 500 16px 'Red Hat Display', sans-serif;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-weight: 700; color: var(--ink);">Email
+<input type="email" autocomplete="email" style="height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--field); color: var(--ink); font: 500 16px 'Red Hat Display', sans-serif;">
+</label>
+</div>
+<label style="display: flex; align-items: flex-start; gap: 12px; font-weight: 500; color: var(--ink-body); cursor: pointer;">
+<input type="checkbox" checked style="width: 20px; height: 20px; margin: 0; accent-color: #2c572a; flex: none;">
+<span>Don’t name me if this becomes a published fact check.</span>
+</label>
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+<button type="button" onClick="{{send}}" style="height: 52px; padding: 0 28px; border: 0; border-radius: 100px; background: var(--brand-forest); color: #ffffff; font: 700 17px 'Red Hat Display', sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Send for checking</button>
+<span style="font-size: 13px; line-height: 18px; color: var(--ink-muted); max-width: 360px;">We use your details only to follow up on this claim. See our <a href="#" style="color: var(--link); text-decoration: underline;">Privacy Policy</a>.</span>
+</div>
+</form>
+</sc-if>
+
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 40px; border-radius: 16px; background: var(--surface-muted); display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
+<div style="width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-forest);">
+<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffb600" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+</div>
+<h2 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 900; color: var(--ink);">Thank you. Your claim is with our desk.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 27px; color: var(--ink-body); max-width: 600px;">If we check it, we will publish the fact check on Check Climate Africa, and email you the link if you left an address.</p>
+<div style="display: flex; gap: 12px; flex-wrap: wrap;">
+<button type="button" onClick="{{reset}}" style="height: 48px; padding: 0 22px; border-radius: 100px; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--ink); font: 700 15px 'Red Hat Display', sans-serif; cursor: pointer;">Submit another claim</button>
+<a href="Category.dc.html" style="display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 100px; background: var(--brand-forest); color: #ffffff; font-size: 15px; font-weight: 700;">Read recent fact checks</a>
+</div>
+</div>
+</sc-if>
+</div>
+
+<aside style="display: flex; flex-direction: column; gap: 24px;" aria-label="Help">
+<div style="padding: 24px; border-radius: 10px; background: var(--surface-muted);">
+<h2 style="margin: 0 0 12px; font-size: 19px; line-height: 25px; font-weight: 700; color: var(--ink);">What makes a good submission</h2>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px; line-height: 24px; color: var(--ink-body); display: flex; flex-direction: column; gap: 6px;">
+<li>The exact words, or a screenshot of the post.</li>
+<li>Where and when you saw it.</li>
+<li>One claim per submission.</li>
+</ul>
+</div>
+<div style="padding: 24px; border-radius: 10px; border: 1px solid var(--border);">
+<h2 style="margin: 0 0 6px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--ink-muted);">Recent fact checks</h2>
+<a href="FactCheck.dc.html" class="story" style="display: block; padding: 12px 0; border-bottom: 1px solid var(--border);"><h5 style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--ink);">Lagos dismisses Bangladesh flood video shared as local footage</h5></a>
+<a href="#" class="story" style="display: block; padding: 12px 0; border-bottom: 1px solid var(--border);"><h5 style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--ink);">No, snow did not fall in Nigeria</h5></a>
+<a href="#" class="story" style="display: block; padding: 12px 0;"><h5 style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--ink);">South African firefighters didn’t go to US to quell wildfire</h5></a>
+</div>
+<div style="padding: 24px; border-radius: 10px; background: var(--brand-amber); color: #000000;">
+<strong style="display: block; font-size: 17px; font-weight: 900; margin-bottom: 6px;">Prefer email?</strong>
+<span style="font-size: 15px; line-height: 22px;">Send it to <a href="mailto:CheckClimateAfrica@gmail.com?subject=Climate%20claim%20to%20check" style="font-weight: 700; text-decoration: underline;">CheckClimateAfrica@gmail.com</a></span>
+</div>
+</aside>
+</div>
+</main>
+
+<dc-import name="Footer" dark="{{dark}}" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false,"section":"Theme"},"showThanks":{"editor":"boolean","default":false,"section":"State"},"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { dark: null, sent: null }; }
+  renderVals() {
+    const dark = this.state.dark === null ? !!this.props.dark : this.state.dark;
+    const sent = this.state.sent === null ? !!this.props.showThanks : this.state.sent;
+    return {
+      dark, themeClass: dark ? 'dark' : '',
+      setLight: () => this.setState({ dark: false }),
+      setDark: () => this.setState({ dark: true }),
+      sent, notSent: !sent,
+      send: () => this.setState({ sent: true }),
+      reset: () => this.setState({ sent: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

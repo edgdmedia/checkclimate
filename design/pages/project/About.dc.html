@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>About and contact</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400&amp;display=swap">
+<style>
+body{margin:0}
+.cc{--brand-forest:#2c572a;--brand-amber:#ffb600;--brand-deep:#003c25;--weather-surface:#2d5a27;--on-image:#f0f2f5;--surface-page:#ffffff;--surface-raised:#ffffff;--surface-muted:#f0f2f5;--ink:#000000;--ink-body:#1a1a1a;--ink-muted:#65676b;--ink-meta:#666666;--border:#e6e6e6;--border-strong:#ced0d4;--link:#2c572a;font-family:"Red Hat Display",sans-serif;background:var(--surface-page);color:var(--ink-body);-webkit-font-smoothing:antialiased}
+.cc.dark{--surface-page:#212121;--surface-raised:#1a1a1a;--surface-muted:#242424;--ink:#ffffff;--ink-body:#c7c5c5;--ink-muted:#9f9f9f;--ink-meta:#878787;--border:#333333;--border-strong:#444444;--link:#ffb600}
+.cc *{box-sizing:border-box}
+.cc a{color:inherit;text-decoration:none}
+.cc a.card:hover{border-color:var(--link)}
+.cc :focus-visible{outline:2px solid var(--brand-amber);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:center}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px}
+.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.hero,.two{grid-template-columns:minmax(0,1fr)}.three{grid-template-columns:minmax(0,1fr)}.four{grid-template-columns:repeat(2,minmax(0,1fr))}.h1{font-size:40px !important;line-height:46px !important}}
+@media (max-width:600px){.four{grid-template-columns:minmax(0,1fr)}.wrap{padding:0 16px}}
+</style>
+</helmet>
+<div class="cc {{themeClass}}" style="width: 100%;">
+<dc-import name="Header" dark="{{dark}}" active="None" on-set-light="{{setLight}}" on-set-dark="{{setDark}}" hint-size="100%,200px"></dc-import>
+
+<main>
+<section style="background: var(--brand-forest); color: #ffffff; padding: 56px 0 64px;" aria-labelledby="about-title">
+<div class="wrap hero">
+<div>
+<span style="font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--brand-amber);">About us</span>
+<h1 id="about-title" class="h1" style="margin: 12px 0 20px; font-size: 54px; line-height: 60px; font-weight: 900; letter-spacing: -.01em;">Disseminating critical climate information across Africa</h1>
+<p style="margin: 0; font-size: 19px; line-height: 31px; color: var(--on-image); max-width: 640px;">Check Climate Africa is a pioneering media consultancy initiative focused on disseminating critical climate information to key stakeholders across Africa, including governments, policymakers, and the general public.</p>
+</div>
+<div style="display: flex; justify-content: center; padding: 40px 32px; border-radius: 16px; background: #ffffff;">
+<img src="/_blob/6d94b35fd9d222fca62d8931122655db" alt="Check Climate" style="width: 100%; max-width: 380px; height: auto;">
+</div>
+</div>
+</section>
+
+<section class="wrap" style="padding-top: 64px; padding-bottom: 24px;" aria-labelledby="do-title">
+<h2 id="do-title" style="margin: 0 0 8px; font-size: 36px; line-height: 44px; font-weight: 700; color: var(--ink);">What we do</h2>
+<p style="margin: 0 0 28px; font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 640px;">A dual-pronged approach: reporting for everyone, and training for the people who verify.</p>
+<div class="two">
+<div style="padding: 32px; border-radius: 16px; background: var(--surface-muted); display: flex; flex-direction: column; gap: 14px;">
+<div style="width: 52px; height: 52px; border-radius: 10px; background: var(--brand-forest); display: grid; place-items: center;">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffb600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h12v14H6a2 2 0 0 1-2-2z"></path><path d="M16 9h4v8a2 2 0 0 1-2 2"></path><path d="M8 9h4M8 13h4"></path></svg>
+</div>
+<h3 style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 700; color: var(--ink);">News, data and analysis</h3>
+<p style="margin: 0; font-size: 17px; line-height: 27px; color: var(--ink-body);">A dedicated webpage offering in-depth climate data, news, and analysis tailored to African contexts, with fact checks of the claims that spread.</p>
+<a href="Main.dc.html" style="font-size: 16px; font-weight: 700; color: var(--link);">Read the latest →</a>
+</div>
+<div style="padding: 32px; border-radius: 16px; background: var(--surface-muted); display: flex; flex-direction: column; gap: 14px;">
+<div style="width: 52px; height: 52px; border-radius: 10px; background: var(--brand-amber); display: grid; place-items: center;">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#003c25" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-4 9 4-9 4z"></path><path d="M7 11v5c3 2 7 2 10 0v-5"></path></svg>
+</div>
+<h3 style="margin: 0; font-size: 24px; line-height: 30px; font-weight: 700; color: var(--ink);">Climate fact-checking training</h3>
+<p style="margin: 0; font-size: 17px; line-height: 27px; color: var(--ink-body);">Expert-led training programmes designed for journalists, researchers, and fact-checkers, to sharpen how they verify climate information and combat misinformation.</p>
+<a href="mailto:CheckClimateAfrica@gmail.com?subject=Training%20enquiry" style="font-size: 16px; font-weight: 700; color: var(--link);">Ask about training →</a>
+</div>
+</div>
+</section>
+
+<section class="wrap" style="padding-top: 48px; padding-bottom: 64px;" aria-labelledby="why-title">
+<h2 id="why-title" style="margin: 0 0 24px; font-size: 36px; line-height: 44px; font-weight: 700; color: var(--ink);">Why it matters</h2>
+<p style="margin: 0 0 28px; font-size: 18px; line-height: 28px; color: var(--ink-body); max-width: 720px;">By providing timely, accurate, and actionable climate insights, Check Climate Africa strives to:</p>
+<div class="three">
+<div style="padding-top: 18px; border-top: 4px solid var(--brand-forest);"><strong style="font-size: 44px; line-height: 48px; font-weight: 900; color: var(--brand-forest);">01</strong><h3 style="margin: 10px 0 0; font-size: 22px; line-height: 28px; font-weight: 700; color: var(--ink);">Inform policy decisions</h3></div>
+<div style="padding-top: 18px; border-top: 4px solid var(--brand-amber);"><strong style="font-size: 44px; line-height: 48px; font-weight: 900; color: var(--brand-forest);">02</strong><h3 style="margin: 10px 0 0; font-size: 22px; line-height: 28px; font-weight: 700; color: var(--ink);">Foster public awareness</h3></div>
+<div style="padding-top: 18px; border-top: 4px solid var(--brand-deep);"><strong style="font-size: 44px; line-height: 48px; font-weight: 900; color: var(--brand-forest);">03</strong><h3 style="margin: 10px 0 0; font-size: 22px; line-height: 28px; font-weight: 700; color: var(--ink);">Promote climate resilience</h3></div>
+</div>
+</section>
+
+<section id="contact" style="background: var(--surface-muted); padding: 64px 0;" aria-labelledby="contact-title">
+<div class="wrap">
+<h2 id="contact-title" style="margin: 0 0 8px; font-size: 36px; line-height: 44px; font-weight: 700; color: var(--ink);">Contact us</h2>
+<p style="margin: 0 0 28px; font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 640px;">Everything goes to one inbox: <a href="mailto:CheckClimateAfrica@gmail.com" style="color: var(--link); font-weight: 700;">CheckClimateAfrica@gmail.com</a>. Pick a topic so it reaches the right person faster.</p>
+<div class="four">
+<a class="card" href="SubmitClaim.dc.html" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 10px; border: 2px solid var(--brand-amber); background: var(--brand-amber); color: #000000;">
+<strong style="font-size: 20px; line-height: 26px; font-weight: 900;">Submit a claim</strong>
+<span style="font-size: 15px; line-height: 22px;">A post, video or quote about the climate you want checked.</span>
+<span style="margin-top: auto; font-size: 15px; font-weight: 700;">Email the desk →</span>
+</a>
+<a class="card" href="mailto:CheckClimateAfrica@gmail.com?subject=Question" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 10px; border: 2px solid var(--border); background: var(--surface-raised);">
+<strong style="font-size: 20px; line-height: 26px; font-weight: 900; color: var(--ink);">Questions</strong>
+<span style="font-size: 15px; line-height: 22px; color: var(--ink-body);">About a story, our work or our sources.</span>
+<span style="margin-top: auto; font-size: 15px; font-weight: 700; color: var(--link);">Write to us →</span>
+</a>
+<a class="card" href="mailto:CheckClimateAfrica@gmail.com?subject=Concern%20or%20correction" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 10px; border: 2px solid var(--border); background: var(--surface-raised);">
+<strong style="font-size: 20px; line-height: 26px; font-weight: 900; color: var(--ink);">Concerns and corrections</strong>
+<span style="font-size: 15px; line-height: 22px; color: var(--ink-body);">Spotted an error? Tell our editors.</span>
+<span style="margin-top: auto; font-size: 15px; font-weight: 700; color: var(--link);">Report it →</span>
+</a>
+<a class="card" href="mailto:CheckClimateAfrica@gmail.com?subject=Advertising" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 10px; border: 2px solid var(--border); background: var(--surface-raised);">
+<strong style="font-size: 20px; line-height: 26px; font-weight: 900; color: var(--ink);">Adverts</strong>
+<span style="font-size: 15px; line-height: 22px; color: var(--ink-body);">Reach readers who follow African climate news.</span>
+<span style="margin-top: auto; font-size: 15px; font-weight: 700; color: var(--link);">Advertise →</span>
+</a>
+</div>
+<div style="display: flex; align-items: center; gap: 16px; margin-top: 32px; flex-wrap: wrap; font-size: 15px; font-weight: 700; color: var(--ink);">
+<span>Follow us</span>
+<a href="https://facebook.com" style="padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border-strong);">Facebook</a>
+<a href="https://twitter.com" style="padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border-strong);">X / Twitter</a>
+<a href="https://youtube.com" style="padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border-strong);">YouTube</a>
+</div>
+</div>
+</section>
+</main>
+
+<dc-import name="Footer" dark="{{dark}}" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false,"section":"Theme"},"$preview":{"width":1440,"height":2500}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { dark: null }; }
+  renderVals() {
+    const dark = this.state.dark === null ? !!this.props.dark : this.state.dark;
+    return {
+      dark, themeClass: dark ? 'dark' : '',
+      setLight: () => this.setState({ dark: false }),
+      setDark: () => this.setState({ dark: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

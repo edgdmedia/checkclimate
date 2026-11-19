@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Site header</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="{{vars}} width: 100%; font-family: 'Red Hat Display', sans-serif; color: var(--ink-body);">
+
+<div style="background: #003c25; color: #ffffff; font-size: 13px; line-height: 18px;">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+<span style="font-weight: 500;">Monday, 16 November 2026</span>
+<span style="display: inline-flex; align-items: center; gap: 8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffb600" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+<strong style="font-weight: 700;">31°C</strong> Ilorin, NG · Humidity 30% · Sunset 6:18 PM</span>
+</div>
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+<div role="group" aria-label="Colour mode" style="display: inline-flex; border: 1px solid rgba(255,255,255,.5); border-radius: 100px; overflow: hidden;">
+<button aria-pressed="{{lightPressed}}" onClick="{{setLight}}" style="border: 0; padding: 4px 14px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; background: {{lightBg}}; color: {{lightFg}};">Light</button>
+<button aria-pressed="{{darkPressed}}" onClick="{{setDark}}" style="border: 0; padding: 4px 14px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; background: {{darkBg}}; color: {{darkFg}};">Dark</button>
+</div>
+<nav aria-label="Social" style="display: flex; gap: 14px; font-weight: 500;">
+<a href="https://facebook.com" style="color: inherit; text-decoration: none;">Facebook</a><a href="https://twitter.com" style="color: inherit; text-decoration: none;">X / Twitter</a><a href="https://youtube.com" style="color: inherit; text-decoration: none;">YouTube</a>
+</nav>
+</div>
+</div>
+</div>
+
+<header style="background: var(--surface-raised); border-bottom: 1px solid var(--border);">
+<div style="max-width: 1240px; margin: 0 auto; padding: 18px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; gap: 6px; text-decoration: none;" aria-label="Check Climate Africa home">
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><img src="/_blob/6d94b35fd9d222fca62d8931122655db" alt="Check Climate" style="height: 48px; width: auto; display: block;"></sc-if>
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><img src="/_blob/6dab08b1915857f1bb4a1e3bc83adb94" alt="Check Climate" style="height: 48px; width: auto; display: block;"></sc-if>
+<span style="font-size: 12px; line-height: 16px; color: var(--ink-muted); font-weight: 500;">Disseminating Critical Climate Information</span>
+</a>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+<label style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 100px; background: var(--surface-muted); width: 260px; box-sizing: border-box;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color: var(--ink-muted); flex: none;"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" aria-label="Search stories" placeholder="Search stories and fact checks" style="border: 0; background: transparent; outline: none; font: 500 14px/20px 'Red Hat Display', sans-serif; color: var(--ink); width: 100%;">
+</label>
+<a href="SubmitClaim.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 100px; background: #2c572a; color: #ffffff; font-size: 15px; font-weight: 700; text-decoration: none;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+Submit a claim</a>
+</div>
+</div>
+<div style="background: var(--surface-muted);">
+<nav aria-label="Categories" style="max-width: 1240px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; display: flex; gap: 4px; overflow-x: auto; font-size: 15px; line-height: 20px;">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="8">
+<a href="{{n.href}}" aria-current="{{n.current}}" style="padding: 14px 12px; white-space: nowrap; text-decoration: none; font-weight: {{n.weight}}; color: {{n.color}}; box-shadow: {{n.bar}};">{{n.label}}</a>
+</sc-for>
+</nav>
+</div>
+</header>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"active":{"editor":"enum","options":["Home","Fact Check","News","Agriculture","Environment","Green Energy","Sustainability","Aviation","None"],"default":"Home"},"onSetLight":{"editor":null},"onSetDark":{"editor":null},"$preview":{"width":1440,"height":200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = !!this.props.dark;
+    const active = this.props.active ?? 'Home';
+    const light = { 'surface-raised': '#ffffff', 'surface-muted': '#f0f2f5', ink: '#000000', 'ink-body': '#000000', 'ink-muted': '#65676b', border: '#e6e6e6', link: '#2c572a' };
+    const darkV = { 'surface-raised': '#1a1a1a', 'surface-muted': '#242424', ink: '#ffffff', 'ink-body': '#c7c5c5', 'ink-muted': '#9f9f9f', border: '#333333', link: '#ffb600' };
+    const v = dark ? darkV : light;
+    const vars = Object.keys(v).map((k) => '--' + k + ': ' + v[k] + ';').join(' ');
+    const pages = { Home: 'Main.dc.html', 'Fact Check': 'Category.dc.html' };
+    const nav = ['Home', 'Fact Check', 'News', 'Agriculture', 'Environment', 'Green Energy', 'Sustainability', 'Aviation'].map((label) => {
+      const on = label === active;
+      return { label, href: pages[label] || '#', current: on ? 'page' : 'false', weight: on ? 700 : 500, color: on ? 'var(--link)' : 'var(--ink-muted)', bar: on ? 'inset 0 -3px 0 var(--link)' : 'none' };
+    });
+    const noop = () => {};
+    return {
+      vars, nav, isDark: dark, isLight: !dark,
+      lightPressed: dark ? 'false' : 'true', darkPressed: dark ? 'true' : 'false',
+      lightBg: dark ? 'transparent' : '#5ca024', lightFg: dark ? '#ffffff' : '#000000',
+      darkBg: dark ? '#5ca024' : 'transparent', darkFg: dark ? '#000000' : '#ffffff',
+      setLight: this.props.onSetLight || noop, setDark: this.props.onSetDark || noop
+    };
+  }
+}
+</script>
+</body>
+</html>

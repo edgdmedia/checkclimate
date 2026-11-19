@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Site footer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<footer style="{{vars}} width: 100%; font-family: 'Red Hat Display', sans-serif; background: var(--surface-footer); color: var(--ink-body); padding: 56px 0 28px;">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 24px; box-sizing: border-box;">
+<div style="display: flex; flex-wrap: wrap; gap: 40px;">
+<div style="flex: 2 1 360px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start;">
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><img src="/_blob/6d94b35fd9d222fca62d8931122655db" alt="Check Climate" style="height: 44px; width: auto;"></sc-if>
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><img src="/_blob/6dab08b1915857f1bb4a1e3bc83adb94" alt="Check Climate" style="height: 44px; width: auto;"></sc-if>
+<p style="margin: 0; font-size: 16px; line-height: 26px; max-width: 440px;">Africa-centred climate news and fact checks. We are dedicated to providing accurate climate information and promoting climate awareness.</p>
+<p style="margin: 0; font-size: 15px; line-height: 24px; max-width: 440px;">For questions, concerns, adverts or climate claim submissions, email <a href="mailto:CheckClimateAfrica@gmail.com" style="color: var(--link); font-weight: 700; text-decoration: none;">CheckClimateAfrica@gmail.com</a></p>
+</div>
+<nav aria-label="Sections" style="flex: 1 1 160px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; font-weight: 500;">
+<strong style="font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--ink);">Sections</strong>
+<a href="Category.dc.html" style="color: inherit; text-decoration: none;">Fact Check</a>
+<a href="#" style="color: inherit; text-decoration: none;">News</a>
+<a href="#" style="color: inherit; text-decoration: none;">Agriculture</a>
+<a href="#" style="color: inherit; text-decoration: none;">Environment</a>
+<a href="#" style="color: inherit; text-decoration: none;">Green Energy</a>
+<a href="#" style="color: inherit; text-decoration: none;">Sustainability</a>
+<a href="#" style="color: inherit; text-decoration: none;">Aviation</a>
+</nav>
+<nav aria-label="About" style="flex: 1 1 160px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; font-weight: 500;">
+<strong style="font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--ink);">Check Climate</strong>
+<a href="About.dc.html" style="color: inherit; text-decoration: none;">About Us</a>
+<a href="About.dc.html#contact" style="color: inherit; text-decoration: none;">Contact Us</a>
+<a href="#" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+<strong style="margin-top: 12px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; color: var(--ink);">Follow</strong>
+<a href="https://facebook.com" style="color: inherit; text-decoration: none;">Facebook</a>
+<a href="https://twitter.com" style="color: inherit; text-decoration: none;">X / Twitter</a>
+<a href="https://youtube.com" style="color: inherit; text-decoration: none;">YouTube</a>
+</nav>
+</div>
+<div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-strong); font-size: 13px; color: var(--ink-meta);">© 2025 Check Climate Africa. All rights reserved.</div>
+</div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":420}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = !!this.props.dark;
+    const v = dark
+      ? { 'surface-footer': '#181818', ink: '#ffffff', 'ink-body': '#c7c5c5', 'ink-meta': '#878787', 'border-strong': '#333333', link: '#ffb600' }
+      : { 'surface-footer': '#e7e7e7', ink: '#000000', 'ink-body': '#000000', 'ink-meta': '#666666', 'border-strong': '#ced0d4', link: '#2c572a' };
+    const vars = Object.keys(v).map((k) => '--' + k + ': ' + v[k] + ';').join(' ');
+    return { vars, isDark: dark, isLight: !dark };
+  }
+}
+</script>
+</body>
+</html>

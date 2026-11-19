@@ -1,0 +1,116 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-16T11:55:00Z"
+  },
+  "title": "Check Climate Africa \u2014 Homepage Redesign",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 3400,
+      "title": "Homepage \u2014 desktop",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Article.dc.html": {
+      "x": 2040,
+      "y": 0,
+      "w": 1440,
+      "h": 3300,
+      "title": "News article",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "FactCheck.dc.html": {
+      "x": 3560,
+      "y": 0,
+      "w": 1440,
+      "h": 3500,
+      "title": "Fact-check article",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Category.dc.html": {
+      "x": 5080,
+      "y": 0,
+      "w": 1440,
+      "h": 2600,
+      "title": "Fact Check archive",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "About.dc.html": {
+      "x": 6600,
+      "y": 0,
+      "w": 1440,
+      "h": 2500,
+      "title": "About + Contact",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Header.dc.html": {
+      "x": 0,
+      "y": 3620,
+      "w": 1440,
+      "h": 200,
+      "title": "Shared: Header",
+      "is_interactive": true
+    },
+    "Footer.dc.html": {
+      "x": 1520,
+      "y": 3620,
+      "w": 1440,
+      "h": 420,
+      "title": "Shared: Footer"
+    },
+    "SubmitClaim.dc.html": {
+      "x": 8120,
+      "y": 0,
+      "w": 1440,
+      "h": 2300,
+      "title": "Submit a claim",
+      "expand": "fill",
+      "is_interactive": true
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Article.dc.html",
+    "FactCheck.dc.html",
+    "Category.dc.html",
+    "About.dc.html",
+    "SubmitClaim.dc.html",
+    "Header.dc.html",
+    "Footer.dc.html"
+  ],
+  "notes": {
+    "n1": {
+      "x": 1520,
+      "y": 0,
+      "w": 420,
+      "text": "What changed from the live site\n\u2022 Weather, date and Light/Dark moved to a slim top bar\n\u2022 Search + a 'Submit a claim' button in the header\n\u2022 ALERT stories get an amber banner\n\u2022 Fact checks get their own green band with a claim-submission card\n\u2022 Top Stories tabs work (try them), with an empty state\n\u2022 Contrast fixed: small green text uses forest, not leaf\n\u2022 Footer now has sections, contact and social links\n\u2022 Photos are placeholders: drop in the real images"
+    },
+    "n2": {
+      "x": 9640,
+      "y": 0,
+      "w": 420,
+      "text": "Inner pages\n\u2022 Header and Footer are shared components (bottom row): edit once, every inner page updates\n\u2022 Article: breadcrumb, share bar, 'At a glance' summary, pull quote, tags, corrections link, comments, related stories\n\u2022 Fact check: Claim / Verdict panel up top, sources box, share incl. WhatsApp\n\u2022 Fact Check archive: topic filters work (try them), author, date and reading time on every row, pagination\n\u2022 About + Contact: the site had no Contact page; contact now routes by topic to the same inbox\n\u2022 Click through in Play: nav, breadcrumbs and 'See all' links connect the pages\n\u2022 Submit a claim: a real form (claim, platform, country, link, file upload, optional contact) with a thank-you state. Every 'Submit a claim' button now leads here"
+    }
+  },
+  "designSystems": [
+    {
+      "title": "Check Climate Africa",
+      "namespace": "checkclimate",
+      "artifact": "https://claude.ai/code/artifact/774490d4-57c6-428e-8888-cb53102aae4d",
+      "version": "1794820959-3810",
+      "copiedAt": "2026-11-16T11:50:42Z"
+    }
+  ]
+}
