@@ -13,40 +13,42 @@
   },
   "scripts": {
     "predev": "node scripts/build-tokens.mjs",
-    "dev": "astro dev",
+    "dev": "node scripts/with-env.mjs astro dev",
     "prebuild": "node scripts/build-tokens.mjs",
     "build": "astro build",
-    "preview": "astro preview",
-    "start": "node ./dist/server/entry.mjs",
+    "preview": "node scripts/with-env.mjs astro preview",
     "typecheck": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
     "seed:generate": "node scripts/seed/generate.mjs",
-    "seed": "node scripts/seed/generate.mjs && emdash seed seed/seed.json --database ./data/checkclimate.db && node scripts/seed/fix-dates.mjs",
+    "seed": "node scripts/seed/generate.mjs && tsx scripts/seed-db.ts",
+    "doctor": "emdash doctor",
     "types": "emdash types",
     "post-import": "tsx scripts/post-import.ts",
     "verify-migration": "tsx scripts/verify-migration.ts"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.5",
+    "@astrojs/cloudflare": "^14.4.9",
     "@astrojs/react": "^7.0.0",
-    "@aws-sdk/client-s3": "^3.879.0",
-    "@aws-sdk/s3-request-presigner": "^3.879.0",
+    "@emdash-cms/cloudflare": "^1.5.0",
     "@fontsource/red-hat-display": "^5.3.0",
-    "@libsql/client": "^0.8.1",
     "astro": "^7.3.2",
     "emdash": "^1.5.0",
+    "kysely": "^0.29.9",
+    "pg": "^8.23.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "^5.20261118.1",
     "@types/node": "^24.10.0",
     "lightningcss": "^1.33.0",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^8.3.8",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.1",
+    "wrangler": "^4.164.0"
   }
 }

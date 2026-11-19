@@ -1,0 +1,105 @@
+---
+import type { MenuItem } from "emdash";
+import logoLight from "../assets/brand/check-climate-lockup.png";
+import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
+import Icon from "./Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import WeatherWidget from "./WeatherWidget.astro";
+import { CLAIM_URL, SEARCH_URL, SOCIAL_LINKS } from "../utils/site";
+
+interface Props {
+	siteTitle: string;
+	siteTagline: string;
+	items: MenuItem[];
+}
+
+const { siteTitle, siteTagline, items } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+
+function isCurrent(url: string): boolean {
+	try {
+		const target = new URL(url, Astro.url);
+		if (target.origin !== Astro.url.origin) return false;
+		const path = target.pathname.replace(/\/+$/, "") || "/";
+		return path === currentPath;
+	} catch {
+		return false;
+	}
+}
+---
+
+<header class="site-header">
+	<div class="topbar">
+		<div class="wrap topbar__inner">
+			<div class="topbar__left">
+				<WeatherWidget />
+			</div>
+			<div class="topbar__right">
+				<ThemeToggle />
+				<nav class="topbar__social" aria-label="Social">
+					{SOCIAL_LINKS.map((link) => (
+						<a href={link.href} rel="noopener noreferrer">{link.label}</a>
+					))}
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<div class="masthead">
+		<div class="wrap masthead__inner">
+			<a href="/" class="masthead__brand" aria-label={`${siteTitle} home`}>
+				<img
+					class="masthead__logo masthead__logo--light"
+					src={logoLight.src}
+					width={logoLight.width}
+					height={logoLight.height}
+					alt="Check Climate"
+				/>
+				<img
+					class="masthead__logo masthead__logo--dark"
+					src={logoDark.src}
+					width={logoDark.width}
+					height={logoDark.height}
+					alt="Check Climate"
+				/>
+				<span class="masthead__tagline">{siteTagline}</span>
+			</a>
+
+			<div class="masthead__actions">
+				<form class="searchbox" action={SEARCH_URL} method="get" role="search">
+					<label class="sr-only" for="site-search">Search stories and fact checks</label>
+					<Icon name="search" size={18} class="searchbox__icon" />
+					<input
+						id="site-search"
+						type="search"
+						name="q"
+						placeholder="Search stories and fact checks"
+						autocomplete="off"
+					/>
+				</form>
+				<a href={CLAIM_URL} class="btn btn--claim">
+					<Icon name="check" size={18} />
+					<span>Submit a claim</span>
+				</a>
+				<a href={SEARCH_URL} class="searchbox-link" aria-label="Search">
+					<Icon name="search" size={22} />
+				</a>
+			</div>
+		</div>
+
+		<div class="catnav">
+			<nav class="wrap catnav__inner" aria-label="Categories">
+				{items.map((item) => (
+					<a
+						href={item.url ?? "/"}
+						target={item.target ?? undefined}
+						rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+						aria-current={isCurrent(item.url ?? "/") ? "page" : undefined}
+					>
+						{item.label}
+					</a>
+				))}
+			</nav>
+		</div>
+	</div>
+</header>

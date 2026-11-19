@@ -1,0 +1,13 @@
+# Worker secrets for `wrangler dev` / `wrangler secret put`.
+# Copy to `.dev.vars` (gitignored) for local development. Set the same names on
+# the deployed Worker with `wrangler secret put <NAME>` — see docs/RUNBOOK.md.
+
+EMDASH_ENCRYPTION_KEY=
+RESEND_API_KEY=
+EMAIL_FROM=Check Climate Africa <newsroom@checkclimate.africa>
+CLAIMS_INBOX=CheckClimateAfrica@gmail.com
+TURNSTILE_SECRET_KEY=
+
+# Public values (safe to keep as Wrangler vars instead of secrets).
+TURNSTILE_SITE_KEY=
+EMDASH_SITE_URL=https://www.checkclimate.africa
