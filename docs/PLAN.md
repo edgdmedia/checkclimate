@@ -1,15 +1,18 @@
 # Check Climate Africa: WordPress → Astro + EmDash
 
-Status: plan, 2026-11-19. Owner: edgdmedia. Repo: github.com/edgdmedia/checkclimate.
+Status: plan v2, 2026-11-19. Stack changed from VPS to **Cloudflare Workers (free) + Neon via Hyperdrive + R2 + KV**.
+Owner: edgdmedia. Repo: github.com/edgdmedia/checkclimate.
 
 ## Goal
 
 Replace the WordPress site at https://www.checkclimate.africa with an Astro + EmDash site that:
 
-- follows the approved design (see `design/`),
+- follows the approved design (`design/`),
 - keeps every existing URL working (SEO),
-- runs on the VPS (Node + SQLite) behind Cloudflare,
-- stores all media in Cloudflare R2.
+- runs on Cloudflare Workers (free plan) in the Security Focus Cloudflare account, with no server to maintain,
+- keeps all media in Cloudflare R2.
+
+For now the site lives on its `*.workers.dev` URL. Later it moves to `checkclimate.africa` (apex, no www).
 
 ## What exists today (measured 2026-11-19)
 
@@ -17,14 +20,14 @@ Replace the WordPress site at https://www.checkclimate.africa with an Astro + Em
 |---|---|
 | Posts | 172 (Yoast `post-sitemap.xml`) |
 | Pages | 6: `/`, `/posts/`, `/contact-us/`, `/accessibility-statement/`, `/about-us/`, `/privacy-policy-2/` |
-| Categories | 36 (fixed nav uses 7: Agriculture, Aviation, Environment, Fact Check, Green Energy, News, Sustainability) |
+| Categories | 36 (nav uses 7: Agriculture, Aviation, Environment, Fact Check, Green Energy, News, Sustainability) |
 | Tags | 277 |
 | Images in posts | about 250, under `/wp-content/uploads/YYYY/MM/` |
 | Permalinks | `/YYYY/MM/DD/<slug>/`, `/category/<slug>/`, `/tag/<slug>/` |
 | Theme / builder | Blogar + Elementor; weather widget from the custom `edgd-weather` plugin |
 | SEO | Yoast |
-| Public REST API | `/wp-json/*` returns 403 (a security plugin blocks it) |
-| Edge | Served straight from `nginx/1.24.0 (Ubuntu)`; **no `cf-ray` header, so it is not proxied by Cloudflare yet** |
+| Public REST API | `/wp-json/*` returns 403 today; the owner will open it for the EmDash Exporter |
+| Edge | Served straight from nginx, not proxied by Cloudflare |
 
 ## Design sources (in this repo)
 
@@ -37,126 +40,153 @@ Replace the WordPress site at https://www.checkclimate.africa with an Astro + Em
 | `design/pages/project/canvas.json` | Notes on what changed vs the live site |
 | `design/logos/*` | Logo files. In the page designs, `/_blob/6d94b35f…` = `check-climate-lockup.png`, `/_blob/6dab08b1…` = `check-climate-lockup-reverse.png`, `/_blob/33927b83…` = `check-climate-mark-simple.png` |
 
-The `.dc.html` files are design mockups (a custom component format with `{{holes}}`, `<sc-for>`, `<dc-import>`). Read them for layout, spacing and copy; rebuild them as Astro components. Do not ship them.
+The `.dc.html` files are mockups (custom format with `{{holes}}`, `<sc-for>`, `<dc-import>`). Read them for layout, spacing and copy, then rebuild as Astro components. Don't ship them.
 
 ## Architecture
 
 ```
-Cloudflare (proxied DNS, Cache Rule, Cache-Tag purge, WAF)
-  → nginx on the VPS (Cloudflare IPs only, Origin Certificate)
-    → 127.0.0.1:4321  node ./dist/server/entry.mjs  (systemd, single process)
-      → SQLite (WAL) at $DATABASE_PATH
-      → media: R2 bucket `checkclimate-media` via S3 API (emdash `s3()`)
+Browser
+  → Workers Cache (cacheCloudflare + routeRules; EmDash purges by tag on publish)
+    → Worker `checkclimate` (Astro 7 + EmDash, @astrojs/cloudflare, placement near Neon)
+      → KV `CACHE`          object cache (kvCache, long TTL)
+      → Hyperdrive          HYPERDRIVE (caching off: admin, writes)  +  HYPERDRIVE_CACHED (anonymous reads)
+          → Neon Postgres   project `checkclimate`, aws-eu-central-1 (Frankfurt)
+      → R2 `checkclimate-media`   media (later on media.checkclimate.africa)
+      → Cron */15 * * * *         scheduled publishing
 ```
 
-Key settings (details: `~/.claude/skills/deploying-emdash-cloudflare/vps.md`):
+`astro.config.mjs`:
 
-- `@astrojs/node` `mode: "standalone"`; no Cloudflare adapter.
-- `sqlite({ url: \`file:${process.env.DATABASE_PATH}\` })` — the path is baked at build time.
-- `storage: s3()` reading `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_REGION=auto`; `local()` fallback when `S3_BUCKET` is unset (dev).
-- `objectCache: memoryCache(...)`. **No Astro cache provider, no `routeRules`, no `Astro.cache.set`.**
-- Sessions: `fsLite` in a dir outside the app (`SESSION_DIR`).
-- `trustedProxyHeaders: ["cf-connecting-ip", "x-forwarded-for"]`.
-- Middleware sets `Cache-Control` + `Cache-Tag` (public 200: `public, max-age=300, s-maxage=2592000`; 404: 60s; `/_emdash`, `/admin`, session cookie: `private, no-store`).
-- Native plugin `plugins/cloudflare-purge/`: purge by tag on publish/unpublish/delete (debounced, retries 429).
-- Native plugin `plugins/resend-email/`: email transport (magic links, invites, claim notifications).
+```js
+import cloudflare from "@astrojs/cloudflare";
+import { cacheCloudflare } from "@astrojs/cloudflare/cache";
+import emdash from "emdash/astro";
+import { hyperdrive, r2, kvCache } from "@emdash-cms/cloudflare";
+
+export default defineConfig({
+  output: "server",
+  adapter: cloudflare(),
+  cache: { provider: cacheCloudflare() },
+  routeRules: { /* public routes only, see "Caching" */ },
+  integrations: [
+    emdash({
+      database: hyperdrive({ binding: "HYPERDRIVE", cachedBinding: "HYPERDRIVE_CACHED" }),
+      storage: r2({ binding: "MEDIA" /* publicUrl: "https://media.checkclimate.africa" once the zone is on Cloudflare */ }),
+      objectCache: kvCache({ binding: "CACHE", defaultTtl: 86400 }),
+      toolbar: "client",
+      plugins: [/* resend-email, site-settings */],
+    }),
+  ],
+});
+```
+
+`wrangler.jsonc` (account = **Security Focus**, `9c8aaa232a52d145430685011e9fff9c`; shared free quotas with other projects in that account): `nodejs_compat`, `hyperdrive` ×2 (with `localConnectionString` to a Neon **dev** branch), `r2_buckets` MEDIA, `kv_namespaces` CACHE (`kv_cache_id`) and SESSION (`kv_session_id`, Astro sessions), `triggers.crons: ["*/15 * * * *"]`, `placement` near Frankfurt, `workers_dev: true`, `observability` on. Entry `src/worker.ts` re-exports the `scheduled` handler from `@emdash-cms/cloudflare/worker`. Requires `pg` ≥ 8.16.3. Verify with `emdash doctor`.
+
+### Why two Hyperdrive bindings
+
+The EmDash docs recommend a primary binding with caching **disabled** (admin, logged-in requests, writes, migrations) and a cached binding on the same database for anonymous public reads. That keeps editors from seeing stale data and still lets most public reads skip Neon.
+
+### Caching
+
+- **Workers Cache** in front of the Worker via `cacheCloudflare()`. Every public route gets a `routeRules` entry (lifetime + tags); EmDash purges by tag on publish. Never cache `/_emdash/*`, `/admin`, form POSTs, search, or anything session-dependent. Don't use a root `/[...slug]` rule (it would match `/_emdash/`).
+- Guard every hint: `if (Astro.cache?.enabled && hint) Astro.cache.set(hint)`. Dev has caching off, so cache code is only verified on a deployed Worker.
+- If Workers Cache isn't available on the free account, fall back to the Cache API in outer middleware, purged on publish.
+- **KV object cache** with a 24h TTL. KV free allows **1,000 writes a day**, so keep TTLs long and don't write per request.
+
+### Free-plan limits and how we watch them
+
+| Limit (free) | Mitigation | Watch |
+|---|---|---|
+| Workers 100k requests/day (per account) | Own account for this client; cached pages use almost no CPU | Workers analytics |
+| **Workers 10 ms CPU per request** | Page cache; heavy jobs (import) run locally, never on the Worker | **Error 1102 / exceededCpu** on uncached pages and the admin |
+| Hyperdrive 100k queries/day | Only cache misses reach the DB | Hyperdrive dashboard |
+| Neon 100 CU-hours/month, 1 GB storage | Scales to zero; media is in R2 | Neon console |
+| KV 1,000 writes/day | Long TTLs | KV metrics |
+| R2 10 GB, no egress fees | Fixed set of image sizes | R2 metrics |
+
+Pilot gate: run a few days on workers.dev with real content and crawler traffic. If 1102 errors appear on uncached pages, the fallback is Turso via `libsql()` with indexes on category/tag queries (after confirming it runs on Workers).
 
 ## Content model
 
-**Collection `posts`** (all news + fact checks, so URLs and archives stay unified)
-- `title`, `slug`, `excerpt`, `content` (Portable Text), `featured_image` (media), `published_at`, bylines
-- `kicker`: select `none | alert | fact_check` (set from the `ALERT:` / `FACT CHECK:` title prefix on import)
-- `reading_time` (computed on render if not stored)
-- Fact-check fields (shown only when `kicker = fact_check`): `claim` (text), `claim_source` (text, e.g. "Posted on X, July 2026"), `verdict` (select: False, Misleading, False context, Partly true, True, Unproven), `verdict_summary` (text), `verdict_note` (text), `sources` (Portable Text)
-- `at_a_glance` (list of strings, optional — the Article "At a glance" box)
-- SEO fields (title, description, og image) — filled by the Exporter's Yoast import when available
+**Collection `posts`** (news + fact checks together, so URLs and archives stay unified)
+- `title`, `slug`, `excerpt`, `content` (Portable Text), `featured_image`, `published_at`, bylines
+- `kicker`: select `none | alert | fact_check` (from the `ALERT:` / `FACT CHECK:` title prefix on import)
+- Fact-check fields (shown only when `kicker = fact_check`): `claim`, `claim_source`, `verdict` (False, Misleading, False context, Partly true, True, Unproven), `verdict_summary`, `verdict_note`, `sources` (Portable Text)
+- `at_a_glance` (optional list), SEO fields (filled from Yoast by the Exporter)
 
 **Collection `pages`**: `title`, `slug`, `content`, `featured_image`, SEO fields.
 
-**Collection `claims`** (private, never rendered publicly): `claim`, `platform`, `country`, `link`, `attachment` (media), `name`, `email`, `consent`, `status` (new / checking / published / rejected), `notes`.
+**Collection `claims`** (private): `claim`, `platform`, `country`, `link`, `attachment`, `name`, `email`, `consent`, `status` (new / checking / published / rejected), `notes`.
 
-**Taxonomies**: `category` (hierarchical, keep WP slugs), `tag` (keep WP slugs).
-
-**Menus**: `primary` (the 7 categories), `footer` (About, Contact, Privacy, Accessibility, Submit a claim).
-
-**Site settings** (singleton, native plugin `ctx.settings` merged over hardcoded defaults): contact email, social links (Facebook, X, YouTube, LinkedIn), weather default city.
+**Taxonomies**: `category` (keep WP slugs), `tag` (keep WP slugs). **Menus**: `primary`, `footer`. **Site settings** (native plugin `ctx.settings` over hardcoded defaults): contact email, socials, weather default city.
 
 ## Routes (keep the WordPress URLs)
 
 | Route | Template | Design |
 |---|---|---|
-| `/` | Home | Main.dc.html |
-| `/[yyyy]/[mm]/[dd]/[slug]/` | Article or Fact-check (by `kicker`) | Article / FactCheck |
-| `/category/[slug]/` (+ `/page/[n]/`) | Archive; Fact Check category gets topic filters | Category |
-| `/tag/[slug]/` (+ `/page/[n]/`) | Archive | Category |
-| `/author/[slug]/` | Byline archive | Category |
-| `/posts/` | All posts archive | Category |
+| `/` | Home | Main |
+| `/[yyyy]/[mm]/[dd]/[slug]/` | Article or Fact check (by `kicker`) | Article / FactCheck |
+| `/category/[slug]/` (+ `/page/[n]/`) | Archive; Fact Check gets topic filters (`?topic=`, server-side) | Category |
+| `/tag/[slug]/`, `/author/[slug]/`, `/posts/` | Archives | Category |
 | `/about-us/`, `/contact-us/` | About + Contact | About |
-| `/submit-a-claim/` | Claim form + thank-you state | SubmitClaim |
-| `/privacy-policy-2/`, `/accessibility-statement/`, other pages | Generic page (`[slug].astro`) | Article prose styles |
-| `/search/?q=` | Search results (EmDash search) | Category |
-| `/feed/` | RSS (keep the path; feed readers use it) | — |
-| `/sitemap.xml`, `/sitemap_index.xml` → sitemap | — | — |
-| `/admin/` | Branded editor landing page → `/_emdash/admin` (noindex) | — |
+| `/submit-a-claim/` | Claim form + thank-you | SubmitClaim |
+| other pages (`/privacy-policy-2/`, `/accessibility-statement/`) | Generic page | Article prose |
+| `/search/?q=` | Search (not cached) | Category |
+| `/feed/`, `/category/[slug]/feed/` | RSS | — |
+| `/sitemap.xml` (+ `/sitemap_index.xml` → it), `/robots.txt` | — | — |
+| `/admin/` | Branded editor landing → `/_emdash/admin` (noindex) | — |
 | `/wp-admin*`, `/wp-login.php`, `/login` | 302 → `/admin/` | — |
-| `/wp-content/uploads/*` | 301 to the new media URL (map generated from the import `urlMap`) | — |
+| `/wp-content/uploads/*` | 301 to the R2 media URL (map from the import `urlMap`, stored in KV-free form: a JSON module bundled at build) | — |
 | `/megamenu/*` | 410 | — |
 
-## Features to rebuild
+## Features
 
-1. Header: top bar (date, weather, Light/Dark), logo lockup + strapline, search, "Submit a claim" button, category nav, mobile menu.
-2. Weather widget: replaces `edgd-weather`. Client island using Open-Meteo (no key), browser geolocation with a default city (Lagos) from settings; cache 30 min in `localStorage`.
-3. Light/Dark: `data-theme` on `<html>`, saved in `localStorage`, honours `prefers-color-scheme`, no flash (inline head script). Logo swaps by theme.
-4. Home: hero + list, Top Stories tabs (working, with empty state), ALERT amber banner, Fact-check green band with claim card, News grid, category blocks.
-5. Article: breadcrumb, share bar (Facebook, X, LinkedIn, WhatsApp, copy link), At a glance, pull quotes, tags, corrections mailto, comments, related stories.
-6. Fact check: Claim / Verdict panel, sources box, share incl. WhatsApp, "More fact checks".
-7. Archive: topic filter chips (links, not JS state: `?topic=` server-side), author/date/reading time, pagination.
-8. Submit a claim: real form → `claims` collection, file upload to R2, Turnstile, email to the desk via Resend, thank-you state.
-9. Comments: EmDash comments with moderation + Turnstile (import existing ones if the Exporter path is used).
-10. Back-to-top button, accessible focus styles, 4.5:1 contrast (tokens README rules: small green text = `brand-forest`, never amber text on white).
+1. Header: top bar (date, weather, Light/Dark), logo + strapline, search, "Submit a claim", category nav, mobile menu.
+2. Weather island (replaces `edgd-weather`): Open-Meteo, geolocation, default city (Lagos), 30-min `localStorage` cache. Client-side, so cached pages stay cacheable.
+3. Light/Dark: `data-theme` on `<html>`, `localStorage`, `prefers-color-scheme`, no-flash inline script, logo swap.
+4. Home: hero + list, Top Stories tabs, ALERT banner, Fact-check band with claim card, News grid, category blocks.
+5. Article: breadcrumb, share bar (Facebook, X, LinkedIn, WhatsApp, copy), At a glance, pull quotes, tags, corrections mailto, comments, related.
+6. Fact check: Claim / Verdict panel, sources, share, More fact checks.
+7. Archives with pagination, author/date/reading time.
+8. Submit a claim → `claims` entry, upload to R2, Turnstile (server-side verify), Resend email to the desk.
+9. Comments: EmDash comments, moderated, Turnstile.
+10. Back-to-top, focus styles, 4.5:1 contrast per the tokens README.
 
 ## Phases
 
-| # | Phase | Who | Output |
+| # | Phase | Who | State |
 |---|---|---|---|
-| 1 | Scaffold: Astro + EmDash, pnpm, Node adapter, SQLite, s3/local storage, tokens → CSS | opencode | builds and runs locally |
-| 2 | Schema + seed (collections, taxonomies, menus, sample content from the designs) | opencode | `seed/seed.json`, admin works |
-| 3 | Layout, components, all templates and routes above, light/dark, responsive | opencode | every page renders with seed data |
-| 4 | Dynamic features: weather, claim form, comments, search, RSS, sitemap, redirects middleware, `/admin` page | opencode | features work locally |
-| 5 | VPS bits: middleware cache headers, purge + Resend plugins, `deploy/` (systemd, nginx, env example), `scripts/deploy-vps.sh`, `scripts/backup.sh`, GitHub Actions | opencode | files ready, not deployed |
-| 6 | Content import rehearsal locally (WXR or Exporter), post-import fix-up script | you + Claude | real content locally |
-| 7 | Staging on `vps.checkclimate.africa` | you + Claude | full checklist passes |
-| 8 | Cutover + 14-day rollback window | you + Claude | live |
+| 1 | Scaffold | opencode | done for Node/SQLite; **re-target to Workers** |
+| 2 | Schema + seed | opencode | done |
+| 3 | Layout, components, templates | opencode | in progress (uncommitted work kept) |
+| 4 | Dynamic features | opencode | todo |
+| 5 | Workers deploy wiring: caching, cron, Resend plugin, GitHub Actions, runbook | opencode | todo |
+| 6 | Provision: R2 `checkclimate-media`, KV `checkclimate-cache` + `checkclimate-session` (done, ids in `.cf-ids.json`); Neon prod + dev branches, Hyperdrive ×2, secrets | Claude | Neon waiting on `neonctl auth` |
+| 7 | First deploy to workers.dev with seed | Claude | todo |
+| 8 | Content import (local → Neon prod + R2), fix-up, verify | Claude + owner | todo |
+| 9 | Pilot: watch 1102 errors, Hyperdrive queries, Neon CU-hours for a few days | Claude + owner | todo |
+| 10 | Domain: move zone to CF, apex `checkclimate.africa`, www→apex, `media.` for R2 | later | todo |
 
 ## Content migration (posts, pages, images)
 
-1. **Create the R2 bucket first** (`checkclimate-media`) and an R2 API token scoped to it. Set the `S3_*` env vars locally. EmDash's import copies media through the configured storage adapter, so images go straight into R2. Nothing is stored on the VPS disk.
-2. **Pick an export path:**
-   - **Preferred: EmDash Exporter plugin** on the WordPress site (connect with a WordPress application password). It also brings Yoast SEO titles and descriptions, featured images, menus, comments, logo and favicon. The REST API currently returns 403, so the security plugin must allow `/wp-json/` for authenticated requests (or allowlist our IP) during the migration.
-   - **Fallback: WXR** from WordPress **Tools → Export → All content**. Brings posts, pages, terms, authors and attachment URLs. Doesn't bring SEO meta or comments; featured images come in as attachments.
-3. **Import locally** at `/_emdash/admin/import/wordpress`: map `post → posts`, `page → pages`, authors → guest bylines (no logins needed), then run the **media step** (downloads from `/wp-content/uploads`, uploads to R2, rewrites URLs in content).
-4. **Save the `urlMap`** returned by the media step to `migration/media-url-map.json`. It generates the `/wp-content/uploads/*` 301 map, so old image links and Google Images keep working.
-5. **Run `scripts/post-import.ts`** (idempotent by slug, `--dry-run`, per-row report):
-   - set `kicker` from the `FACT CHECK:` / `ALERT:` prefix,
-   - check that every post has `published_at` matching its old `/YYYY/MM/DD/` path,
-   - flag posts whose body still contains Elementor/shortcode markup or `wp-content` URLs,
-   - list fact checks that still need `claim` / `verdict` filled in (editors do the recent ones by hand; older ones render without the verdict panel).
-6. **Verify**: 172 posts, 6 pages, 36 categories, 277 tags, every sitemap URL returns 200 on the new site (script diffs old sitemap vs new), and no `wp-content` URLs left in content.
-7. **Production**: copy the rehearsed SQLite file to the VPS (media is already in R2, so there's nothing else to move). At cutover, freeze WordPress publishing and re-run the import with `skipExisting` to pick up any posts written since the rehearsal.
-8. Keep the WordPress install (DB + uploads) untouched and backed up for at least 30 days after cutover. **Never delete the R2 media bucket.**
+**Rule: never run the import on the deployed Worker.** The import's analyze/convert steps exceed the free plan's 10 ms CPU (Error 1102), and a retry loop burns quotas. Run it from local `astro dev`, which has no CPU cap, with bindings pointed at the real resources:
 
-## Cutover checklist
+1. Local dev uses Hyperdrive `localConnectionString` = **Neon prod branch** (direct URL) for the import session only, and the `MEDIA` R2 binding with `"remote": true`, so imported rows land in Neon and images land in the real R2 bucket.
+2. On WordPress: install the **EmDash Exporter** plugin, create an application password, and allow `/wp-json/` (security plugin) for the import.
+3. Locally at `/_emdash/admin/import/wordpress`: connect with the Exporter key, map `post → posts`, `page → pages`, authors → guest bylines, enable menus, SEO (Yoast), featured images, comments. Start the import, then the **media step** (downloads from `/wp-content/uploads`, stores in R2, rewrites content URLs).
+4. Save the media `urlMap` to `migration/media-url-map.json`, which drives the `/wp-content/uploads/*` 301s.
+5. `pnpm tsx scripts/post-import.ts` (idempotent by slug, `--dry-run` default, per-row report): set `kicker`, check `published_at` against the old date path, flag leftover Elementor/shortcode markup and `wp-content` URLs, list fact checks needing claim/verdict.
+6. `pnpm tsx scripts/verify-migration.ts`: counts (172 / 6 / 36 / 277), every URL in the old sitemap returns 200 on the workers.dev site, no `wp-content` URLs left in content.
+7. Switch `localConnectionString` back to the Neon **dev** branch. Before the domain moves, re-run the import with `skipExisting` for posts written since.
+8. Keep WordPress (DB + uploads) backed up for 30 days after the domain moves. **Never delete the R2 media bucket.**
 
-- Cloudflare: zone active, apex + www proxied, A record → VPS, Cache Rule (exclude `/_emdash`, `astro-session` cookie), www→apex (or apex→www, matching the current canonical `www`) redirect rule, Origin Certificate on nginx, nginx accepts only Cloudflare IPs.
-- `EMDASH_SITE_URL=https://www.checkclimate.africa` in both build and runtime env; rebuild.
-- Email: Resend domain verified (DKIM + `send.` subdomain records; leave the apex MX alone).
-- Smoke test: every page type, images from R2, search, claim form + email, comment, magic link, passkey, `cf-cache-status: HIT` on the second request, purge MISS→HIT after a publish, a scheduled post goes live.
-- Backups: nightly `sqlite3 .backup` → separate private R2 bucket `checkclimate-backups` (rclone, `no_head = true`), 30-day lifecycle.
-- Google Search Console: submit the new sitemap, watch 404s for two weeks.
+## Deploys
 
-## Open questions for the owner
+- GitHub Actions: `dev` → typecheck, test, build. `main` → `pnpm astro build && pnpm wrangler deploy` (always build first: deploy reads `dist/server/wrangler.json`). Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+- Worker secrets (names in `docs/RUNBOOK.md`, values never in the repo): `EMDASH_ENCRYPTION_KEY`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`. Run `wrangler secret list` after any Worker create/rename.
+- First boot runs EmDash migrations on Neon. Deployment migrations use the direct Neon URL (`migrationConnectionStringEnv`).
 
-1. "The Cloudflare page is already set": does that mean the `checkclimate.africa` **zone** is on Cloudflare (DNS not proxied yet), or a Cloudflare **Pages** project? We are deploying to the VPS, so a Pages project won't be used.
-2. Is the VPS the same box that hosts WordPress today, and does it run Virtualmin?
-3. Can you install the EmDash Exporter plugin on WordPress, or should we use a WXR export?
-4. Canonical host: keep `www.checkclimate.africa` (current) or move to the apex?
+## Open items
+
+- VPS: not used any more.
+- Domain move and email sending domain: later (phase 10).

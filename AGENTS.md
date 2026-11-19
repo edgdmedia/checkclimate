@@ -6,9 +6,12 @@ The full plan is `docs/PLAN.md`. Read it first. This file is the rules.
 ## Hard rules
 
 - **Package manager: pnpm only.** Never npm or yarn. Pin `packageManager` in `package.json`.
-- **Target: VPS (Node + SQLite) behind Cloudflare.** Use `@astrojs/node` standalone. Do **not** add `@astrojs/cloudflare`, `wrangler.jsonc`, D1, KV or Workers code.
-- **Media lives in Cloudflare R2** through EmDash `s3()` storage (S3_* env vars). `local()` only as the dev fallback when `S3_BUCKET` is unset.
-- **No Astro cache provider, no `routeRules`, no `Astro.cache.set()`.** Edge caching is done by middleware headers + Cloudflare (see PLAN.md).
+- **Target: Cloudflare Workers (free plan) + Neon Postgres via Hyperdrive + R2 + KV.** Use `@astrojs/cloudflare`, `wrangler.jsonc`, and `hyperdrive()`, `r2()`, `kvCache()` from `@emdash-cms/cloudflare` exactly as `docs/PLAN.md` "Architecture" shows. **No D1, no SQLite, no `@astrojs/node`, no VPS files.**
+- **10 ms CPU per request on the free plan.** Keep request work small: no heavy loops over all posts per request, no per-request image processing, paginate every list, and select only the fields a template needs. Long jobs (import, fix-up scripts) run locally, never on the Worker.
+- **Media lives in R2** through the `MEDIA` binding.
+- **Caching: Workers Cache** via `cacheCloudflare()` with a `routeRules` entry for every public route. Guard every hint: `if (Astro.cache?.enabled && hint) Astro.cache.set(hint)`. Never cache `/_emdash/*`, `/admin`, search, form POSTs or session-dependent responses. No root `/[...slug]` rule. `toolbar: "client"`.
+- **KV free = 1,000 writes/day.** Long object-cache TTLs; never write KV per request.
+- Always `pnpm astro build && pnpm wrangler deploy`, never deploy alone (deploy reads `dist/server/wrangler.json`). Don't run deploy yourself unless the task says so.
 - **Keep WordPress URLs**: posts at `/[yyyy]/[mm]/[dd]/[slug]/`, `/category/[slug]/`, `/tag/[slug]/`, `/author/[slug]/`, `/feed/`.
 - Never commit secrets. Ship `.env.example` with names only. `.env`, `*.db`, `data/`, `.astro/`, `dist/`, `node_modules/` are gitignored.
 - Do not push to GitHub and do not deploy. Commit locally on branch `dev`, one commit per phase, with a clear message.
@@ -44,7 +47,7 @@ EmDash changes fast. Check current APIs before using them:
 pnpm install
 pnpm dev            # Astro 7 dev may run as a background daemon; logs in .astro/dev.log
 pnpm build
-pnpm start          # node ./dist/server/entry.mjs
+pnpm preview       # wrangler dev against the built Worker
 pnpm typecheck
 pnpm test
 ```
