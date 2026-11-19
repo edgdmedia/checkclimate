@@ -23,6 +23,9 @@ importers:
       '@fontsource/red-hat-display':
         specifier: ^5.3.0
         version: 5.3.0
+      '@libsql/client':
+        specifier: ^0.8.1
+        version: 0.8.1
       astro:
         specifier: ^7.3.2
         version: 7.4.13(@types/node@24.19.2)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)
@@ -4916,12 +4919,10 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-    optional: true
 
   '@libsql/core@0.8.1':
     dependencies:
       js-base64: 3.9.7
-    optional: true
 
   '@libsql/darwin-arm64@0.3.19':
     optional: true
@@ -4938,10 +4939,8 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-    optional: true
 
-  '@libsql/isomorphic-fetch@0.2.5':
-    optional: true
+  '@libsql/isomorphic-fetch@0.2.5': {}
 
   '@libsql/isomorphic-ws@0.1.5':
     dependencies:
@@ -4950,7 +4949,6 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-    optional: true
 
   '@libsql/kysely-libsql@0.4.1(kysely@0.29.9)':
     dependencies:
@@ -5049,8 +5047,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.5
     optional: true
 
-  '@neon-rs/load@0.0.4':
-    optional: true
+  '@neon-rs/load@0.0.4': {}
 
   '@noble/secp256k1@3.2.0': {}
 
@@ -5665,7 +5662,6 @@ snapshots:
   '@types/ws@8.18.2':
     dependencies:
       '@types/node': 24.19.2
-    optional: true
 
   '@ungap/structured-clone@1.4.0': {}
 
@@ -6033,8 +6029,7 @@ snapshots:
     dependencies:
       d3-array: 3.2.5
 
-  data-uri-to-buffer@4.0.1:
-    optional: true
+  data-uri-to-buffer@4.0.1: {}
 
   date-fns-jalali@4.1.0-0: {}
 
@@ -6054,8 +6049,7 @@ snapshots:
 
   destr@2.0.5: {}
 
-  detect-libc@2.0.2:
-    optional: true
+  detect-libc@2.0.2: {}
 
   detect-libc@2.1.2: {}
 
@@ -6366,7 +6360,6 @@ snapshots:
     dependencies:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.3.3
-    optional: true
 
   finalhandler@2.1.1:
     dependencies:
@@ -6394,7 +6387,6 @@ snapshots:
   formdata-polyfill@4.0.10:
     dependencies:
       fetch-blob: 3.2.0
-    optional: true
 
   forwarded@0.2.0: {}
 
@@ -6539,8 +6531,7 @@ snapshots:
 
   jpeg-js@0.4.4: {}
 
-  js-base64@3.9.7:
-    optional: true
+  js-base64@3.9.7: {}
 
   js-sha256@0.10.1: {}
 
@@ -6578,7 +6569,6 @@ snapshots:
       '@libsql/linux-x64-gnu': 0.3.19
       '@libsql/linux-x64-musl': 0.3.19
       '@libsql/win32-x64-msvc': 0.3.19
-    optional: true
 
   lightningcss-android-arm64@1.33.0:
     optional: true
@@ -6736,8 +6726,7 @@ snapshots:
     dependencies:
       '@types/nlcst': 2.0.3
 
-  node-domexception@1.0.0:
-    optional: true
+  node-domexception@1.0.0: {}
 
   node-fetch-native@1.6.7: {}
 
@@ -6746,7 +6735,6 @@ snapshots:
       data-uri-to-buffer: 4.0.1
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
-    optional: true
 
   node-mock-http@1.0.5: {}
 
@@ -6888,8 +6876,7 @@ snapshots:
 
   process-ancestry@0.1.0: {}
 
-  promise-limit@2.7.0:
-    optional: true
+  promise-limit@2.7.0: {}
 
   proper-lockfile@4.1.2:
     dependencies:
@@ -7598,8 +7585,7 @@ snapshots:
 
   w3c-keyname@2.2.8: {}
 
-  web-streams-polyfill@3.3.3:
-    optional: true
+  web-streams-polyfill@3.3.3: {}
 
   which@2.0.2:
     dependencies:

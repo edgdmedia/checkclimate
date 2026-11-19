@@ -2,21 +2,28 @@
 	"$schema": "https://emdashcms.com/seed.schema.json",
 	"version": "1",
 	"meta": {
-		"name": "Blog Starter",
-		"description": "A blog with posts and pages",
-		"author": "EmDash"
+		"name": "Check Climate Africa",
+		"description": "Climate news and fact checks for Africa",
+		"author": "Check Climate Africa"
 	},
 	"settings": {
-		"title": "My Blog",
-		"tagline": "Thoughts on building for the web"
+		"title": "Check Climate Africa",
+		"tagline": "Disseminating Critical Climate Information"
 	},
 	"collections": [
 		{
 			"slug": "posts",
 			"label": "Posts",
 			"labelSingular": "Post",
-			"urlPattern": "/posts/{slug}",
-			"supports": ["drafts", "revisions", "preview", "search", "seo"],
+			"urlPattern": "/{year}/{month}/{day}/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"scheduling",
+				"search",
+				"seo"
+			],
 			"commentsEnabled": true,
 			"fields": [
 				{
@@ -27,9 +34,9 @@
 					"searchable": true
 				},
 				{
-					"slug": "featured_image",
-					"label": "Featured Image",
-					"type": "image"
+					"slug": "excerpt",
+					"label": "Excerpt",
+					"type": "text"
 				},
 				{
 					"slug": "content",
@@ -38,9 +45,67 @@
 					"searchable": true
 				},
 				{
-					"slug": "excerpt",
-					"label": "Excerpt",
+					"slug": "featured_image",
+					"label": "Featured image",
+					"type": "image"
+				},
+				{
+					"slug": "kicker",
+					"label": "Kicker",
+					"type": "select",
+					"defaultValue": "none",
+					"validation": {
+						"options": [
+							"none",
+							"alert",
+							"fact_check"
+						]
+					}
+				},
+				{
+					"slug": "at_a_glance",
+					"label": "At a glance",
+					"type": "json"
+				},
+				{
+					"slug": "claim",
+					"label": "Claim",
 					"type": "text"
+				},
+				{
+					"slug": "claim_source",
+					"label": "Claim source",
+					"type": "string"
+				},
+				{
+					"slug": "verdict",
+					"label": "Verdict",
+					"type": "select",
+					"validation": {
+						"options": [
+							"False",
+							"Misleading",
+							"False context",
+							"Partly true",
+							"True",
+							"Unproven"
+						]
+					}
+				},
+				{
+					"slug": "verdict_summary",
+					"label": "Verdict summary",
+					"type": "text"
+				},
+				{
+					"slug": "verdict_note",
+					"label": "Verdict note",
+					"type": "text"
+				},
+				{
+					"slug": "sources",
+					"label": "Sources",
+					"type": "json"
 				}
 			]
 		},
@@ -48,8 +113,14 @@
 			"slug": "pages",
 			"label": "Pages",
 			"labelSingular": "Page",
-			"urlPattern": "/pages/{slug}",
-			"supports": ["drafts", "revisions", "preview", "search", "seo"],
+			"urlPattern": "/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
 			"fields": [
 				{
 					"slug": "title",
@@ -63,6 +134,96 @@
 					"label": "Content",
 					"type": "portableText",
 					"searchable": true
+				},
+				{
+					"slug": "featured_image",
+					"label": "Featured image",
+					"type": "image"
+				}
+			]
+		},
+		{
+			"slug": "claims",
+			"label": "Claims",
+			"labelSingular": "Claim",
+			"description": "Reader claim submissions. Never rendered publicly.",
+			"routable": false,
+			"supports": [
+				"drafts"
+			],
+			"fields": [
+				{
+					"slug": "claim",
+					"label": "Claim",
+					"type": "text",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "platform",
+					"label": "Platform",
+					"type": "select",
+					"validation": {
+						"options": [
+							"Facebook",
+							"X",
+							"WhatsApp",
+							"Instagram",
+							"TikTok",
+							"YouTube",
+							"Web",
+							"Other"
+						]
+					}
+				},
+				{
+					"slug": "country",
+					"label": "Country",
+					"type": "string"
+				},
+				{
+					"slug": "link",
+					"label": "Link",
+					"type": "url"
+				},
+				{
+					"slug": "attachment",
+					"label": "Attachment",
+					"type": "image"
+				},
+				{
+					"slug": "name",
+					"label": "Name",
+					"type": "string"
+				},
+				{
+					"slug": "email",
+					"label": "Email",
+					"type": "string"
+				},
+				{
+					"slug": "consent",
+					"label": "Consent to contact",
+					"type": "boolean"
+				},
+				{
+					"slug": "review_status",
+					"label": "Status",
+					"type": "select",
+					"defaultValue": "new",
+					"validation": {
+						"options": [
+							"new",
+							"checking",
+							"published",
+							"rejected"
+						]
+					}
+				},
+				{
+					"slug": "notes",
+					"label": "Notes",
+					"type": "text"
 				}
 			]
 		}
@@ -73,19 +234,53 @@
 			"label": "Categories",
 			"labelSingular": "Category",
 			"hierarchical": true,
-			"collections": ["posts"],
+			"collections": [
+				"posts"
+			],
 			"terms": [
 				{
-					"slug": "development",
-					"label": "Development"
+					"slug": "news",
+					"label": "News"
 				},
 				{
-					"slug": "design",
-					"label": "Design"
+					"slug": "fact-check",
+					"label": "Fact Check"
 				},
 				{
-					"slug": "notes",
-					"label": "Notes"
+					"slug": "agriculture",
+					"label": "Agriculture"
+				},
+				{
+					"slug": "environment",
+					"label": "Environment"
+				},
+				{
+					"slug": "green-energy",
+					"label": "Green Energy"
+				},
+				{
+					"slug": "sustainability",
+					"label": "Sustainability"
+				},
+				{
+					"slug": "aviation",
+					"label": "Aviation"
+				},
+				{
+					"slug": "energy",
+					"label": "Energy"
+				},
+				{
+					"slug": "climate-action",
+					"label": "Climate Action"
+				},
+				{
+					"slug": "africa",
+					"label": "Africa"
+				},
+				{
+					"slug": "climate-resilience",
+					"label": "Climate Resilience"
 				}
 			]
 		},
@@ -94,44 +289,127 @@
 			"label": "Tags",
 			"labelSingular": "Tag",
 			"hierarchical": false,
-			"collections": ["posts"],
+			"collections": [
+				"posts"
+			],
 			"terms": [
 				{
-					"slug": "webdev",
-					"label": "Web Development"
+					"slug": "africa",
+					"label": "Africa"
+				},
+				{
+					"slug": "blue-economy",
+					"label": "Blue Economy"
+				},
+				{
+					"slug": "climate-action",
+					"label": "Climate Action"
+				},
+				{
+					"slug": "climate-crisis",
+					"label": "Climate Crisis"
+				},
+				{
+					"slug": "climate-disinformation",
+					"label": "Climate Disinformation"
+				},
+				{
+					"slug": "climate-resilience",
+					"label": "Climate Resilience"
+				},
+				{
+					"slug": "cop30",
+					"label": "Cop30"
+				},
+				{
+					"slug": "energy",
+					"label": "Energy"
+				},
+				{
+					"slug": "environment",
+					"label": "Environment"
+				},
+				{
+					"slug": "fisheries",
+					"label": "Fisheries"
+				},
+				{
+					"slug": "green-energy",
+					"label": "Green Energy"
+				},
+				{
+					"slug": "heatwaves",
+					"label": "Heatwaves"
+				},
+				{
+					"slug": "house-of-reps",
+					"label": "House Of Reps"
+				},
+				{
+					"slug": "lagos-flood",
+					"label": "Lagos Flood"
+				},
+				{
+					"slug": "lake-chad",
+					"label": "Lake Chad"
+				},
+				{
+					"slug": "lekki",
+					"label": "Lekki"
+				},
+				{
+					"slug": "nigeria",
+					"label": "Nigeria"
 				},
 				{
 					"slug": "opinion",
 					"label": "Opinion"
 				},
 				{
-					"slug": "tools",
-					"label": "Tools"
+					"slug": "plastics",
+					"label": "Plastics"
 				},
 				{
-					"slug": "creativity",
-					"label": "Creativity"
+					"slug": "renewable-energy-authority",
+					"label": "Renewable Energy Authority"
+				},
+				{
+					"slug": "research",
+					"label": "Research"
+				},
+				{
+					"slug": "sierra-leone",
+					"label": "Sierra Leone"
+				},
+				{
+					"slug": "south-africa",
+					"label": "South Africa"
+				},
+				{
+					"slug": "tokunbo-wahab",
+					"label": "Tokunbo Wahab"
 				}
 			]
 		}
 	],
 	"bylines": [
 		{
-			"id": "byline-editorial",
-			"slug": "emdash-editorial",
-			"displayName": "EmDash Editorial"
+			"id": "byline-check-climate",
+			"slug": "check-climate-desk",
+			"displayName": "Check Climate Africa Desk",
+			"bio": "Reporting and fact checking from the Check Climate Africa newsroom."
 		},
 		{
-			"id": "byline-guest",
-			"slug": "guest-contributor",
-			"displayName": "Guest Contributor",
-			"isGuest": true
+			"id": "byline-lanre",
+			"slug": "lanre-adebayo",
+			"displayName": "Lanre Adebayo",
+			"bio": "Senior reporter covering climate, energy and the environment across West Africa."
 		}
 	],
 	"menus": [
 		{
 			"name": "primary",
-			"label": "Primary Navigation",
+			"label": "Primary navigation",
 			"items": [
 				{
 					"type": "custom",
@@ -140,148 +418,83 @@
 				},
 				{
 					"type": "custom",
-					"label": "About",
-					"url": "/pages/about"
+					"label": "Fact Check",
+					"url": "/category/fact-check/"
 				},
 				{
 					"type": "custom",
-					"label": "Posts",
-					"url": "/posts"
-				}
-			]
-		}
-	],
-	"widgetAreas": [
-		{
-			"name": "sidebar",
-			"label": "Sidebar",
-			"description": "Widget area displayed on single post pages",
-			"widgets": [
-				{
-					"type": "component",
-					"componentId": "core:search",
-					"title": "Search"
+					"label": "News",
+					"url": "/category/news/"
 				},
 				{
-					"type": "component",
-					"componentId": "core:categories",
-					"title": "Categories"
+					"type": "custom",
+					"label": "Agriculture",
+					"url": "/category/agriculture/"
 				},
 				{
-					"type": "component",
-					"componentId": "core:tags",
-					"title": "Tags"
+					"type": "custom",
+					"label": "Environment",
+					"url": "/category/environment/"
 				},
 				{
-					"type": "component",
-					"componentId": "core:recent-posts",
-					"title": "Recent Posts",
-					"props": {
-						"count": 5,
-						"showDate": true
-					}
+					"type": "custom",
+					"label": "Green Energy",
+					"url": "/category/green-energy/"
 				},
 				{
-					"type": "component",
-					"componentId": "core:archives",
-					"title": "Archives",
-					"props": {
-						"type": "monthly",
-						"limit": 6
-					}
+					"type": "custom",
+					"label": "Sustainability",
+					"url": "/category/sustainability/"
+				},
+				{
+					"type": "custom",
+					"label": "Aviation",
+					"url": "/category/aviation/"
 				}
 			]
 		},
 		{
 			"name": "footer",
-			"label": "Footer",
-			"description": "Widget area displayed in the site footer",
-			"widgets": [
+			"label": "Footer navigation",
+			"items": [
 				{
-					"type": "content",
-					"title": "About",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "A blog about software, design, and the occasional stray thought.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						}
-					]
-				}
-			]
-		}
-	],
-	"sections": [
-		{
-			"slug": "newsletter-signup",
-			"title": "Newsletter Signup",
-			"description": "A call-to-action block for newsletter subscriptions",
-			"keywords": ["newsletter", "subscribe", "email", "cta"],
-			"source": "theme",
-			"content": [
-				{
-					"_type": "block",
-					"style": "h3",
-					"children": [
-						{
-							"_type": "span",
-							"text": "Stay in the loop",
-							"_key": "k1"
-						}
-					],
-					"_key": "k0"
+					"type": "custom",
+					"label": "About Us",
+					"url": "/about-us/"
 				},
 				{
-					"_type": "block",
-					"style": "normal",
-					"children": [
-						{
-							"_type": "span",
-							"text": "Get notified when new posts are published. No spam, unsubscribe anytime.",
-							"_key": "k3"
-						}
-					],
-					"_key": "k2"
-				}
-			]
-		},
-		{
-			"slug": "about-author",
-			"title": "About the Author",
-			"description": "Brief author bio for use in posts or pages",
-			"keywords": ["author", "bio", "about"],
-			"source": "theme",
-			"content": [
+					"type": "custom",
+					"label": "Contact Us",
+					"url": "/contact-us/"
+				},
 				{
-					"_type": "block",
-					"style": "normal",
-					"children": [
-						{
-							"_type": "span",
-							"text": "A software developer who writes about building things on the web. Based somewhere with good coffee and reliable internet.",
-							"_key": "k1"
-						}
-					],
-					"_key": "k0"
+					"type": "custom",
+					"label": "Privacy Policy",
+					"url": "/privacy-policy-2/"
+				},
+				{
+					"type": "custom",
+					"label": "Accessibility",
+					"url": "/accessibility-statement/"
+				},
+				{
+					"type": "custom",
+					"label": "Submit a claim",
+					"url": "/submit-a-claim/"
 				}
 			]
 		}
 	],
 	"content": {
-		"pages": [
+		"posts": [
 			{
-				"id": "about",
-				"slug": "about",
+				"id": "post-reps-advance-bill-renewable-energy-authority",
+				"slug": "reps-advance-bill-renewable-energy-authority",
 				"status": "published",
 				"data": {
-					"title": "About",
+					"title": "Reps advance bill to establish renewable energy authority",
+					"excerpt": "The Electricity Act (Amendment) Bill, 2025 passed its second reading and was referred to committee.",
+					"kicker": "none",
 					"content": [
 						{
 							"_type": "block",
@@ -289,11 +502,11 @@
 							"children": [
 								{
 									"_type": "span",
-									"text": "A place for writing about software, design, and the occasional stray thought. No posting schedule, no newsletter funnel. Just things I wanted to write down.",
+									"text": "The house of representatives has advanced a bill seeking to establish a National Authority for Renewable Energy to coordinate renewable energy development, expand off-grid electricity access and attract investment in clean power.",
 									"_key": "k1"
 								}
 							],
-							"_key": "k0"
+							"_key": "k2"
 						},
 						{
 							"_type": "block",
@@ -301,638 +514,1910 @@
 							"children": [
 								{
 									"_type": "span",
-									"text": "Built with Astro and EmDash. The source is open if you want to see how it works.",
+									"text": "The Electricity Act (Amendment) Bill, 2025, sponsored by Afam Ogene, representative of Ogbaru federal constituency in Anambra state and chair of the house committee on renewable energy, passed its second reading on Thursday following debate among lawmakers.",
 									"_key": "k3"
 								}
 							],
-							"_key": "k2"
+							"_key": "k4"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Ogene argued that transferring renewable energy responsibilities currently handled by the Nigerian Electricity Regulatory Commission (NERC), the Rural Electrification Agency (REA) and the Rural Electrification Fund (REF) to a dedicated authority would reduce overlapping functions and improve coordination across sectors.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k6"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The proposed authority would promote solar, wind, hydropower, geothermal, biomass and hydrogen energy, while supporting mini-grid and off-grid electricity projects in rural and underserved communities.",
+									"_key": "k7"
+								}
+							],
+							"_key": "k8"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "It would also encourage local manufacturing, research and technical training through incentives designed to attract investment and create jobs.",
+									"_key": "k9"
+								}
+							],
+							"_key": "k10"
+						},
+						{
+							"_type": "block",
+							"style": "blockquote",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A key provision of the bill proposes allocating 40% of the rural electrification fund's annual resources to the new authority.",
+									"_key": "k11"
+								}
+							],
+							"_key": "k12"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Opposition in the chamber",
+									"_key": "k13"
+								}
+							],
+							"_key": "k14"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "However, the proposal faced opposition during the debate. Victor Nwokolo, chair of the house committee on power, questioned the need for another institution, warning that separating renewable energy responsibilities from existing electricity oversight could duplicate functions and increase governance costs.",
+									"_key": "k15"
+								}
+							],
+							"_key": "k16"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Ahmadu Jaha also raised concerns about institutional duplication.",
+									"_key": "k17"
+								}
+							],
+							"_key": "k18"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Lawmakers adopted the bill for a second reading and referred it to the relevant committee for further examination. The proposed authority and funding arrangement remain subject to the legislative process.",
+									"_key": "k19"
+								}
+							],
+							"_key": "k20"
+						}
+					],
+					"at_a_glance": [
+						"The Electricity Act (Amendment) Bill, 2025 would create a National Authority for Renewable Energy.",
+						"It would take 40% of the Rural Electrification Fund's annual resources.",
+						"Status: passed second reading; referred to committee."
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"environment"
+					],
+					"tag": [
+						"house-of-reps",
+						"renewable-energy-authority",
+						"green-energy"
+					]
+				}
+			},
+			{
+				"id": "post-lagos-dismisses-bangladesh-flood-video",
+				"slug": "lagos-dismisses-bangladesh-flood-video",
+				"status": "published",
+				"data": {
+					"title": "Lagos dismisses Bangladesh flood video shared as local footage",
+					"excerpt": "A viral clip said to show Lekki under water was filmed in Bangladesh, the state environment commissioner said.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Tokunbo Wahab, Lagos state commissioner for the environment and water resources, has dismissed a trending flood video said to be from Lekki, an upscale area in the state.",
+									"_key": "k21"
+								}
+							],
+							"_key": "k22"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "An X user posted a since deleted clip of a heavily flooded road and claimed it was a situation report from Lekki.",
+									"_key": "k23"
+								}
+							],
+							"_key": "k24"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why the claim spread",
+									"_key": "k25"
+								}
+							],
+							"_key": "k26"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Because Lekki is a naturally formed peninsula, the area is often prone to flooding during rainy seasons.",
+									"_key": "k27"
+								}
+							],
+							"_key": "k28"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "An unprecedented volume of rainfall recorded over the past few weeks has overwhelmed the state, resulting in flooding in some communities including Lekki.",
+									"_key": "k29"
+								}
+							],
+							"_key": "k30"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What the state said",
+									"_key": "k31"
+								}
+							],
+							"_key": "k32"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Reacting to the viral clip on July 14, Wahab said the video attributed to Lekki was a deliberate dissemination of false information.",
+									"_key": "k33"
+								}
+							],
+							"_key": "k34"
+						},
+						{
+							"_type": "block",
+							"style": "blockquote",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Dear @iamscrummy_ The flood video you shared and attributed to Lagos State is actually from Bangladesh. We kindly encourage you to verify the authenticity and origin of such content before sharing it, as the dissemination of inaccurate information can mislead the public and undermine genuine discussions about issues affecting Lagos. Thank you for your understanding.",
+									"_key": "k35"
+								}
+							],
+							"_key": "k36"
+						},
+						{
+							"_type": "block",
+							"style": "blockquote",
+							"children": [
+								{
+									"_type": "span",
+									"text": "-- Tokunbo Wahab on X, July 14",
+									"_key": "k37"
+								}
+							],
+							"_key": "k38"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "While we acknowledge and respect everyone's right to freedom of expression, it is important to recognize that every right comes with corresponding responsibilities and legal limits. The deliberate dissemination of false information and misleading narratives not only undermines the efforts of the Lagos State Government but also diminishes the credibility of genuine complaints raised by well-meaning residents, he said.",
+									"_key": "k39"
+								}
+							],
+							"_key": "k40"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The X user took down the video after Wahab's post.",
+									"_key": "k41"
+								}
+							],
+							"_key": "k42"
+						}
+					],
+					"claim": "A viral clip shows a heavily flooded road in Lekki, Lagos.",
+					"claim_source": "Posted on X, July 2026 (since deleted)",
+					"verdict": "False",
+					"verdict_summary": "The footage is from Bangladesh, not Lagos.",
+					"verdict_note": "Confirmed by Tokunbo Wahab, Lagos State commissioner for the environment and water resources.",
+					"sources": [
+						"Statement by Tokunbo Wahab, Lagos State commissioner for the environment and water resources, on X, July 14",
+						"The original post on X (deleted after the commissioner's reply)"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"lagos-flood",
+						"lekki",
+						"tokunbo-wahab",
+						"climate-disinformation"
+					]
+				}
+			},
+			{
+				"id": "post-nnpc-fuel-discount-petrol-subsidy",
+				"slug": "nnpc-fuel-discount-petrol-subsidy",
+				"status": "published",
+				"data": {
+					"title": "NNPC says fuel discount does not restore petrol subsidy",
+					"excerpt": "The state oil company said its new retail discount is a commercial decision, not a return to a subsidy regime.",
+					"kicker": "alert",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The Nigerian National Petroleum Company Limited says the discount it introduced on petrol at its retail stations does not amount to a restoration of the fuel subsidy removed in 2023.",
+									"_key": "k43"
+								}
+							],
+							"_key": "k44"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The company said the price adjustment is a commercial decision taken to move stock and compete with private marketers, and that it does not change the deregulated pricing framework.",
+									"_key": "k45"
+								}
+							],
+							"_key": "k46"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why it matters",
+									"_key": "k47"
+								}
+							],
+							"_key": "k48"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Fuel prices shape transport costs, food prices and the case for cleaner alternatives. A return to a broad subsidy would also redirect public money away from adaptation and grid investment.",
+									"_key": "k49"
+								}
+							],
+							"_key": "k50"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Climate and energy analysts say the distinction matters because a subsidy would weaken the price signal that has slowly made solar, mini-grids and efficient appliances more competitive.",
+									"_key": "k51"
+								}
+							],
+							"_key": "k52"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The company did not publish the volume of fuel sold under the discount or say how long it would last.",
+									"_key": "k53"
+								}
+							],
+							"_key": "k54"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"news"
+					],
+					"tag": [
+						"energy",
+						"nigeria",
+						"climate-action"
+					]
+				}
+			},
+			{
+				"id": "post-no-snow-did-not-fall-in-nigeria",
+				"slug": "no-snow-did-not-fall-in-nigeria",
+				"status": "published",
+				"data": {
+					"title": "No, snow did not fall in Nigeria",
+					"excerpt": "Posts showing snow-covered streets were filmed in another country and recaptioned.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Posts circulating on Facebook and WhatsApp show streets covered in snow, with captions claiming the scenes were filmed in northern Nigeria.",
+									"_key": "k55"
+								}
+							],
+							"_key": "k56"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Reverse image searches trace the earliest versions of the clip to a winter storm in North America. Later reposts cropped out street signs and shop names.",
+									"_key": "k57"
+								}
+							],
+							"_key": "k58"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why it spread",
+									"_key": "k59"
+								}
+							],
+							"_key": "k60"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Unusual weather is easy to share and hard to check. The post arrived during a harmattan cold spell, when temperatures in parts of the north dip enough for people to reach for blankets.",
+									"_key": "k61"
+								}
+							],
+							"_key": "k62"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Snow requires sustained temperatures below freezing and enough moisture in the air. Nigeria's climate does not supply both, even during an unusually cold harmattan.",
+									"_key": "k63"
+								}
+							],
+							"_key": "k64"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The Nigerian Meteorological Agency's seasonal outlook described cooler nights and dusty air, not snowfall.",
+									"_key": "k65"
+								}
+							],
+							"_key": "k66"
+						}
+					],
+					"claim": "Snow fell in northern Nigeria during a cold spell.",
+					"claim_source": "Facebook post, July 2025",
+					"verdict": "False",
+					"verdict_summary": "The images were taken abroad and recaptioned.",
+					"verdict_note": "Nigeria's climate does not produce snow; the earliest frames trace to a winter storm in North America.",
+					"sources": [
+						"Reverse image search results for the earliest frame in the post",
+						"Nigerian Meteorological Agency seasonal outlook, 2025"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"climate-disinformation",
+						"nigeria"
+					]
+				}
+			},
+			{
+				"id": "post-cold-snap-does-not-disprove-global-warming",
+				"slug": "cold-snap-does-not-disprove-global-warming",
+				"status": "published",
+				"data": {
+					"title": "Does cold snap mean global warming isn't real?",
+					"excerpt": "A short cold spell is weather. The long-term trend is climate, and it is still warming.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Cold snaps are a normal part of a warming climate. They are weather: short, local and highly variable.",
+									"_key": "k67"
+								}
+							],
+							"_key": "k68"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Climate is the long-run average and the distribution around it. Every decade since the 1980s has been warmer than the one before it, and the last ten years are the warmest on record.",
+									"_key": "k69"
+								}
+							],
+							"_key": "k70"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why cold air still reaches Africa",
+									"_key": "k71"
+								}
+							],
+							"_key": "k72"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A warming Arctic weakens and wobbles the jet stream. That can let cold air spill further south than usual, even as the average global temperature climbs.",
+									"_key": "k73"
+								}
+							],
+							"_key": "k74"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Confusing a single cold week with the global trend is like judging a country's economy from one shop's takings on a slow Tuesday.",
+									"_key": "k75"
+								}
+							],
+							"_key": "k76"
+						}
+					],
+					"claim": "A cold snap proves that global warming is a hoax.",
+					"claim_source": "Comment thread on X, May 2025",
+					"verdict": "Misleading",
+					"verdict_summary": "One cold week is weather, not a trend. Global average temperatures keep rising.",
+					"verdict_note": "Warming increases the variability of the jet stream and can push cold air further south.",
+					"sources": [
+						"WMO State of the Global Climate reports",
+						"IPCC Sixth Assessment Report, Working Group I"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"climate-disinformation",
+						"climate-crisis"
+					]
+				}
+			},
+			{
+				"id": "post-south-african-firefighters-did-not-go-to-us-wildfire",
+				"slug": "south-african-firefighters-did-not-go-to-us-wildfire",
+				"status": "published",
+				"data": {
+					"title": "South African firefighters didn't go to US to quell wildfire",
+					"excerpt": "A photo of a deployment ceremony was reused with a false caption about a US wildfire.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A photo of firefighters in yellow protective gear was shared with a caption claiming the crew had been sent to the United States to help contain a wildfire.",
+									"_key": "k77"
+								}
+							],
+							"_key": "k78"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The image was first published by Working on Fire, a South African government-funded programme, during a domestic deployment and training exercise.",
+									"_key": "k79"
+								}
+							],
+							"_key": "k80"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What the programme said",
+									"_key": "k81"
+								}
+							],
+							"_key": "k82"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Working on Fire said no crew had been deployed to the United States at the time. The programme does send teams abroad for mutual aid, but those deployments are announced publicly.",
+									"_key": "k83"
+								}
+							],
+							"_key": "k84"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Wildfire seasons are getting longer and more intense in many regions, which makes accurate information about response capacity more important, not less.",
+									"_key": "k85"
+								}
+							],
+							"_key": "k86"
+						}
+					],
+					"claim": "South African firefighters were deployed to the United States to fight a wildfire.",
+					"claim_source": "Facebook post, January 2025",
+					"verdict": "False",
+					"verdict_summary": "The photo is from a domestic deployment exercise.",
+					"verdict_note": "Working on Fire said the image was taken during a South African training exercise.",
+					"sources": [
+						"Working on Fire statement, January 2025",
+						"Original photo published by the programme"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"climate-disinformation",
+						"south-africa"
+					]
+				}
+			},
+			{
+				"id": "post-sierra-leone-harmattan-not-air-pollution",
+				"slug": "sierra-leone-harmattan-not-air-pollution",
+				"status": "published",
+				"data": {
+					"title": "No, Sierra Leone's harmattan weather is not extreme air pollution",
+					"excerpt": "Dust haze is seasonal and natural. It is not the same as the pollution that comes from traffic and burning.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A WhatsApp forward described the annual harmattan haze as extreme air pollution and blamed industrial emissions.",
+									"_key": "k87"
+								}
+							],
+							"_key": "k88"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Harmattan is a seasonal wind that carries dust from the Sahara across West Africa. It reduces visibility, dries the air and can irritate eyes and throats.",
+									"_key": "k89"
+								}
+							],
+							"_key": "k90"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why the distinction matters",
+									"_key": "k91"
+								}
+							],
+							"_key": "k92"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Dust and combustion pollution are different mixtures. They can both harm health, but they call for different responses: dust episodes call for protection and monitoring, while industrial or traffic pollution calls for emissions controls.",
+									"_key": "k93"
+								}
+							],
+							"_key": "k94"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Health officials advised people with asthma and other respiratory conditions to limit outdoor exposure during the worst days. That advice does not support the claim that an industrial pollution event caused the haze.",
+									"_key": "k95"
+								}
+							],
+							"_key": "k96"
+						}
+					],
+					"claim": "The harmattan haze over Sierra Leone is extreme air pollution caused by industry.",
+					"claim_source": "WhatsApp forward, January 2025",
+					"verdict": "False context",
+					"verdict_summary": "Harmattan dust is seasonal and natural, though it does worsen air quality.",
+					"verdict_note": "Health authorities advised people with respiratory conditions to take precautions; that is not proof of an industrial pollution event.",
+					"sources": [
+						"Sierra Leone Meteorological Agency seasonal advisory",
+						"World Health Organization guidance on particulate matter"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"environment",
+						"sierra-leone",
+						"climate-disinformation"
+					]
+				}
+			},
+			{
+				"id": "post-does-the-night-get-darkest-before-dawn",
+				"slug": "does-the-night-get-darkest-before-dawn",
+				"status": "published",
+				"data": {
+					"title": "Does the night get darkest before dawn?",
+					"excerpt": "The phrase is a proverb about hope, not a description of how light works.",
+					"kicker": "fact_check",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The line is usually offered as encouragement during difficult negotiations. It is not a claim about astronomy.",
+									"_key": "k97"
+								}
+							],
+							"_key": "k98"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Before sunrise, the sky passes through astronomical, nautical and civil twilight. Light increases throughout, so the darkest moment comes earlier, not immediately before dawn.",
+									"_key": "k99"
+								}
+							],
+							"_key": "k100"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why we checked it",
+									"_key": "k101"
+								}
+							],
+							"_key": "k102"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Climate talks often end in long nights and short sleep. Quoting a proverb is fine; presenting it as evidence about progress is not.",
+									"_key": "k103"
+								}
+							],
+							"_key": "k104"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Whether a deal is close is a question about text, finance and trust, not about the colour of the sky.",
+									"_key": "k105"
+								}
+							],
+							"_key": "k106"
+						}
+					],
+					"claim": "The night is always darkest just before dawn.",
+					"claim_source": "Quote attributed to climate negotiators, December 2025",
+					"verdict": "Unproven",
+					"verdict_summary": "It is a proverb, not a measurable fact. Light increases gradually before sunrise.",
+					"verdict_note": "Astronomical twilight begins well before sunrise, so the darkest moment is earlier in the night.",
+					"sources": [
+						"Astronomical twilight definitions, International Astronomical Union",
+						"Sunrise and twilight tables for Lagos, December 2025"
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"fact-check"
+					],
+					"tag": [
+						"climate-action",
+						"opinion"
+					]
+				}
+			},
+			{
+				"id": "post-global-south-unites-climate-justice-cop30",
+				"slug": "global-south-unites-climate-justice-cop30",
+				"status": "published",
+				"data": {
+					"title": "From Amazon to Congo, Global South unites for climate justice at COP30",
+					"excerpt": "Bloc politics returns to the centre of the talks as rainforest nations compare notes on finance and fossil fuels.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Negotiators from the Amazon, the Congo basin and Southeast Asia are coordinating their positions at COP30, arguing that tropical forest countries carry a disproportionate share of the adaptation burden.",
+									"_key": "k107"
+								}
+							],
+							"_key": "k108"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The groups are pushing for adaptation finance to be delivered as grants rather than loans, and for a clearer timetable on phasing out fossil fuels.",
+									"_key": "k109"
+								}
+							],
+							"_key": "k110"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What to watch",
+									"_key": "k111"
+								}
+							],
+							"_key": "k112"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The test of the talks will be whether the final text names a figure for the adaptation finance gap and sets a date for the next round of national climate plans.",
+									"_key": "k113"
+								}
+							],
+							"_key": "k114"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "African negotiators have said they will not accept a package that counts existing pledges as new money.",
+									"_key": "k115"
+								}
+							],
+							"_key": "k116"
+						}
+					],
+					"at_a_glance": [
+						"Rainforest nations are coordinating positions on finance and fossil fuel phase-out.",
+						"The COP30 presidency wants a decision on the adaptation finance gap.",
+						"African negotiators say grants, not loans, are the test."
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"news"
+					],
+					"tag": [
+						"cop30",
+						"climate-action",
+						"africa"
+					]
+				}
+			},
+			{
+				"id": "post-extreme-heat-reshaping-work-africa",
+				"slug": "extreme-heat-reshaping-work-africa",
+				"status": "published",
+				"data": {
+					"title": "How extreme heat is reshaping work and business in Africa",
+					"excerpt": "Outdoor workers, factories and informal traders are changing hours and costs as heatwaves lengthen.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Construction sites are starting earlier, market traders are shifting to evening hours, and factories are reviewing cooling costs as extreme heat stretches deeper into the working day.",
+									"_key": "k117"
+								}
+							],
+							"_key": "k118"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Occupational health researchers say the changes are uneven. Formal employers can install shade, fans and water stations; informal workers often absorb the risk themselves.",
+									"_key": "k119"
+								}
+							],
+							"_key": "k120"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The productivity question",
+									"_key": "k121"
+								}
+							],
+							"_key": "k122"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Studies of heat stress find measurable losses in output once wet-bulb temperatures pass the mid-20s Celsius, especially for heavy outdoor work. The losses fall hardest on workers paid by the day.",
+									"_key": "k123"
+								}
+							],
+							"_key": "k124"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"environment"
+					],
+					"tag": [
+						"heatwaves",
+						"climate-crisis",
+						"africa"
+					]
+				}
+			},
+			{
+				"id": "post-africa-blue-economy-time-running-out",
+				"slug": "africa-blue-economy-time-running-out",
+				"status": "published",
+				"data": {
+					"title": "Africa's blue economy holds promise, but time is running out",
+					"excerpt": "Fisheries, ports and coastal tourism could grow — if warming, overfishing and poor planning do not get there first.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "African coastal states are trying to turn ocean resources into steady jobs, but warming water, acidification and illegal fishing are eroding the asset base.",
+									"_key": "k125"
+								}
+							],
+							"_key": "k126"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Fisheries ministers meeting this month called for stronger monitoring and for port investment that benefits local fleets rather than only transshipment.",
+									"_key": "k127"
+								}
+							],
+							"_key": "k128"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The finance gap",
+									"_key": "k129"
+								}
+							],
+							"_key": "k130"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Blue economy projects still struggle to attract private capital because returns are slow and property rights are unclear. Public guarantees and better data are the usual remedies.",
+									"_key": "k131"
+								}
+							],
+							"_key": "k132"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"sustainability"
+					],
+					"tag": [
+						"blue-economy",
+						"africa",
+						"climate-action"
+					]
+				}
+			},
+			{
+				"id": "post-nasa-imagery-lake-chad-vanishing",
+				"slug": "nasa-imagery-lake-chad-vanishing",
+				"status": "published",
+				"data": {
+					"title": "NASA imagery reveals Lake Chad may be vanishing forever",
+					"excerpt": "Satellite records show the lake's open water shrinking and fragmenting across five countries.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Satellite imagery released by NASA shows the open water of Lake Chad continuing to shrink and fragment, squeezing fishing and farming communities that depend on it.",
+									"_key": "k133"
+								}
+							],
+							"_key": "k134"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The lake's decline is driven by a mix of rainfall variability, irrigation withdrawals and population pressure. Its basin is shared by Chad, Cameroon, Niger and Nigeria.",
+									"_key": "k135"
+								}
+							],
+							"_key": "k136"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Adaptation on the shore",
+									"_key": "k137"
+								}
+							],
+							"_key": "k138"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Projects in the basin have focused on restoring wetlands and diversifying incomes, but hydrologists say the long-term outlook depends on regional rainfall.",
+									"_key": "k139"
+								}
+							],
+							"_key": "k140"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"environment"
+					],
+					"tag": [
+						"lake-chad",
+						"africa",
+						"climate-crisis"
+					]
+				}
+			},
+			{
+				"id": "post-plastics-fuelling-climate-change",
+				"slug": "plastics-fuelling-climate-change",
+				"status": "published",
+				"data": {
+					"title": "New research shows plastics are fuelling climate change in more ways than we thought",
+					"excerpt": "Emissions from production, shipping and waste are larger than previously counted, a review finds.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A review of plastics emissions finds that production, transport and waste management together account for a larger share of global greenhouse gases than earlier estimates suggested.",
+									"_key": "k141"
+								}
+							],
+							"_key": "k142"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Most of the growth is in petrochemical production, much of it planned in countries with weak waste collection.",
+									"_key": "k143"
+								}
+							],
+							"_key": "k144"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What would help",
+									"_key": "k145"
+								}
+							],
+							"_key": "k146"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Researchers point to mandatory recycled content, better waste data and a cap on new production capacity as the measures with the largest near-term effect.",
+									"_key": "k147"
+								}
+							],
+							"_key": "k148"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"news"
+					],
+					"tag": [
+						"plastics",
+						"climate-crisis",
+						"research"
+					]
+				}
+			},
+			{
+				"id": "post-cra-heat-insurance-award",
+				"slug": "cra-heat-insurance-award",
+				"status": "published",
+				"data": {
+					"title": "CRA wins climate innovation award for heat insurance initiative",
+					"excerpt": "A scheme that pays out when temperatures cross a threshold is being expanded to more cities.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A heat insurance scheme that pays out automatically when temperatures cross a set threshold has won a climate innovation award, with organisers planning to expand it to more cities.",
+									"_key": "k149"
+								}
+							],
+							"_key": "k150"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Unlike conventional insurance, the scheme uses weather data rather than damage assessments, so payouts arrive faster.",
+									"_key": "k151"
+								}
+							],
+							"_key": "k152"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Who it covers",
+									"_key": "k153"
+								}
+							],
+							"_key": "k154"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "It targets outdoor workers and small traders whose income falls when it is too hot to work. Early results suggest payouts reach women and informal workers who are usually excluded.",
+									"_key": "k155"
+								}
+							],
+							"_key": "k156"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"sustainability"
+					],
+					"tag": [
+						"heatwaves",
+						"climate-action",
+						"research"
+					]
+				}
+			},
+			{
+				"id": "post-fish-vanish-storms-women-pay",
+				"slug": "fish-vanish-storms-women-pay",
+				"status": "published",
+				"data": {
+					"title": "When the fish vanish and the storms hit, women pay the price",
+					"excerpt": "Along the West African coast, women who smoke, sell and process fish carry the first losses.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "In coastal communities from Senegal to Ghana, women dominate the processing and sale of fish. When stocks move or storms keep boats ashore, their income disappears first.",
+									"_key": "k157"
+								}
+							],
+							"_key": "k158"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Support programmes often focus on boat owners. Researchers and cooperatives say credit, storage and market access for processors would do more for household resilience.",
+									"_key": "k159"
+								}
+							],
+							"_key": "k160"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A different adaptation",
+									"_key": "k161"
+								}
+							],
+							"_key": "k162"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Some cooperatives are pooling savings and building solar-powered cold rooms, which cut spoilage when catches are delayed.",
+									"_key": "k163"
+								}
+							],
+							"_key": "k164"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-lanre"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"agriculture"
+					],
+					"tag": [
+						"fisheries",
+						"africa",
+						"climate-resilience"
+					]
+				}
+			},
+			{
+				"id": "post-net-zero-southern-africa-heatwaves",
+				"slug": "net-zero-southern-africa-heatwaves",
+				"status": "published",
+				"data": {
+					"title": "Why net zero may not end Southern Africa's heatwaves",
+					"excerpt": "Even with rapid cuts, heat that is already locked in will keep shaping the region for decades.",
+					"kicker": "none",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Reaching net zero would stop the world from adding more warming, but it would not immediately reverse the heat already stored in the climate system.",
+									"_key": "k165"
+								}
+							],
+							"_key": "k166"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Southern Africa is warming at roughly twice the global average, and models show more frequent heatwaves even under strong mitigation.",
+									"_key": "k167"
+								}
+							],
+							"_key": "k168"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Adaptation is not optional",
+									"_key": "k169"
+								}
+							],
+							"_key": "k170"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Researchers argue that heat action plans, early warning and building standards need the same urgency as emissions cuts, because the region will live with both for decades.",
+									"_key": "k171"
+								}
+							],
+							"_key": "k172"
+						}
+					]
+				},
+				"bylines": [
+					{
+						"byline": "byline-check-climate"
+					}
+				],
+				"taxonomies": {
+					"category": [
+						"news"
+					],
+					"tag": [
+						"heatwaves",
+						"climate-crisis",
+						"research"
+					]
+				}
+			}
+		],
+		"pages": [
+			{
+				"id": "page-about-us",
+				"slug": "about-us",
+				"status": "published",
+				"data": {
+					"title": "About us",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Check Climate Africa is a pioneering media consultancy initiative focused on disseminating critical climate information to key stakeholders across Africa, including governments, policymakers, and the general public.",
+									"_key": "k173"
+								}
+							],
+							"_key": "k174"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "We report on the climate crisis, resilience and adaptation, green energy, agriculture, sustainability and aviation — and we check the claims that shape those debates.",
+									"_key": "k175"
+								}
+							],
+							"_key": "k176"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Why it matters",
+									"_key": "k177"
+								}
+							],
+							"_key": "k178"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "By providing timely, accurate, and actionable climate insights, Check Climate Africa strives to inform policy decisions, foster public awareness and promote climate resilience.",
+									"_key": "k179"
+								}
+							],
+							"_key": "k180"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "How we work",
+									"_key": "k181"
+								}
+							],
+							"_key": "k182"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Our reporting is independent. Fact checks are reviewed by an editor before publication, cite the evidence we relied on, and are corrected in public when we get something wrong.",
+									"_key": "k183"
+								}
+							],
+							"_key": "k184"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Send questions, corrections or story tips to CheckClimateAfrica@gmail.com. To ask us to check a claim, use the Submit a claim form.",
+									"_key": "k185"
+								}
+							],
+							"_key": "k186"
+						}
+					]
+				}
+			},
+			{
+				"id": "page-contact-us",
+				"slug": "contact-us",
+				"status": "published",
+				"data": {
+					"title": "Contact us",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Everything goes to one inbox: CheckClimateAfrica@gmail.com. Pick a subject line so it reaches the right person faster.",
+									"_key": "k187"
+								}
+							],
+							"_key": "k188"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Questions",
+									"_key": "k189"
+								}
+							],
+							"_key": "k190"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "About a story, our work or our sources.",
+									"_key": "k191"
+								}
+							],
+							"_key": "k192"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Concerns and corrections",
+									"_key": "k193"
+								}
+							],
+							"_key": "k194"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Spotted an error? Tell our editors. Include the URL and what is wrong.",
+									"_key": "k195"
+								}
+							],
+							"_key": "k196"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Adverts and partnerships",
+									"_key": "k197"
+								}
+							],
+							"_key": "k198"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Reach readers who follow African climate news.",
+									"_key": "k199"
+								}
+							],
+							"_key": "k200"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Submit a claim",
+									"_key": "k201"
+								}
+							],
+							"_key": "k202"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Use the Submit a claim form to send a post, video, image or quote you want checked.",
+									"_key": "k203"
+								}
+							],
+							"_key": "k204"
+						}
+					]
+				}
+			},
+			{
+				"id": "page-privacy-policy",
+				"slug": "privacy-policy-2",
+				"status": "published",
+				"data": {
+					"title": "Privacy policy",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Check Climate Africa collects the minimum information needed to publish the site and respond to readers.",
+									"_key": "k205"
+								}
+							],
+							"_key": "k206"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What we collect",
+									"_key": "k207"
+								}
+							],
+							"_key": "k208"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Server logs, anonymous analytics, and anything you send us through a form or email.",
+									"_key": "k209"
+								}
+							],
+							"_key": "k210"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "If you submit a claim, we store the claim, the link or file you send, and your contact details so we can reply.",
+									"_key": "k211"
+								}
+							],
+							"_key": "k212"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "How long we keep it",
+									"_key": "k213"
+								}
+							],
+							"_key": "k214"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Claim submissions are kept while we investigate and for our records afterwards. Email is kept for as long as it is needed to answer you.",
+									"_key": "k215"
+								}
+							],
+							"_key": "k216"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Your choices",
+									"_key": "k217"
+								}
+							],
+							"_key": "k218"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Write to CheckClimateAfrica@gmail.com to ask for a copy of what we hold about you, or to ask us to delete it.",
+									"_key": "k219"
+								}
+							],
+							"_key": "k220"
+						}
+					]
+				}
+			},
+			{
+				"id": "page-accessibility",
+				"slug": "accessibility-statement",
+				"status": "published",
+				"data": {
+					"title": "Accessibility statement",
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Check Climate Africa aims to meet WCAG 2.2 AA. Pages are built with real headings, landmarks, visible focus states and text that meets 4.5:1 contrast.",
+									"_key": "k221"
+								}
+							],
+							"_key": "k222"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What we test",
+									"_key": "k223"
+								}
+							],
+							"_key": "k224"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Keyboard navigation, screen reader order, colour contrast in light and dark mode, and layouts at 360px without horizontal scrolling.",
+									"_key": "k225"
+								}
+							],
+							"_key": "k226"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Tell us about a barrier",
+									"_key": "k227"
+								}
+							],
+							"_key": "k228"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "If something is hard to use, email CheckClimateAfrica@gmail.com with the page and what happened. We will fix it or offer the information another way.",
+									"_key": "k229"
+								}
+							],
+							"_key": "k230"
 						}
 					]
 				}
 			}
 		],
-		"posts": [
+		"claims": [
 			{
-				"id": "post-1",
-				"slug": "building-for-the-long-term",
-				"status": "published",
-				"data": {
-					"title": "Building for the Long Term",
-					"excerpt": "The frameworks will change. The databases will change. What survives is the clarity of your thinking.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=800&fit=crop",
-							"alt": "Code on a monitor in a dark room",
-							"filename": "building-long-term.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Every few years the industry collectively decides that everything we've been doing is wrong and there's a better way. New frameworks, new paradigms, new build tools. The churn is relentless, and if you're not careful, you spend more time migrating than building.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I've been writing software long enough to have seen several of these cycles. jQuery to Backbone to Angular to React to whatever comes next. Each transition felt urgent at the time. Looking back, the things that actually mattered were rarely about the framework.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What survives",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Clean data models survive. Clear boundaries between systems survive. Good naming survives. The decision to keep things simple when you could have made them clever - that definitely survives.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What doesn't survive is code that was written to impress, abstractions built for problems that never materialized, and architectures designed around a framework's opinions rather than the domain's reality.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The best code I've written is boring. It reads like prose, does one thing well, and doesn't require a PhD in category theory to understand. The worst code I've written was technically impressive at the time.",
-									"_key": "k11"
-								}
-							],
-							"_key": "k10"
-						}
-					]
-				},
-				"bylines": [
-					{
-						"byline": "byline-editorial"
-					},
-					{
-						"byline": "byline-guest",
-						"roleLabel": "Guest essay"
-					}
-				],
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-2",
-				"slug": "the-case-for-static",
-				"status": "published",
-				"data": {
-					"title": "The Case for Static",
-					"excerpt": "Static sites aren't a step backwards. They're what you get when you take performance and simplicity seriously.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=800&fit=crop",
-							"alt": "Laptop and coffee on a wooden table",
-							"filename": "case-for-static.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "There's a certain irony in the fact that the web started static, went dynamic, and is now swinging back toward static again. But the static sites of today aren't the hand-coded HTML pages of 1998. They're generated, optimized, and deployed to edge networks that serve them in milliseconds.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The pitch for server-rendered everything was compelling: dynamic content, personalization, real-time data. But most sites don't need most of that most of the time. A blog post doesn't need to be rendered on every request. A product page doesn't change every second.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The performance argument",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "A static file served from a CDN is as fast as the web gets. No cold starts, no database queries, no server-side rendering overhead. The Time to First Byte is essentially the network latency to your nearest edge node. You can't beat physics.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "And when you do need dynamic behavior, you can add it surgically. An island of interactivity in a sea of static HTML. The best of both worlds, without paying the cost of either at all times.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"bylines": [
-					{
-						"byline": "byline-editorial"
-					}
-				],
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["webdev", "opinion"]
-				}
-			},
-			{
-				"id": "post-3",
-				"slug": "learning-in-public",
-				"status": "published",
-				"data": {
-					"title": "Learning in Public",
-					"excerpt": "Writing about what you're learning is the fastest way to find out what you don't actually understand.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1200&h=800&fit=crop",
-							"alt": "Notebook and pen on a desk",
-							"filename": "learning-in-public.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I started writing about things I was learning not because I had anything original to say, but because I kept forgetting what I'd figured out. The blog posts were notes to my future self, published publicly more out of laziness than courage.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What I didn't expect was how much the writing itself would accelerate the learning. There's a particular kind of clarity that comes from trying to explain something to someone else. The gaps in your understanding, which you can happily ignore when the knowledge lives only in your head, become painfully obvious when you try to put it into sentences.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The fear of being wrong",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The biggest barrier isn't time or writing skill. It's the fear of publishing something that turns out to be wrong. But here's the thing: being wrong publicly is one of the most efficient ways to learn. Someone will correct you, often kindly, and you'll remember that correction forever.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The posts that helped me most weren't written by experts. They were written by people one step ahead of me on the same path, in language that hadn't yet been polished into abstraction. There's a place for that kind of writing, and it's more valuable than most people realize.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["notes"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-4",
-				"slug": "small-tools-big-impact",
-				"status": "published",
-				"data": {
-					"title": "Small Tools, Big Impact",
-					"excerpt": "The best developer tools do one thing well and get out of your way. A love letter to focused software.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1575026615908-666710ae5e47?w=1200&h=800&fit=crop",
-							"alt": "Wrenches and hand tools hanging on a workshop wall",
-							"filename": "small-tools.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "There's a class of software that doesn't get enough appreciation. Not the frameworks or the platforms or the IDEs, but the small, sharp tools that solve one problem so well you stop thinking about them. They become invisible, which is the highest compliment you can pay a tool.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I'm talking about things like ripgrep, which searches code so fast it changed how I think about searching. Or jq, which makes JSON feel like a first-class data format in the terminal. Or curl, which has been quietly powering the internet's plumbing for decades.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The Unix philosophy, revisited",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Do one thing well. The advice is old enough to be a cliche, but the best modern tools still follow it. They don't try to be platforms. They don't have plugin ecosystems or configuration languages or startup wizards. They do their job and they compose with other tools that do theirs.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The temptation is always to add more. One more feature, one more option, one more integration. But every addition is a decision someone has to make, a path through the code that has to be maintained, a thing that can break. The best tools resist this. They stay small, and in staying small, they stay reliable.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["tools"]
-				}
-			},
-			{
-				"id": "post-5",
-				"slug": "designing-with-constraints",
-				"status": "published",
-				"data": {
-					"title": "Designing with Constraints",
-					"excerpt": "Limitations aren't obstacles to creativity. They're the structure that makes creativity possible.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1200&h=800&fit=crop",
-							"alt": "Pencils and design tools on a desk",
-							"filename": "designing-with-constraints.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Give a designer a blank canvas and unlimited time, and they'll often produce something mediocre. Give them a tight brief, a small screen, and a deadline, and they'll surprise you. This isn't a paradox - it's how creativity actually works.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Constraints force decisions. When you can't use more than two typefaces, you have to choose carefully. When the page has to load in under a second, every element earns its place. When the interface has to work on a 320px screen, you discover what's truly essential.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Embracing the box",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The web itself is a constraint. HTML flows in one direction. CSS has a box model. Browsers have viewport sizes and font rendering quirks. You can fight these constraints or you can work with them, and the results are dramatically different.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The designs I admire most don't look like they were forced through a framework. They look like they grew naturally from the medium, respecting its grain rather than working against it. That only happens when you treat constraints as creative partners rather than enemies.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["design"],
-					"tag": ["creativity"]
-				}
-			},
-			{
-				"id": "post-6",
-				"slug": "a-weekend-with-a-side-project",
-				"status": "published",
-				"data": {
-					"title": "A Weekend with a Side Project",
-					"excerpt": "No stakeholders, no deadlines, no Jira tickets. Just you and a dumb idea that might turn into something.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1200&h=800&fit=crop",
-							"alt": "Code on a screen with a dark theme",
-							"filename": "weekend-side-project.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Saturday morning. Coffee's made, the house is quiet, and I've got an idea that's been nagging at me all week. Not a good idea, necessarily - just a persistent one. A small tool that does a thing I keep doing manually. How hard could it be?",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "This is the best kind of programming. No requirements document, no sprint planning, no pull request reviews. Just a text editor and a problem. The freedom to make terrible architectural decisions, rewrite everything twice, and follow tangents that turn out to be dead ends.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Why side projects matter",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Side projects are where you learn things your day job would never teach you. Not because the problems are harder, but because you're free to take risks. Try a language you've never used. Build something without a framework. Deploy to a platform you've only read about. The stakes are zero, which makes the learning maximum.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "By Sunday evening, the thing sort of works. It's rough, the error handling is nonexistent, and the README is a single sentence. But it solves the problem I set out to solve, and I learned three things I didn't know on Friday. Not a bad weekend.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["creativity"]
-				}
-			},
-			{
-				"id": "post-7",
-				"slug": "notes-on-simplicity",
-				"status": "published",
-				"data": {
-					"title": "Notes on Simplicity",
-					"excerpt": "Simplicity isn't the absence of complexity. It's the result of understanding a problem well enough to solve it cleanly.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1559051668-e1fa58f25786?w=1200&h=800&fit=crop",
-							"alt": "Geometric pattern carved into white paper",
-							"filename": "notes-on-simplicity.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Every piece of software starts simple. A few files, a clear purpose, a small surface area. Then features get added, edge cases get handled, and before long you're looking at something that requires a diagram to understand. This isn't inevitable, but it takes discipline to prevent.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The hard part of simplicity isn't the initial design. It's the ongoing resistance to complication. Every feature request, every bug fix, every refactor is an opportunity to add complexity. Saying no is the most important design skill, and the least celebrated.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Removing as a feature",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The best version of a product often has fewer features than the previous one. Not because features were missing, but because someone had the courage to remove things that weren't earning their keep. Every feature has a cost - in maintenance, in cognitive load, in the weight of the interface.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Simplicity is a practice, not a destination. You never arrive at simple. You just keep asking: is this necessary? Could this be clearer? Is there a way to solve this problem by removing something instead of adding something? The answer is yes more often than you'd expect.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["notes"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-draft",
-				"slug": "work-in-progress",
+				"id": "claim-sample",
+				"slug": "sample-claim",
 				"status": "draft",
 				"data": {
-					"title": "Work in Progress",
-					"excerpt": "This post is still being written.",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "This is a draft post that won't appear in the public listing.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						}
-					]
+					"claim": "A video shows snow falling in Kano in July.",
+					"platform": "WhatsApp",
+					"country": "Nigeria",
+					"link": "https://example.com/claim",
+					"name": "Sample reader",
+					"email": "reader@example.com",
+					"consent": true,
+					"review_status": "new",
+					"notes": "Sample row created by the seed. Safe to delete."
 				}
 			}
 		]
