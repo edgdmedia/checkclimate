@@ -361,7 +361,7 @@ export function collectWaybackEdits(blocks: unknown): {
 export function extractWrappedUrls(html: string): string[] {
 	const matches = html.match(WAYBACK_URL_IN_HTML) ?? [];
 	// Trailing punctuation from prose; attribute values are already clean.
-	return [...new Set(matches.map((url) => url.replace(/[),.;:!]+$/, "")))];
+	return [...new Set(matches.map((url: string) => url.replace(/[),.;:!]+$/, "")))];
 }
 
 /**

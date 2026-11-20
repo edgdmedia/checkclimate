@@ -9,7 +9,7 @@
 import { loadEnvFile } from "node:process";
 import pg from "pg";
 
-export type Branch = "dev" | "prod";
+export type Branch = "dev" | "prod" | "local";
 
 export interface Database extends pg.Client {
 	/** Which Neon branch this connection is on. */
@@ -33,8 +33,8 @@ export function parseArgs(argv: string[]): CliFlags {
 		if (key === "apply" || key === "write") flags.apply = true;
 		else if (key === "dry-run") flags.apply = false;
 		else if (key === "database" || key === "branch") {
-			if (value !== "dev" && value !== "prod") {
-				throw new Error(`--database must be dev or prod (got ${String(value)})`);
+			if (value !== "dev" && value !== "prod" && value !== "local") {
+				throw new Error(`--database must be dev, prod or local (got ${String(value)})`);
 			}
 			flags.branch = value;
 		} else flags[key] = typeof value === "boolean" ? value : String(value);
@@ -64,10 +64,15 @@ export async function connect(branch: Branch): Promise<Database> {
 		}
 	}
 
+	// `local` is the Postgres the WordPress import runs against before it is
+	// copied to Neon (see RUNBOOK "Importing WordPress content").
 	const connectionString =
 		branch === "prod"
 			? envValue("NEON_DATABASE_URL")
-			: envValue("NEON_DEV_DATABASE_URL") || envValue("NEON_DATABASE_URL");
+			: branch === "local"
+				? envValue("LOCAL_IMPORT_DATABASE_URL") ||
+					"postgresql://postgres:localimport@localhost:5433/checkclimate"
+				: envValue("NEON_DEV_DATABASE_URL") || envValue("NEON_DATABASE_URL");
 
 	if (!connectionString) {
 		throw new Error(
@@ -79,7 +84,7 @@ export async function connect(branch: Branch): Promise<Database> {
 		connectionString,
 		// pg's own types predate pg-connection-string's ssl `mode` option, which
 		// the runtime accepts (SSL required, no certificate pinning).
-		ssl: { mode: "require" } as pg.ConnectionConfig["ssl"],
+		ssl: branch === "local" ? false : ({ mode: "require" } as pg.ConnectionConfig["ssl"]),
 		statement_timeout: 120_000,
 	}) as Database;
 	await client.connect();

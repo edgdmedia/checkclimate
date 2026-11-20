@@ -34,6 +34,8 @@ export interface Page {
   title: string;
   content?: PortableTextBlock[];
   featured_image?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  excerpt?: string;
+  seo_description?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -58,6 +60,7 @@ export interface Post {
   verdict_summary?: string;
   verdict_note?: string;
   sources?: unknown;
+  seo_description?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

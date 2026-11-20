@@ -255,7 +255,7 @@ interface Flags {
 	mapPath: string;
 	failedPath: string;
 	mediaBase: string;
-	branch: "dev" | "prod";
+	branch: "dev" | "prod" | "local";
 }
 
 function parseFlags(argv: string[]): Flags {
@@ -324,17 +324,16 @@ async function run(flags: Flags): Promise<void> {
 		const queue = new Map<string, PendingUpload>();
 
 		const queueImage = (
-			plan: RowPlan,
-			unwrapped: NonNullable<ReturnType<typeof unwrapWayback>>,
+			_unwrapped: NonNullable<ReturnType<typeof unwrapWayback>>,
 			alt: string | undefined,
 		): void => {
-			const pending = queue.get(unwrapped.original) ?? {
-				original: unwrapped.original,
-				unwrapped,
+			const pending = queue.get(_unwrapped.original) ?? {
+				original: _unwrapped.original,
+				unwrapped: _unwrapped,
 				alts: [],
 			};
 			if (alt && !pending.alts.includes(alt)) pending.alts.push(alt);
-			queue.set(unwrapped.original, pending);
+			queue.set(_unwrapped.original, pending);
 		};
 
 		// 1. Collect every wrapped URL in every row, and what each needs.
@@ -370,7 +369,7 @@ async function run(flags: Flags): Promise<void> {
 						if (mapped) {
 							plan.fields.push({ occurrence, replacement: mapped, source: "url-map" });
 						} else {
-							queueImage(plan, unwrapped, occurrence.alt);
+							queueImage(unwrapped, occurrence.alt);
 							plan.fields.push({ occurrence, replacement: null, source: "pending" });
 						}
 					} else {
@@ -392,7 +391,7 @@ async function run(flags: Flags): Promise<void> {
 							if (mapped) {
 								replacements.set(wrapped, mapped);
 							} else {
-								queueImage(plan, unwrapped, undefined);
+								queueImage(unwrapped, undefined);
 								replacements.set(wrapped, null);
 							}
 						} else {
@@ -422,7 +421,7 @@ async function run(flags: Flags): Promise<void> {
 						edit.replacement = mapped;
 						edit.source = "url-map";
 					} else {
-						queueImage(plan, unwrapped, candidate.alt);
+						queueImage(unwrapped, candidate.alt);
 					}
 					plan.featured.push(edit);
 				}

@@ -65,46 +65,73 @@ the new copy.
 
 ## Importing WordPress content
 
-Run the import from your laptop, never on the Worker:
+Run the import from your laptop, never on the Worker (10 ms CPU), and **not
+against Neon directly**: every import request makes hundreds of round trips to
+Frankfurt (28–46 s each), and Neon Free suspends the compute after 5 idle
+minutes, which kills the local Hyperdrive proxy's connections until dev is
+restarted. Import into a local Postgres 18 (same major version as Neon), then
+copy it to Neon in one dump. This is how the first import was done (2026-11-20).
 
-1. Point the local dev server at the branch you want to import into. By
-   default `scripts/with-env.mjs` maps `NEON_DEV_DATABASE_URL` onto both
-   Hyperdrive bindings. To import into **prod** instead, override the env
-   vars for that one run:
+1. **Local Postgres** (data lives in `data/pg`, gitignored):
 
    ```bash
-   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE="$NEON_DATABASE_URL" \
-   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_CACHED="$NEON_DATABASE_URL" \
+   PG=/opt/homebrew/opt/postgresql@18/bin
+   $PG/initdb -D data/pg -U postgres --auth=trust -E UTF8
+   $PG/pg_ctl -D data/pg -o "-p 5433 -k /tmp" -l data/pg.log start
+   $PG/psql -h localhost -p 5433 -U postgres -c "create database checkclimate"
+   $PG/psql -h localhost -p 5433 -U postgres -c "alter user postgres password 'localimport'"  # Hyperdrive needs one
+   ```
+
+   Seed the schema only: `pnpm seed --url postgresql://postgres:localimport@localhost:5433/checkclimate --schema-only`.
+   To start from what is in Neon instead, `pg_dump` Neon and strip Neon's
+   column storage parameter before restoring:
+   `pg_restore -f x.sql dump && grep -v "SET (pg_attver=" x.sql | psql <local>`.
+
+2. **Media straight to R2:** temporarily add `"remote": true` to the `MEDIA`
+   binding in `wrangler.jsonc` (revert afterwards; never commit it).
+
+3. **Dev on port 4321** (passkeys are bound to `http://localhost:4321`; if the
+   port is taken, dev moves to 4322 and passkey setup fails with "Invalid origin"):
+
+   ```bash
+   L=postgresql://postgres:localimport@localhost:5433/checkclimate
+   CLOUDFLARE_ACCOUNT_ID=9c8aaa232a52d145430685011e9fff9c \
+   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE="$L" \
+   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_CACHED="$L" \
    pnpm exec astro dev
    ```
 
-   (`wrangler.jsonc` itself does not need editing; the env vars take
-   precedence over `localConnectionString`.)
-2. Open `/_emdash/admin/import/wordpress` and run the import.
-3. After the import, save the media `urlMap` to
-   `migration/media-url-map.json` (the redirects middleware reads it).
-4. `pnpm tsx scripts/unwrap-wayback.ts --database=prod` (dry run), review,
-   then `--apply`. The old site was partly restored from the Wayback Machine,
-   so content arrived with URLs wrapped as
-   `https://web.archive.org/web/<timestamp><flag>/<original>`. The script
-   unwraps only URLs whose original is on checkclimate.africa — links to
-   root-relative WordPress paths, images to the media-library copy in R2
-   (from the urlMap, or downloaded live / from Wayback and uploaded through
-   the media API, which needs `pnpm dev` running). External Wayback URLs are
-   deliberate archived citations and stay exactly as they are. It writes the
-   URLs it could not fix to `migration/unwrap-wayback-failed.json`.
-5. `pnpm tsx scripts/post-import.ts --database=prod` (dry run), review the
-   report, then `--apply` to set kickers. Save the old `wayback_source_url`
-   postmeta to `migration/wayback-source-urls.json` first if you want that
-   check (it compares each stripped Wayback URL against the entry's own
-   permalink; the meta is never imported).
-6. `pnpm tsx scripts/verify-migration.ts --database=prod --base=https://checkclimate.<subdomain>.workers.dev`
-   to check counts, every old URL, and that no own-site Wayback URL is left
-   wrapped in content.
-7. Stop the dev server; the next normal `pnpm dev` is back on the dev branch.
+4. **Admin import** at `/_emdash/admin/import/wordpress` with the exporter
+   migration key (`WP_MIGRATION_KEY` in `.env`). Map `post` → posts and `page`
+   → pages, skip `elementor_library`, leave authors unmapped (guest bylines),
+   menus off, logo off, SEO on. Then run the media step. Re-running is safe: the
+   admin always sends `skipExisting` (matched by collection + slug + locale).
+5. **Clean-up, all with `--database=local`:**
+   - `pnpm tsx scripts/relink-media.ts --apply`: rebuilds
+     `migration/media-url-map.json` from the exporter's attachment list and
+     repoints image blocks the importer missed (byte-identical copies are stored
+     once, so their blocks keep `wp-content` URLs).
+   - `pnpm tsx scripts/unwrap-wayback.ts --apply` (needs `EMDASH_TOKEN` in `.env`,
+     an API token from Settings → API Tokens; without it the CLI signs in as a
+     "Dev Admin" that would be copied to prod).
+   - `pnpm tsx scripts/post-import.ts --apply` (sets kickers).
+   - Merge guest bylines into one per WordPress author, keeping the old
+     `/author/<login>/` slugs (the importer names them after the login and adds
+     `-2`, `-3`… per batch). Drop theme fields the importer created (`axil_*`,
+     `select_banner_style`, `select_sidebar`, `wayback_source_url`). Delete the
+     Home and Posts pages and WordPress's menus in the admin.
+6. **Copy to Neon main** (back it up first):
 
-The import scripts (`scripts/post-import.ts`, `scripts/verify-migration.ts`)
-connect to Neon directly with `pg`; they do not go through the Worker.
+   ```bash
+   pg_dump "$NEON_DATABASE_URL" --no-owner --no-privileges -Fc -f data/neon-backup.dump
+   pg_dump "$L" --no-owner --no-privileges -f data/local.sql
+   { echo begin\;; echo "drop schema public cascade; create schema public;"; \
+     grep -v "^SELECT pg_catalog.set_config('search_path'" data/local.sql | grep -v '^\\restrict\|^\\unrestrict'; \
+     echo commit\;; } | psql "$NEON_DATABASE_URL" -v ON_ERROR_STOP=1 -q
+   ```
+
+7. `pnpm tsx scripts/verify-migration.ts --database=prod` until it exits 0, then
+   `--base=<workers.dev url>` after the deploy to check every old URL.
 
 ## Migration lock
 

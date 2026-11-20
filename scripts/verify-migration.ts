@@ -41,7 +41,8 @@ import {
 	unwrapWayback,
 } from "./lib/wayback";
 
-const EXPECTED = { posts: 172, pages: 6, categories: 36, tags: 277 };
+// pages: 6 in WordPress, minus Home and Posts (both templates here, deleted after import).
+const EXPECTED = { posts: 172, pages: 4, categories: 36, tags: 277 };
 const OLD_SITE = "https://www.checkclimate.africa";
 /** Yoast puts posts in numbered sitemaps once there are more than 1000. */
 const OLD_SITEMAPS = [
@@ -197,22 +198,41 @@ async function main(): Promise<void> {
 			}
 		}
 
-		// 2. Leftover WordPress URLs inside the content.
-		const leftovers = await db.query(
-			`select slug from ec_posts where deleted_at is null and (
-			   content::text like '%wp-content%' or content::text like '%wp-includes%'
-			   or excerpt like '%wp-content%' or title like '%wp-content%')
-			 union all
-			 select slug from ec_pages where deleted_at is null and (
-			   content::text like '%wp-content%' or content::text like '%wp-includes%')`,
+		// 2. Leftover URLs on OUR old WordPress (checkclimate.africa/wp-content or
+		// wp-includes) outside a Wayback wrapper — those are check 2b. Other
+		// sites' wp-content links (a source's PDF, a hotlinked image) are fine.
+		// URLs in migration/known-dead-media.json were already 404 on the live
+		// WordPress before the move; they are reported, not blocking.
+		let knownDead = new Set<string>();
+		try {
+			knownDead = new Set(
+				parseJson<string[]>(readFileSync("migration/known-dead-media.json", "utf8"), []),
+			);
+		} catch {
+			// No list: every leftover blocks.
+		}
+		const leftovers = await db.query<{ slug: string; url: string }>(
+			`with c as (
+			   select slug, regexp_replace(content::text || ' ' || coalesce(excerpt, ''),
+			            'https?://web\\.archive\\.org/web/[^"\\s]+', '', 'g') t
+			     from ec_posts where deleted_at is null
+			   union all
+			   select slug, regexp_replace(content::text, 'https?://web\\.archive\\.org/web/[^"\\s]+', '', 'g')
+			     from ec_pages where deleted_at is null)
+			 select distinct slug, (regexp_matches(t,
+			   'https?://(?:www\\.)?checkclimate\\.africa/wp-(?:content|includes)/[^"\\s\\\\]+', 'g'))[1] url
+			 from c`,
 		);
-		console.log(`wp-content  ${leftovers.rows.length} rows still reference the old site`);
-		for (const row of leftovers.rows as { slug: string }[]) {
+		const leftoverSlugs = new Set(leftovers.rows.map((row) => row.slug));
+		console.log(`wp-content  ${leftoverSlugs.size} rows still reference the old site`);
+		for (const row of leftovers.rows) {
+			const dead = knownDead.has(row.url);
 			rows.push({
 				slug: row.slug,
 				check: "wp-content URL",
-				found: "still in content",
-				action: "needs a person",
+				found: row.url,
+				action: dead ? "skipped" : "needs a person",
+				...(dead ? { note: "already 404 on the live WordPress" } : {}),
 			});
 		}
 
