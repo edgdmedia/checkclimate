@@ -12,12 +12,15 @@
  *   pnpm seed                 # apply against NEON_DEV_DATABASE_URL
  *   pnpm seed --url postgres://...   # explicit target (e.g. prod for the import)
  *   pnpm seed --dry-run       # validate + report, change nothing
+ *   pnpm seed --url "$NEON_DATABASE_URL" --schema-only   # prod before the WP import:
+ *                             # collections, fields, taxonomies, menus, settings; no demo entries
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createDialect } from "emdash/db/postgres";
 import { runMigrations } from "emdash/db";
+import type { Database } from "emdash";
 import { applySeed, validateSeed } from "emdash/seed";
 import { Kysely, sql } from "kysely";
 
@@ -44,11 +47,12 @@ function loadEnvFile() {
 }
 
 function parseArgs(argv) {
-	const args = { dryRun: false, url: undefined };
+	const args = { dryRun: false, url: undefined, schemaOnly: false };
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
 		if (arg === "--dry-run") args.dryRun = true;
 		else if (arg === "--url") args.url = argv[++i];
+		else if (arg === "--schema-only") args.schemaOnly = true;
 	}
 	return args;
 }
@@ -81,14 +85,14 @@ if (args.dryRun) {
 		`dry run: would apply ${seedRaw.collections?.length ?? 0} collections, ` +
 			`${seedRaw.taxonomies?.length ?? 0} taxonomies, ` +
 			`${Object.values(seedRaw.content ?? {}).reduce(
-				(sum, entries) => sum + (Array.isArray(entries) ? entries.length : 0),
+				(sum: number, entries) => sum + (Array.isArray(entries) ? entries.length : 0),
 				0,
 			)} content entries to ${redact(connectionString)}`,
 	);
 	process.exit(0);
 }
 
-const db = new Kysely({ dialect: createDialect({ connectionString }) });
+const db = new Kysely<Database>({ dialect: createDialect({ connectionString }) });
 
 try {
 	console.log(`target ${redact(connectionString)}`);
@@ -100,7 +104,7 @@ try {
 	);
 
 	const result = await applySeed(db, seedRaw, {
-		includeContent: true,
+		includeContent: !args.schemaOnly,
 		onConflict: "skip",
 		mediaBasePath: resolve(root, "seed"),
 		// Seed images resolve to external URLs; media imports land in R2 via the
@@ -120,9 +124,19 @@ try {
 		].join("\n  "),
 	);
 
+	// Mark the explicit seed as the site's seed, as EmDash's own seeding does
+	// (claimExplicitSeedOwnership). Migration 089 only sets this when collections
+	// already exist, and here migrations run first; without it a fresh database
+	// boots into the auto-seed path and fails with "Fresh-site media usage
+	// activation did not complete".
+	await sql`
+		insert into options (name, value) values ('emdash:seed_complete', 'true')
+		on conflict (name) do nothing
+	`.execute(db);
+
 	// Restore the intended WordPress publish dates.
 	const datesPath = resolve(root, "seed/dates.json");
-	if (existsSync(datesPath)) {
+	if (!args.schemaOnly && existsSync(datesPath)) {
 		const dates = JSON.parse(readFileSync(datesPath, "utf8"));
 		let updated = 0;
 		for (const [slug, date] of Object.entries(dates)) {

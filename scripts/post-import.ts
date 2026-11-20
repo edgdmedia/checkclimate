@@ -24,6 +24,12 @@
  *     see it at once)
  * Everything else is a report for an editor, because guessing at content is
  * how a migration quietly loses sentences.
+ *
+ * The `wayback_source_url` postmeta (the Wayback snapshot a restored post was
+ * taken from) is deliberately NOT imported — stripping it gives the post's own
+ * permalink, which is redundant. When the owner saves those values to
+ * migration/wayback-source-urls.json, this script checks each stripped value
+ * against the entry's permalink and reports mismatches. Report only.
  */
 import { readFileSync } from "node:fs";
 import {
@@ -34,6 +40,7 @@ import {
 	wantsHelp,
 	type ReportRow,
 } from "./lib/migration-db";
+import { unwrapWayback } from "./lib/wayback";
 
 interface PostRow {
 	id: string;
@@ -87,6 +94,11 @@ const HELP = `post-import.ts
   --limit=n            stop after n rows per collection
   --urls=<file>        old WordPress URLs (JSON array or one per line) for the
                        published-date check. Default: migration/old-urls.json
+  --wayback=<file>     post's own Wayback source URL per slug (JSON object, an
+                       array of {slug,url}, or one URL per line) for the
+                       wayback_source_url check. Default:
+                       migration/wayback-source-urls.json. Report only — the
+                       meta is not imported.
   --help               this message
 `;
 
@@ -157,6 +169,123 @@ function watParts(value: Date | string | null): { year: number; month: number; d
 	};
 }
 
+/**
+ * The `wayback_source_url` postmeta by slug, from the owner's export. The
+ * importer drops unknown postmeta (it only fills existing schema fields), so
+ * the values can only be checked from this file — never from the database.
+ *
+ * Accepted shapes: a JSON object `{slug: url}`, a JSON array of
+ * `{slug, url}` (or `{slug, wayback_source_url}`) or bare URL strings, or one
+ * URL per line. For URL-only entries the slug is the last segment of the
+ * stripped permalink.
+ */
+function loadWaybackSources(path: string): Map<string, string[]> {
+	const bySlug = new Map<string, string[]>();
+	const add = (slug: string, url: string): void => {
+		if (!slug || !url) return;
+		bySlug.set(slug, [...(bySlug.get(slug) ?? []), url]);
+	};
+	let raw = "";
+	try {
+		raw = readFileSync(path, "utf8");
+	} catch {
+		return bySlug;
+	}
+
+	const pushUrl = (url: string): void => {
+		const unwrapped = unwrapWayback(url.trim());
+		const original = unwrapped?.original ?? url.trim();
+		const match = /\/([^/?#]+)\/?$/.exec(original);
+		add(match?.[1] ?? "", url.trim());
+	};
+
+	if (raw.trimStart().startsWith("{")) {
+		const object = parseJson<Record<string, unknown>>(raw, {});
+		for (const [slug, value] of Object.entries(object)) add(slug, String(value));
+	} else if (raw.trimStart().startsWith("[")) {
+		const list = parseJson<unknown[]>(raw, []);
+		for (const entry of list) {
+			if (typeof entry === "string") pushUrl(entry);
+			else if (typeof entry === "object" && entry !== null) {
+				const record = entry as Record<string, unknown>;
+				const slug = typeof record.slug === "string" ? record.slug : "";
+				const url = record.url ?? record.wayback_source_url;
+				if (slug && typeof url === "string") add(slug, url);
+				else if (typeof url === "string") pushUrl(url);
+			}
+		}
+	} else {
+		for (const line of raw.split(/\r?\n/)) {
+			if (line.trim()) pushUrl(line);
+		}
+	}
+	return bySlug;
+}
+
+/** Paths compare without host or letter case, always with a trailing slash. */
+function normalisePath(path: string): string {
+	const withoutQuery = path.split(/[?#]/)[0] ?? path;
+	return withoutQuery.endsWith("/") ? withoutQuery.toLowerCase() : `${withoutQuery}/`.toLowerCase();
+}
+
+/** The permalink the entry should have kept: posts on the date path, pages on the slug. */
+function expectedPermalink(
+	row: { slug: string; published_at?: Date | string | null },
+	isPost: boolean,
+): string | null {
+	if (!isPost) return `/${row.slug}/`;
+	const parts = watParts(row.published_at ?? null);
+	if (!parts) return null;
+	const pad = (n: number): string => String(n).padStart(2, "0");
+	return `/${parts.year}/${pad(parts.month)}/${pad(parts.day)}/${row.slug}/`;
+}
+
+/** One report row per wayback_source_url value that does not match the entry. */
+function checkWaybackSource(
+	slug: string,
+	sources: string[],
+	expected: string | null,
+	rows: ReportRow[],
+): void {
+	for (const source of sources) {
+		const unwrapped = unwrapWayback(source);
+		if (!unwrapped) {
+			rows.push({
+				slug,
+				check: "wayback_source_url",
+				found: "not a Wayback Machine URL",
+				action: "needs a person",
+				note: source.slice(0, 80),
+			});
+			continue;
+		}
+		if (!expected) {
+			rows.push({
+				slug,
+				check: "wayback_source_url",
+				found: "no permalink to compare with (no publish date)",
+				action: "skipped",
+			});
+			continue;
+		}
+		let actualPath = unwrapped.original;
+		try {
+			actualPath = new URL(unwrapped.original).pathname;
+		} catch {
+			// Compare the raw original when it is not a parseable URL.
+		}
+		if (normalisePath(actualPath) !== normalisePath(expected)) {
+			rows.push({
+				slug,
+				check: "wayback_source_url",
+				found: `stripped ${unwrapped.original}`,
+				action: "needs a person",
+				note: `the entry's permalink is ${expected}`,
+			});
+		}
+	}
+}
+
 async function main(): Promise<void> {
 	const argv = process.argv.slice(2);
 	if (wantsHelp(argv)) {
@@ -176,6 +305,16 @@ async function main(): Promise<void> {
 			console.log(
 				"No old WordPress URL list found: the published-date check is skipped. " +
 					"Save the sitemap URLs to migration/old-urls.json and re-run.",
+			);
+		}
+
+		const waybackPath = String(flags.wayback ?? "migration/wayback-source-urls.json");
+		const waybackSources = loadWaybackSources(waybackPath);
+		if (waybackSources.size === 0) {
+			console.log(
+				"No wayback_source_url export found: that check is skipped. Save the old postmeta " +
+					"(slug → Wayback URL) to migration/wayback-source-urls.json and re-run. The meta is " +
+					"never imported; this only checks it against each entry's permalink.",
 			);
 		}
 
@@ -286,6 +425,14 @@ async function main(): Promise<void> {
 					});
 				}
 
+				// 3b. The postmeta `wayback_source_url`: the Wayback snapshot the
+				// restored post was taken from. Stripped, it should be the post's
+				// own permalink. Report only — the meta is not imported.
+				const sources = waybackSources.get(raw.slug);
+				if (sources) {
+					checkWaybackSource(raw.slug, sources, expectedPermalink(raw, true), rows);
+				}
+
 				// 4. Fact checks the desk still has to finish.
 				const isFactCheck = (raw.kicker ?? inferred) === "fact_check";
 				if (isFactCheck) {
@@ -351,6 +498,10 @@ async function main(): Promise<void> {
 						action: "needs a person",
 						note: snippet(haystack, markup.at),
 					});
+				}
+				const pageSources = waybackSources.get(raw.slug);
+				if (pageSources) {
+					checkWaybackSource(raw.slug, pageSources, expectedPermalink(raw, false), rows);
 				}
 				if (raw.status !== "published") {
 					rows.push({

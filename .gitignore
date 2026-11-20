@@ -15,7 +15,13 @@ data/
 !.dev.vars.example
 CLAUDE.md
 migration/*.xml
+# Run artifact written by `unwrap-wayback --apply`; verify-migration reads it
+# from disk when present, and a fresh list is written on every apply run.
+migration/unwrap-wayback-failed.json
 coverage/
 .DS_Store
 .emdash/
+# Node/tsx compile caches some shells leave in the repo root.
+node-compile-cache/
+tsx-*/
 uploads/.neon

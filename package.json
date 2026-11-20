@@ -25,6 +25,7 @@
     "doctor": "emdash doctor",
     "types": "emdash types",
     "post-import": "tsx scripts/post-import.ts",
+    "unwrap-wayback": "tsx scripts/unwrap-wayback.ts",
     "verify-migration": "tsx scripts/verify-migration.ts"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "@astrojs/check": "^0.9.10",
     "@cloudflare/workers-types": "^5.20261118.1",
     "@types/node": "^24.10.0",
+    "@types/pg": "^8.23.1",
     "lightningcss": "^1.33.0",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",

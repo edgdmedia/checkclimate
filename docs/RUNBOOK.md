@@ -83,11 +83,25 @@ Run the import from your laptop, never on the Worker:
 2. Open `/_emdash/admin/import/wordpress` and run the import.
 3. After the import, save the media `urlMap` to
    `migration/media-url-map.json` (the redirects middleware reads it).
-4. `pnpm tsx scripts/post-import.ts --database=prod` (dry run), review the
-   report, then `--apply` to set kickers.
-5. `pnpm tsx scripts/verify-migration.ts --database=prod --base=https://checkclimate.<subdomain>.workers.dev`
-   to check counts and every old URL.
-6. Stop the dev server; the next normal `pnpm dev` is back on the dev branch.
+4. `pnpm tsx scripts/unwrap-wayback.ts --database=prod` (dry run), review,
+   then `--apply`. The old site was partly restored from the Wayback Machine,
+   so content arrived with URLs wrapped as
+   `https://web.archive.org/web/<timestamp><flag>/<original>`. The script
+   unwraps only URLs whose original is on checkclimate.africa — links to
+   root-relative WordPress paths, images to the media-library copy in R2
+   (from the urlMap, or downloaded live / from Wayback and uploaded through
+   the media API, which needs `pnpm dev` running). External Wayback URLs are
+   deliberate archived citations and stay exactly as they are. It writes the
+   URLs it could not fix to `migration/unwrap-wayback-failed.json`.
+5. `pnpm tsx scripts/post-import.ts --database=prod` (dry run), review the
+   report, then `--apply` to set kickers. Save the old `wayback_source_url`
+   postmeta to `migration/wayback-source-urls.json` first if you want that
+   check (it compares each stripped Wayback URL against the entry's own
+   permalink; the meta is never imported).
+6. `pnpm tsx scripts/verify-migration.ts --database=prod --base=https://checkclimate.<subdomain>.workers.dev`
+   to check counts, every old URL, and that no own-site Wayback URL is left
+   wrapped in content.
+7. Stop the dev server; the next normal `pnpm dev` is back on the dev branch.
 
 The import scripts (`scripts/post-import.ts`, `scripts/verify-migration.ts`)
 connect to Neon directly with `pg`; they do not go through the Worker.

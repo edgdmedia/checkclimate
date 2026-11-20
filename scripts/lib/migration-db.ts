@@ -77,7 +77,9 @@ export async function connect(branch: Branch): Promise<Database> {
 
 	const client = new pg.Client({
 		connectionString,
-		ssl: { mode: "require" },
+		// pg's own types predate pg-connection-string's ssl `mode` option, which
+		// the runtime accepts (SSL required, no certificate pinning).
+		ssl: { mode: "require" } as pg.ConnectionConfig["ssl"],
 		statement_timeout: 120_000,
 	}) as Database;
 	await client.connect();

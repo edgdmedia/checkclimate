@@ -1,7 +1,7 @@
 # Status — Check Climate Africa rebuild
 
-Last updated: 2026-11-20, after Step D and the Finish checks.
-Branch `dev`, four commits, nothing pushed, nothing deployed.
+Last updated: 2026-11-20, after the Wayback unwrap pass. Branch `dev`,
+five commits, nothing pushed, nothing deployed.
 
 | Commit | Step |
 |---|---|
@@ -9,6 +9,7 @@ Branch `dev`, four commits, nothing pushed, nothing deployed.
 | `98d5358` | B — Phase 3: design system, page routes and edge caching |
 | `00ff1d7` | C — Phase 4: claim form, comments, feeds, redirects and site settings |
 | `943f3cc` | D — Phase 5: deploy wiring, migration scripts, plugins, tests, runbook |
+| (this commit) | Wayback unwrap pass — see "Wayback unwrap pass" below |
 
 ## What is built
 
@@ -219,13 +220,100 @@ dates).
     switch is the `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_*` env
     vars, not a `wrangler.jsonc` edit.
 
+## Wayback unwrap pass (2026-11-20, after the Finish checks)
+
+Implements `docs/opencode-task-wayback.md`: own-site Wayback Machine URLs
+in imported content are unwrapped; external archived citations are kept
+verbatim.
+
+**What was added**
+
+- `scripts/lib/wayback.ts` — the shared helpers: `unwrapWayback` (parses
+  `web.archive.org/web/<14 digits><flag>/<original>`, normalises `https:/` →
+  `https://`, unwraps nested wrappers, leaves `archive.ph`/`archive.today`
+  originals untouched — they are citations, not wrappers), own-host and
+  image-original predicates, root-relative path mapping, the media-urlMap
+  lookup (exact → base → WordPress size variant, across www/apex/http) and a
+  Portable Text walker (`markDefs[].href`, image `asset.url`/`_ref`, linked
+  images, galleries, columns, tables, buttons, files, embeds, htmlBlocks,
+  video/iframe, featured image) that collects every wrapped URL with its
+  container for in-place rewrites.
+- `scripts/lib/wayback.test.ts` — unit tests for all of the above (the
+  wrapper shapes measured on the live site: flags, single-slash originals,
+  nesting, archive.ph, query strings, malformed wrappers).
+- `scripts/unwrap-wayback.ts` — the pass itself. Dry run by default,
+  `--apply` to write; `--database=dev|prod`, `--slugs=`, `--map=`,
+  `--failed=`, `--media-url=`. Own-site links become root-relative WordPress
+  paths (kept by our routes); own-site images resolve through
+  `migration/media-url-map.json` first, otherwise download (live site, then
+  the Wayback `id_` raw copy — throttled to 1 request/second, retried on
+  429/5xx) and upload through EmDash's media API via the emdash CLI (never
+  direct to R2), deduped per original URL; `srcset` is dropped; the block is
+  rewritten with `meta.storageKey` the way imported images look. Failures
+  leave the URL untouched and go to `migration/unwrap-wayback-failed.json`
+  (gitignored run artifact); every run retries them. A second run finds
+  nothing to change.
+- `verify-migration.ts` gained check 2b: any own-site original still wrapped
+  blocks the go/no-go decision unless it is on the FAILED list (reported as
+  skipped — the next unwrap run retries it). External Wayback URLs are
+  counted as expected citations, never blocking. `--unwrap-failed=` points
+  somewhere else if needed.
+- `post-import.ts` gained the `wayback_source_url` check (report only, the
+  meta is never imported): when the owner saves the old postmeta to
+  `migration/wayback-source-urls.json` (object, `{slug,url}` array or bare
+  lines), each stripped Wayback URL is compared with the entry's own
+  permalink and mismatches are reported.
+- `package.json`: `pnpm unwrap-wayback`. `tsconfig.json` now typechecks
+  `scripts/` too, so `@types/pg` is a dev dependency and `migration-db.ts`
+  casts pg's `ssl.mode` (pg's types predate pg-connection-string; the
+  runtime accepts it — the libpq "prefer/require" warning on stderr is
+  benign).
+
+**Decisions and incidents**
+
+- `seed-db.ts` keeps the `--schema-only` flag and the `emdash:seed_complete`
+  options insert (added on request; the insert mirrors EmDash's
+  `claimExplicitSeedOwnership` so a fresh database does not fall into the
+  auto-seed path and fail media activation).
+- `scripts/tmp-smoke.ts` (a clearly-marked temporary smoke fixture) was
+  removed, and its leftovers were cleaned: the `__wayback_smoke_test__` post
+  was deleted from the **dev** branch (17 → 16 posts), the two fake
+  `01SMOKEMEDIA*` entries the smoke run had put into
+  `migration/media-url-map.json` were reverted to `{}`, the empty
+  `migration/no-such-map.json` and the stale smoke-era
+  `migration/unwrap-wayback-failed.json` were deleted, and stray
+  `node-compile-cache/` / `tsx-501/` cache dirs were removed.
+- `wrangler.jsonc` is left modified-but-uncommitted on purpose: the `MEDIA`
+  `remote: true` line is a temporary import setting to revert after the
+  import, and committing it would make the temporary state look intended.
+- **A concurrent writer overwrote the finished script mid-session**:
+  `scripts/unwrap-wayback.ts` was replaced at 08:19 by an older 704-line
+  draft (4 type errors) while this session was running — no process of this
+  session wrote it; most likely a stale editor buffer or one of the other
+  open opencode sessions. The typecheck-clean version was restored from the
+  session record (the overwritten draft was archived to the session temp
+  dir as `unwrap-wayback.overwritten-0819.ts`). If this file regresses
+  again, check for other agents/editors working in this repo.
+- Dev-branch dry run: **the real WordPress import has not run**, so there is
+  no imported content to dry-run against — the dev branch holds only the 16
+  seed posts, and zero rows mention `web.archive.org`. The dry run was
+  still executed (read-only) to prove the script works end-to-end against a
+  live database: it reports `0 own-site wrapped URLs in 0 rows`, `KEPT: 0
+  external Wayback citations`. The meaningful dry run happens after the
+  import, per the RUNBOOK order (unwrap → post-import → verify).
+
+**Verification this pass:** `pnpm typecheck` 0 errors (78 files), `pnpm test`
+64/64 across 4 files (wayback suite included), `--help` and the dev-branch
+dry run behave as documented, `migration/media-url-map.json` back to `{}`.
+
 ## Next
 
 - Run the real import (RUNBOOK "Importing WordPress content"), then
-  `post-import --apply` and `verify-migration --database=prod
-  --base=<workers.dev url>` until it exits 0.
+  `unwrap-wayback --database=prod` (dry run, then `--apply` with the dev
+  server up for media uploads), `post-import --apply` and
+  `verify-migration --database=prod --base=<workers.dev url>` until it
+  exits 0.
 - Set the real secrets (`wrangler secret put`), push `dev`, let CI run,
   merge to `main` to deploy.
-- `docs/opencode-task-wayback.md` (untracked, added by the site owner)
-  is the follow-up task: unwrap Wayback Machine URLs in imported
-  content. Not started here.
+- Revert the temporary `MEDIA remote: true` line in `wrangler.jsonc` after
+  the import (currently deliberately uncommitted).
