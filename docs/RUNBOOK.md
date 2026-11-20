@@ -7,7 +7,7 @@ to change a secret, or I need to move a setting".
 
 | Resource | Cloudflare binding | What it holds |
 |---|---|---|
-| Worker | `checkclimate-africa` (the Workers service) | The deployed site |
+| Worker | `checkclimate` (the Workers service) | The deployed site |
 | Hyperdrive (primary) | `HYPERDRIVE` | Direct Neon connection, no query cache |
 | Hyperdrive (cached) | `HYPERDRIVE_CACHED` | Same Neon connection, with the Hyperdrive read cache |
 | R2 | `MEDIA` | Screenshots, uploads, media library |
@@ -17,10 +17,12 @@ to change a secret, or I need to move a setting".
 | Assets | `ASSETS` | Static files from `public/` and the built client |
 
 The Worker is on the **Security Focus** Cloudflare account
-(`3a1a378bdf2b8bc66490838fe500dce4`). The two Hyperdrive bindings are
-configured in the Cloudflare dashboard and point at the Neon dev branch by
-default; the prod branch is wired in only for the import and the migration
-scripts.
+(`9c8aaa232a52d145430685011e9fff9c`). Both Hyperdrive configs
+(`checkclimate-db`, `checkclimate-db-cached`) point at the Neon **main**
+(prod) branch. Local development never uses them: `scripts/with-env.mjs`
+sets `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` (and the
+`_CACHED` variant) from `NEON_DEV_DATABASE_URL`, which Wrangler and the
+Astro dev server honour in place of the remote config.
 
 ## Secrets
 
@@ -44,7 +46,8 @@ used for canonical URLs, the sitemap and the RSS feed.
 The desk can change the contact email, the claim inbox, the social profiles
 and the weather city from the admin without a deploy:
 
-1. Sign in at `/admin/` (passkey or magic link).
+1. Sign in at `/_emdash/admin` (passkey or magic link). `/admin/` is the
+   branded door page that links there.
 2. Open the **Plugins** page and find **Site settings**.
 3. Edit the form and save. The change is visible on the next page load, at
    worst 60 seconds later (the Worker caches the settings for one minute per
@@ -64,15 +67,27 @@ the new copy.
 
 Run the import from your laptop, never on the Worker:
 
-1. In `wrangler.jsonc`, temporarily set the Hyperdrive
-   `localConnectionString` to the **prod** Neon connection string.
-2. `pnpm dev` and open `/_emdash/admin/import/wordpress`.
+1. Point the local dev server at the branch you want to import into. By
+   default `scripts/with-env.mjs` maps `NEON_DEV_DATABASE_URL` onto both
+   Hyperdrive bindings. To import into **prod** instead, override the env
+   vars for that one run:
+
+   ```bash
+   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE="$NEON_DATABASE_URL" \
+   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_CACHED="$NEON_DATABASE_URL" \
+   pnpm exec astro dev
+   ```
+
+   (`wrangler.jsonc` itself does not need editing; the env vars take
+   precedence over `localConnectionString`.)
+2. Open `/_emdash/admin/import/wordpress` and run the import.
 3. After the import, save the media `urlMap` to
-   `migration/media-url-map.json`.
-4. `pnpm tsx scripts/post-import.ts` (dry run) then `--apply` to set kickers.
-5. `pnpm tsx scripts/verify-migration.ts --database=prod --base=https://<preview>.workers.dev`
-   to check counts and URLs.
-6. Switch `localConnectionString` back to the dev branch.
+   `migration/media-url-map.json` (the redirects middleware reads it).
+4. `pnpm tsx scripts/post-import.ts --database=prod` (dry run), review the
+   report, then `--apply` to set kickers.
+5. `pnpm tsx scripts/verify-migration.ts --database=prod --base=https://checkclimate.<subdomain>.workers.dev`
+   to check counts and every old URL.
+6. Stop the dev server; the next normal `pnpm dev` is back on the dev branch.
 
 The import scripts (`scripts/post-import.ts`, `scripts/verify-migration.ts`)
 connect to Neon directly with `pg`; they do not go through the Worker.
@@ -102,9 +117,10 @@ themselves live in `_emdash_migrations`.
   through; the primary binding is what writes and admin reads go through.
   Sudden spikes in primary-binding queries usually mean the object cache
   (KV) is missing or the cache TTL was shortened.
-- **Neon CU-hours.** Free plan is 10 CU-hours/month. The import scripts can
-  burn a lot in one sitting; run them during the day, not overnight, so you
-  can stop them.
+- **Neon compute hours.** The Free plan includes a monthly compute-hours
+  allowance (191.9 hours at the time of writing — check the Neon console's
+  Usage page for the current number). The import scripts can burn a lot in
+  one sitting; run them during the day, not overnight, so you can stop them.
 - **KV writes.** Free plan is 1,000 writes/day. The object cache writes are
   mostly reads, and the session KV writes are admin-only, so the number
   should stay well under 100/day. If it climbs, a page is writing KV per
@@ -113,11 +129,12 @@ themselves live in `_emdash_migrations`.
 
 ## Rollback
 
-A deploy is a new Worker version; Cloudflare keeps the previous one for a
-few minutes. To roll back:
+A deploy is a new Worker version; Cloudflare keeps recent deployment
+versions. To roll back:
 
-1. `wrangler rollback` (or, if the rollback window has passed, redeploy the
-   previous commit: `git checkout <commit> && pnpm astro build && pnpm wrangler deploy`).
+1. `wrangler rollback` lists the recent versions and restores the one you
+   pick. If the version you need is gone, redeploy the previous commit:
+   `git checkout <commit> && pnpm astro build && pnpm wrangler deploy`.
 2. The Workers Cache is independent of the Worker version, so the cache
    keeps serving the new routes; it does not need a purge.
 3. The Neon database is the source of truth for content; a deploy never

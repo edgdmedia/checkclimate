@@ -23,12 +23,12 @@
 	"hyperdrive": [
 		{
 			"binding": "HYPERDRIVE",
-			"id": "REPLACE_ME_HYPERDRIVE_ID",
+			"id": "2b3bccf24eec455e83134ad7b2f4fef2",
 			"localConnectionString": "postgres://REPLACE_ME:REPLACE_ME@localhost:5432/checkclimate"
 		},
 		{
 			"binding": "HYPERDRIVE_CACHED",
-			"id": "REPLACE_ME_HYPERDRIVE_CACHED_ID",
+			"id": "c67dc2046be04de9a2070be50b51b14f",
 			"localConnectionString": "postgres://REPLACE_ME:REPLACE_ME@localhost:5432/checkclimate"
 		}
 	],
