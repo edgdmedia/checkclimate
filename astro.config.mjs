@@ -14,12 +14,14 @@ const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 const siteUrl = env.EMDASH_SITE_URL || "https://www.checkclimate.africa";
 
 /**
- * Native plugins that live in this repo. The descriptor is plain data, so the
- * config never imports the plugin's runtime (which pulls in EmDash). Keep the
- * id, version and entrypoint in step with plugins/site-settings/src/index.ts,
- * and the entrypoint in step with the alias below.
+ * Native plugins that live in this repo, as plain data: the config must not
+ * import a plugin's runtime, because that pulls EmDash into the config file.
+ *
+ * `source` is only used to build the Vite alias below — EmDash resolves plugin
+ * entrypoints by module specifier, and these are not published packages.
+ * Keep id and version in step with each plugin's `src/index.ts`.
  */
-const localPlugins = [
+const localPluginSources = [
 	{
 		id: "checkclimate-site-settings",
 		displayName: "Site settings",
@@ -28,8 +30,28 @@ const localPlugins = [
 		version: "1.0.0",
 		format: "native",
 		entrypoint: "@checkclimate/plugin-site-settings",
+		source: "./plugins/site-settings/src/index.ts",
+	},
+	{
+		id: "resend-email",
+		displayName: "Resend email",
+		description: "Delivers EmDash's transactional mail (sign-in links, notices) via Resend.",
+		version: "1.0.0",
+		format: "native",
+		entrypoint: "@checkclimate/plugin-resend-email",
+		capabilities: ["hooks.email-transport:register"],
+		source: "./plugins/resend-email/src/index.ts",
 	},
 ];
+
+const localPlugins = localPluginSources.map(({ source, ...descriptor }) => descriptor);
+
+const localPluginAliases = Object.fromEntries(
+	localPluginSources.map((plugin) => [
+		plugin.entrypoint,
+		fileURLToPath(new URL(plugin.source, import.meta.url)),
+	]),
+);
 
 /**
  * Public routes only. Anything session-dependent (search, forms, `/admin`,
@@ -92,14 +114,10 @@ export default defineConfig({
 		// every POST (the claim form), /admin, /_emdash/*, /404.
 	},
 	vite: {
-		// The plugin entrypoints in `localPlugins` are in-repo, so they are
-		// resolved by alias instead of a published package.
+		// In-repo plugin entrypoints resolve by alias instead of a published
+		// package. Same map as `localPlugins`, so they cannot drift apart.
 		resolve: {
-			alias: {
-				"@checkclimate/plugin-site-settings": fileURLToPath(
-					new URL("./plugins/site-settings/src/index.ts", import.meta.url),
-				),
-			},
+			alias: localPluginAliases,
 		},
 		// `pg` (node-postgres) is CommonJS. The Workers build inlines it, but the
 		// dev runner otherwise externalises node_modules and evaluates them with

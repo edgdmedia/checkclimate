@@ -2,57 +2,28 @@
  * Site constants, with the editable ones merged over the defaults.
  *
  * `plugins/site-settings` gives the desk a form for the contact address, the
- * claim inbox, the social profiles and the weather city. Nothing here assumes
- * those rows exist: every read falls back to the default in this file, so an
- * empty setting or a database outage still renders a complete page.
+ * claim inbox, the social profiles and the weather city. The rules for what a
+ * stored value means live in `site-settings.ts`, next to the defaults; this
+ * file does the lookup and keeps it for a minute.
  */
 import { env } from "cloudflare:workers";
 import { getPluginSettings } from "emdash";
 import { SITE_SETTINGS_ID } from "../../plugins/site-settings/src/index";
+import {
+	mergeSiteConfig,
+	SITE_DEFAULTS,
+	type SiteConfig,
+	type SocialLink,
+	type WeatherPlace,
+} from "./site-settings";
+
+export type { SiteConfig, SocialLink, WeatherPlace };
+export { SITE_DEFAULTS, mergeSiteConfig } from "./site-settings";
 
 /** Fixed URLs in the WordPress shape; not editable. */
 export const CLAIM_URL = "/submit-a-claim/";
 export const ABOUT_URL = "/about-us/";
 export const SEARCH_URL = "/search/";
-
-export interface SocialLink {
-	label: string;
-	href: string;
-}
-
-export interface WeatherPlace {
-	city: string;
-	country: string;
-	latitude: number;
-	longitude: number;
-}
-
-export interface SiteConfig {
-	contactEmail: string;
-	claimsInbox: string;
-	socials: SocialLink[];
-	weather: WeatherPlace;
-}
-
-export const SITE_DEFAULTS: SiteConfig = {
-	contactEmail: "CheckClimateAfrica@gmail.com",
-	claimsInbox: "CheckClimateAfrica@gmail.com",
-	socials: [
-		{ label: "Facebook", href: "https://facebook.com" },
-		{ label: "X / Twitter", href: "https://twitter.com" },
-		{ label: "YouTube", href: "https://youtube.com" },
-	],
-	weather: { city: "Ilorin", country: "NG", latitude: 8.4966, longitude: 4.5426 },
-};
-
-/** Order the profiles appear in, top bar then footer. */
-const SOCIAL_FIELDS: ReadonlyArray<{ key: string; label: string }> = [
-	{ key: "facebookUrl", label: "Facebook" },
-	{ key: "xUrl", label: "X / Twitter" },
-	{ key: "instagramUrl", label: "Instagram" },
-	{ key: "youtubeUrl", label: "YouTube" },
-	{ key: "whatsappUrl", label: "WhatsApp" },
-];
 
 /**
  * One options-table lookup per minute per isolate. Settings change a few times
@@ -62,47 +33,6 @@ const SOCIAL_FIELDS: ReadonlyArray<{ key: string; label: string }> = [
 const SETTINGS_TTL_MS = 60_000;
 let cached: { value: SiteConfig; at: number } | null = null;
 let pending: Promise<SiteConfig> | null = null;
-
-function readString(settings: Record<string, unknown>, key: string): string | null {
-	const value = settings[key];
-	if (typeof value !== "string") return null;
-	const trimmed = value.trim();
-	return trimmed ? trimmed : null;
-}
-
-function readNumber(settings: Record<string, unknown>, key: string): number | null {
-	const value = settings[key];
-	return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-/** Merges stored settings over the defaults. Pure, so it is easy to test. */
-export function mergeSiteConfig(
-	settings: Record<string, unknown>,
-	defaults: SiteConfig = SITE_DEFAULTS,
-): SiteConfig {
-	const socials = SOCIAL_FIELDS.reduce<SocialLink[]>((links, { key, label }) => {
-		const stored = settings[key];
-		if (stored === "") return links; // the desk cleared it: hide the profile
-		const href =
-			typeof stored === "string" && stored.trim()
-				? stored.trim()
-				: (defaults.socials.find((link) => link.label === label)?.href ?? "");
-		if (href) links.push({ label, href });
-		return links;
-	}, []);
-
-	return {
-		contactEmail: readString(settings, "contactEmail") ?? defaults.contactEmail,
-		claimsInbox: readString(settings, "claimsInbox") ?? defaults.claimsInbox,
-		socials: socials.length > 0 ? socials : defaults.socials,
-		weather: {
-			city: readString(settings, "weatherCity") ?? defaults.weather.city,
-			country: readString(settings, "weatherCountry") ?? defaults.weather.country,
-			latitude: readNumber(settings, "weatherLatitude") ?? defaults.weather.latitude,
-			longitude: readNumber(settings, "weatherLongitude") ?? defaults.weather.longitude,
-		},
-	};
-}
 
 async function load(): Promise<SiteConfig> {
 	try {
@@ -132,8 +62,8 @@ export async function siteConfig(): Promise<SiteConfig> {
 }
 
 /**
- * The sections in the category bar and the footer. WordPress had them in a
- * menu; the taxonomy is the source of truth here, so this list only names the
+ * The sections in the category bar and the footer. WordPress kept them in a
+ * menu; here the taxonomy is the source of truth and this list only gives the
  * order and the label to show.
  */
 export const SECTIONS = [

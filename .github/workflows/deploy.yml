@@ -1,0 +1,76 @@
+name: Deploy
+
+# `main` is the production site. Pushing there (usually a merge from `dev`)
+# builds the Worker and deploys it to Cloudflare.
+#
+# Wrangler reads its configuration from dist/server/wrangler.json, which only
+# `astro build` produces — so the build is part of this job and never skipped.
+#
+# Required repository secrets:
+#   CLOUDFLARE_API_TOKEN   — a token scoped to Workers Scripts: Edit, for the
+#                            Security Focus account only
+#   CLOUDFLARE_ACCOUNT_ID  — the account id (also set as a repository variable
+#                            so CI's dry run can resolve the account)
+#
+# Worker *runtime* secrets (EMDASH_ENCRYPTION_KEY, RESEND_API_KEY,
+# TURNSTILE_SECRET_KEY) are not handled here: they are set with
+# `wrangler secret put` and survive redeploys. See docs/RUNBOOK.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://www.checkclimate.africa
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm astro build
+        env:
+          EMDASH_SITE_URL: https://www.checkclimate.africa
+
+      - name: Deploy
+        run: pnpm wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Fail loudly if the Worker cannot see its own bindings: a missing secret
+      # is a 1102/500 waiting for the first reader.
+      - name: Check secrets are attached
+        run: pnpm wrangler secret list
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
