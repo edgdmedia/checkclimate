@@ -13,6 +13,15 @@ const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 
 const siteUrl = env.EMDASH_SITE_URL || "https://www.checkclimate.africa";
 
+// `.env` sets a localhost URL for `astro dev`, and loadEnv reads it during
+// `astro build` too. A build is always for a deployed Worker, so refuse to bake
+// localhost into it: pass EMDASH_SITE_URL explicitly (see the deploy:* scripts).
+if (process.argv.includes("build") && /^https?:\/\/(localhost|127\.0\.0\.1)/.test(siteUrl)) {
+	throw new Error(
+		`EMDASH_SITE_URL is ${siteUrl} for a production build. Run \`pnpm deploy:preview\` or \`pnpm deploy:production\`, or set EMDASH_SITE_URL.`,
+	);
+}
+
 /**
  * Native plugins that live in this repo, as plain data: the config must not
  * import a plugin's runtime, because that pulls EmDash into the config file.
@@ -42,16 +51,32 @@ const localPluginSources = [
 		capabilities: ["hooks.email-transport:register"],
 		source: "./plugins/resend-email/src/index.ts",
 	},
+	{
+		id: "checkclimate-post-editor",
+		displayName: "Post editor",
+		description: "Post type picker and fact-check fields that only show on fact checks.",
+		version: "1.0.0",
+		format: "native",
+		entrypoint: "@checkclimate/plugin-post-editor",
+		adminEntry: "@checkclimate/plugin-post-editor/admin",
+		source: "./plugins/post-editor/src/index.ts",
+		adminSource: "./plugins/post-editor/src/admin.tsx",
+	},
 ];
 
-const localPlugins = localPluginSources.map(({ source, ...descriptor }) => descriptor);
+const localPlugins = localPluginSources.map(({ source, adminSource, ...descriptor }) => descriptor);
 
-const localPluginAliases = Object.fromEntries(
-	localPluginSources.map((plugin) => [
+// Admin entries first: Vite matches aliases in order and a bare entrypoint
+// key would otherwise also catch "<entrypoint>/admin".
+const localPluginAliases = Object.fromEntries([
+	...localPluginSources
+		.filter((plugin) => plugin.adminEntry && plugin.adminSource)
+		.map((plugin) => [plugin.adminEntry, fileURLToPath(new URL(plugin.adminSource, import.meta.url))]),
+	...localPluginSources.map((plugin) => [
 		plugin.entrypoint,
 		fileURLToPath(new URL(plugin.source, import.meta.url)),
 	]),
-);
+]);
 
 /**
  * Public routes only. Anything session-dependent (search, forms, `/admin`,
@@ -97,7 +122,7 @@ export default defineConfig({
 		"/tag/[slug]/page/[n]": cachedPage(["posts"]),
 		"/author/[slug]": cachedPage(["posts"]),
 		"/author/[slug]/page/[n]": cachedPage(["posts"]),
-		// Static pages: /about-us/, /contact-us/ and the generic page route.
+		// Static pages, hardcoded in src/pages/ (StaticPage layout).
 		"/about-us": cachedPage(["pages"]),
 		"/contact-us": cachedPage(["pages"]),
 		"/privacy-policy-2": cachedPage(["pages"]),
@@ -155,6 +180,14 @@ export default defineConfig({
 			plugins: localPlugins,
 			siteUrl,
 			toolbar: "client",
+			// Our mark on the admin login page and sidebar instead of EmDash's.
+			// The square mark (no text) reads in both admin themes and fits the
+			// sidebar's small square slot.
+			admin: {
+				logo: "/brand/admin-mark.png",
+				siteName: "Check Climate",
+				favicon: "/favicon.ico",
+			},
 		}),
 	],
 	devToolbar: { enabled: false },

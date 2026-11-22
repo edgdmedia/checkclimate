@@ -83,7 +83,9 @@ const BUILDER_PATTERNS: Array<{ token: string; label: string }> = [
 	{ token: "<img src=\"data:", label: "inline base64 image" },
 ];
 
-const KICKER_VALUES = new Set(["none", "alert", "fact_check"]);
+// Import-time values. scripts/post-types.ts then maps them to the current
+// post types (news | fact_check | opinion) plus the separate alert flag.
+const KICKER_VALUES = new Set(["none", "alert", "fact_check", "news", "opinion"]);
 
 const HELP = `post-import.ts
 
