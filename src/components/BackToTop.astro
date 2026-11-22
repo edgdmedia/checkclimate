@@ -1,0 +1,21 @@
+---
+import Icon from "./Icon.astro";
+---
+
+<button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">
+	<Icon name="arrow-up" size={20} />
+</button>
+
+<script>
+	const button = document.querySelector<HTMLButtonElement>("[data-back-to-top]");
+	if (button) {
+		const update = () => {
+			button.classList.toggle("is-visible", window.scrollY > 600);
+		};
+		window.addEventListener("scroll", update, { passive: true });
+		update();
+		button.addEventListener("click", () => {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		});
+	}
+</script>

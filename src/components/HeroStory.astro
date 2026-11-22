@@ -1,0 +1,25 @@
+---
+/**
+ * HeroStory — the photo-led lead story. Category pill, headline over a dark
+ * fade, byline, and the photo credit in the top-left corner.
+ */
+import type { Post } from "../utils/content";
+import StoryCard from "./StoryCard.astro";
+
+interface Props {
+	post: Post;
+	headingLevel?: 2 | 3;
+	priority?: boolean;
+	credit?: string | null;
+}
+
+const { post, headingLevel = 2, priority = true, credit = null } = Astro.props;
+---
+
+<StoryCard
+	post={post}
+	variant="hero"
+	headingLevel={headingLevel}
+	priority={priority}
+	credit={credit}
+/>

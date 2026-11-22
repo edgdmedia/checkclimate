@@ -1,0 +1,44 @@
+---
+/**
+ * Floating light/dark switch, stacked above the back-to-top button. Light is
+ * the default (Base.astro); the reader's choice is remembered in localStorage.
+ * The button shows the mode it will switch to.
+ */
+import Icon from "./Icon.astro";
+---
+
+<button type="button" class="theme-fab" data-theme-toggle aria-label="Switch to dark mode">
+	<span class="theme-fab__to-dark"><Icon name="moon" size={20} /></span>
+	<span class="theme-fab__to-light"><Icon name="sun" size={20} /></span>
+</button>
+
+<script>
+	const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+
+	function current(): "light" | "dark" {
+		return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+	}
+
+	function label(): void {
+		button?.setAttribute(
+			"aria-label",
+			current() === "dark" ? "Switch to light mode" : "Switch to dark mode",
+		);
+	}
+
+	button?.addEventListener("click", () => {
+		const theme = current() === "dark" ? "light" : "dark";
+		const root = document.documentElement;
+		root.setAttribute("data-theme", theme);
+		root.classList.remove("light", "dark");
+		root.classList.add(theme);
+		try {
+			localStorage.setItem("theme", theme);
+		} catch {
+			// Storage can be blocked; the theme still applies for this page.
+		}
+		label();
+	});
+
+	label();
+</script>

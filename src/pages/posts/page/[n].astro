@@ -1,0 +1,8 @@
+---
+import Archive from "../../../components/Archive.astro";
+import { pageFromParam, postsView } from "../../../utils/archive";
+
+const view = await postsView(pageFromParam(Astro.params.n));
+---
+
+<Archive {...view} />

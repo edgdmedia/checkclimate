@@ -1,0 +1,144 @@
+---
+/**
+ * Portable Text embed block. X / Twitter posts cannot be iframed safely here
+ * (their widget needs platform JS), so they render as a branded link card;
+ * everything else — YouTube, Vimeo, self-hosted media — goes to EmDash's own
+ * embed renderer.
+ */
+import { Embed } from "emdash/ui";
+import Icon from "../Icon.astro";
+
+interface EmbedNode {
+	_type: "embed";
+	_key: string;
+	url: string;
+	provider?: string;
+	html?: string;
+	caption?: string;
+}
+
+interface Props {
+	node: EmbedNode;
+}
+
+const { node } = Astro.props;
+
+const X_HOSTS = new Set([
+	"twitter.com",
+	"www.twitter.com",
+	"mobile.twitter.com",
+	"x.com",
+	"www.x.com",
+]);
+
+function handle(raw: string): string | null {
+	try {
+		const url = new URL(raw);
+		if (!X_HOSTS.has(url.hostname)) return null;
+		const parts = url.pathname.split("/").filter(Boolean);
+		const index = parts.indexOf("status");
+		if (parts[0] !== "i" && index < 0) return null;
+		return parts[parts[0] === "i" ? 1 : index + 1] ?? null;
+	} catch {
+		return null;
+	}
+}
+
+const postId = handle(node.url);
+---
+
+{
+	postId ? (
+		<figure class="pt-x">
+			<a
+				href={node.url}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="pt-x__link"
+			>
+				<span class="pt-x__icon">
+					<Icon name="x" size={20} />
+				</span>
+				<span class="pt-x__text">
+					<strong>View the post on X</strong>
+					<span class="pt-x__url">{node.url}</span>
+				</span>
+				<span class="pt-x__go" aria-hidden="true">→</span>
+			</a>
+			{node.caption && <figcaption>{node.caption}</figcaption>}
+		</figure>
+	) : (
+		<Embed node={node as never} />
+	)
+}
+
+<style>
+	.pt-x {
+		margin: 32px 0;
+	}
+
+	.pt-x__link {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 16px 18px;
+		border-radius: var(--radius);
+		border: 1px solid var(--border-strong);
+		background: var(--surface-raised);
+		color: var(--ink);
+		text-decoration: none;
+	}
+
+	.pt-x__link:hover {
+		border-color: var(--ink);
+	}
+
+	.pt-x__icon {
+		flex: none;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: #000000;
+		color: #ffffff;
+	}
+
+	[data-theme="dark"] .pt-x__icon {
+		background: var(--surface-raised);
+		color: var(--ink);
+		border: 1px solid var(--border-strong);
+	}
+
+	.pt-x__text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.pt-x__text strong {
+		font-size: 16px;
+		line-height: 22px;
+		font-weight: 700;
+	}
+
+	.pt-x__url {
+		font-size: 13px;
+		line-height: 18px;
+		color: var(--ink-muted);
+		overflow-wrap: anywhere;
+	}
+
+	.pt-x__go {
+		margin-inline-start: auto;
+		font-weight: 900;
+	}
+
+	.pt-x figcaption {
+		margin-top: 10px;
+		font-size: 14px;
+		line-height: 20px;
+		color: var(--ink-muted);
+	}
+</style>

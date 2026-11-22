@@ -1,0 +1,157 @@
+---
+/**
+ * "Share this fact check" block: a preview of the share card and downloads in
+ * both sizes. Shown to every reader. The images come from
+ * /share/<format>/<slug>.png (src/pages/share/[format]/[slug].png.ts).
+ *
+ * `sidebar` is the one-column treatment used in the article aside: the preview
+ * moves to the top and the download buttons stack full width.
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+	slug: string;
+	variant?: "inline" | "sidebar";
+}
+
+const { slug, variant = "inline" } = Astro.props;
+const wide = `/share/wide/${slug}.png`;
+const portrait = `/share/portrait/${slug}.png`;
+---
+
+<section
+	class:list={["sharecard", variant === "sidebar" && "sharecard--sidebar"]}
+	aria-labelledby="sharecard-title"
+>
+	<div class="sharecard__text">
+		<h2 id="sharecard-title" class="sharecard__title">Share this fact check</h2>
+		<p class="sharecard__lede">
+			Download the verdict as an image for social media, with the claim, our verdict and a link back here.
+		</p>
+		<div class="sharecard__actions">
+			<a class="sharecard__btn" href={`${portrait}?download`} download={`checkclimate-${slug}-portrait.png`}>
+				<Icon name="download" size={18} />
+				<span>Portrait <small>Instagram, WhatsApp Status</small></span>
+			</a>
+			<a class="sharecard__btn" href={`${wide}?download`} download={`checkclimate-${slug}-wide.png`}>
+				<Icon name="download" size={18} />
+				<span>Wide <small>X, Facebook, LinkedIn</small></span>
+			</a>
+		</div>
+	</div>
+	<img
+		class="sharecard__preview"
+		src={wide}
+		width="1200"
+		height="630"
+		loading="lazy"
+		decoding="async"
+		alt="Share image for this fact check, showing the claim and our verdict"
+	/>
+</section>
+
+<style>
+	.sharecard {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 24px;
+		align-items: center;
+		margin: 40px 0 8px;
+		padding: 24px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--surface-muted);
+	}
+
+	.sharecard__title {
+		margin: 0 0 6px;
+		font-size: 20px;
+		line-height: 26px;
+		font-weight: 900;
+	}
+
+	.sharecard__lede {
+		margin: 0 0 16px;
+		font-size: 15px;
+		line-height: 23px;
+		color: var(--ink-muted);
+	}
+
+	.sharecard__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.sharecard__btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 16px;
+		border-radius: var(--radius-pill);
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		font-weight: 700;
+		font-size: 15px;
+		line-height: 18px;
+		text-decoration: none;
+	}
+
+	.sharecard__btn small {
+		display: block;
+		font-weight: 500;
+		font-size: 12px;
+		opacity: 0.85;
+	}
+
+	.sharecard__btn:hover {
+		background: var(--brand-deep);
+	}
+
+	.sharecard__btn:focus-visible {
+		outline: 2px solid var(--brand-amber);
+		outline-offset: 2px;
+	}
+
+	.sharecard__preview {
+		width: 100%;
+		height: auto;
+		border-radius: calc(var(--radius) - 4px);
+		box-shadow: var(--shadow-primary);
+		background: var(--brand-deep);
+	}
+
+	/* Sidebar: one column, preview first, buttons stacked. */
+	.sharecard--sidebar {
+		grid-template-columns: minmax(0, 1fr);
+		margin: 0;
+		padding: 20px;
+		gap: 16px;
+	}
+
+	.sharecard--sidebar .sharecard__preview {
+		order: -1;
+	}
+
+	.sharecard--sidebar .sharecard__title {
+		font-size: 13px;
+		line-height: 18px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+
+	.sharecard--sidebar .sharecard__actions {
+		flex-direction: column;
+	}
+
+	.sharecard--sidebar .sharecard__btn {
+		width: 100%;
+	}
+
+	@media (max-width: 760px) {
+		.sharecard {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

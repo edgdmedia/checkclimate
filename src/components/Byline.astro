@@ -1,0 +1,97 @@
+---
+/**
+ * Byline: avatar (or initials) + name + date. The avatar is the byline's
+ * media-library image when present; otherwise a green disc with initials.
+ */
+import { Image } from "emdash/ui";
+import { formatDate } from "../utils/locale";
+
+interface Props {
+	name: string;
+	slug?: string | null;
+	avatar?: unknown;
+	date?: Date | null;
+}
+
+const { name, slug, avatar, date } = Astro.props;
+
+const initials = name
+	.split(/\s+/)
+	.filter(Boolean)
+	.slice(0, 2)
+	.map((word) => [...word][0]?.toUpperCase() ?? "")
+	.join("");
+
+const href = slug ? `/author/${slug}/` : undefined;
+---
+
+<div class="byline">
+	<a href={href} class="byline__avatar" aria-label={name}>
+		{avatar ? (
+			<Image image={avatar as never} alt="" width={40} height={40} />
+		) : (
+			<span class="byline__initials" aria-hidden="true">{initials}</span>
+		)}
+	</a>
+	<div class="byline__text">
+		<strong class="byline__name">
+			{href ? <a href={href}>{name}</a> : name}
+		</strong>
+		{date && <span class="byline__date">{formatDate(date, "long")}</span>}
+	</div>
+</div>
+
+<style>
+	.byline {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.byline__avatar {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		overflow: hidden;
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		text-decoration: none;
+	}
+
+	.byline__avatar img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.byline__initials {
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	.byline__text {
+		font-size: 14px;
+		line-height: 20px;
+	}
+
+	.byline__name {
+		display: block;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.byline__name a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.byline__name a:hover {
+		color: var(--link);
+	}
+
+	.byline__date {
+		color: var(--ink-meta);
+	}
+</style>

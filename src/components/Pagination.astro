@@ -1,0 +1,73 @@
+---
+/**
+ * Numbered pagination for the archives. EmDash's offset queries return
+ * `hasMore` instead of a row count, so the renderer shows the pages it knows
+ * about (1 … current) and offers the next one when there is more.
+ */
+interface Props {
+	basePath: string;
+	page: number;
+	hasMore: boolean;
+	/**
+	 * Query string for routes that paginate by parameter instead of by path
+	 * (search). When set, links become `/search/?q=…&page=N`.
+	 */
+	query?: string | null;
+	/** Extra query to carry through `/page/N/` links, e.g. a topic filter. */
+	suffix?: string | null;
+}
+
+const { basePath, page, hasMore, query = null, suffix = null } = Astro.props;
+const base = basePath.replace(/\/+$/, "");
+const extra = suffix ? `?${suffix}` : "";
+
+function pageUrl(n: number): string {
+	if (query) {
+		return n <= 1
+			? `${base}/?${query}`
+			: `${base}/?${query}&page=${n}`;
+	}
+	return n <= 1 ? `${base}/${extra}` : `${base}/page/${n}/${extra}`;
+}
+
+const numbers = Array.from({ length: Math.min(page, 5) }, (_, i) => {
+	// Show the current page and up to four before it, always starting at 1.
+	const start = Math.max(1, page - 4);
+	return start + i;
+});
+const showGap = page > 5;
+---
+
+{
+	(page > 1 || hasMore) && (
+		<nav class="pagination" aria-label="Story pages">
+			{page > 1 ? (
+				<a href={pageUrl(page - 1)} class="pagination__prev" rel="prev">
+					← Prev
+				</a>
+			) : (
+				<span class="pagination__prev" aria-hidden="true">
+					← Prev
+				</span>
+			)}
+			{showGap && <span class="pagination__gap" aria-hidden="true">…</span>}
+			{numbers.map((n) => (
+				<a
+					href={pageUrl(n)}
+					aria-current={n === page ? "page" : undefined}
+				>
+					{n}
+				</a>
+			))}
+			{hasMore ? (
+				<a href={pageUrl(page + 1)} class="pagination__next" rel="next">
+					Next →
+				</a>
+			) : (
+				<span class="pagination__next" aria-hidden="true">
+					Next →
+				</span>
+			)}
+		</nav>
+	)
+}

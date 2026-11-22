@@ -1,0 +1,8 @@
+---
+import Archive from "../../components/Archive.astro";
+import { postsView } from "../../utils/archive";
+
+const view = await postsView(1);
+---
+
+<Archive {...view} />

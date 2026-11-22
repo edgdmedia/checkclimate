@@ -1,9 +1,33 @@
 node_modules/
 dist/
 .astro/
+.wrangler/
 data/
 *.db
 *.db-*
+*.db-wal
+*.db-shm
 .env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 CLAUDE.md
 migration/*.xml
+# Run artifact written by `unwrap-wayback --apply`; verify-migration reads it
+# from disk when present, and a fresh list is written on every apply run.
+migration/unwrap-wayback-failed.json
+coverage/
+.DS_Store
+.emdash/
+# Node/tsx compile caches some shells leave in the repo root.
+node-compile-cache/
+tsx-*/
+uploads/.neon
+
+# Production backups written by the one-off migration scripts (full post
+# content; keep them locally, not in git).
+migration/*-backup-*.json
+# Reference copy of the old WordPress weather plugin; it embeds an API key.
+docs/edgd-weather/

@@ -1,0 +1,3698 @@
+{
+ "tree": [
+  {
+   "slug": "climate",
+   "label": "Climate",
+   "subs": [
+    [
+     "climate-science",
+     "Climate Science"
+    ],
+    [
+     "adaptation-resilience",
+     "Adaptation & Resilience"
+    ],
+    [
+     "climate-disinformation",
+     "Climate Disinformation"
+    ],
+    [
+     "climate-reporting",
+     "Climate Reporting"
+    ]
+   ]
+  },
+  {
+   "slug": "weather",
+   "label": "Weather",
+   "subs": [
+    [
+     "heat",
+     "Heat"
+    ],
+    [
+     "floods",
+     "Floods"
+    ],
+    [
+     "wildfires",
+     "Wildfires"
+    ],
+    [
+     "drought",
+     "Drought"
+    ]
+   ]
+  },
+  {
+   "slug": "energy",
+   "label": "Energy",
+   "subs": [
+    [
+     "renewables",
+     "Renewables"
+    ],
+    [
+     "oil-gas",
+     "Oil & Gas"
+    ]
+   ]
+  },
+  {
+   "slug": "agriculture",
+   "label": "Agriculture",
+   "subs": []
+  },
+  {
+   "slug": "environment",
+   "label": "Environment",
+   "subs": [
+    [
+     "pollution",
+     "Pollution"
+    ],
+    [
+     "water",
+     "Water"
+    ],
+    [
+     "nature-wildlife",
+     "Nature & Wildlife"
+    ]
+   ]
+  },
+  {
+   "slug": "health",
+   "label": "Health",
+   "subs": []
+  },
+  {
+   "slug": "policy",
+   "label": "Policy",
+   "subs": [
+    [
+     "climate-finance",
+     "Climate Finance"
+    ],
+    [
+     "cop-negotiations",
+     "COP & Negotiations"
+    ]
+   ]
+  }
+ ],
+ "posts": [
+  {
+   "slug": "reps-advance-bill-to-establish-renewable-energy-authority",
+   "title": "Reps advance bill to establish renewable energy authority",
+   "type": "news",
+   "url": "/2026/10/15/reps-advance-bill-to-establish-renewable-energy-authority/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "House of reps",
+    "renewable energy authority"
+   ],
+   "cat": "energy",
+   "sub": "renewables",
+   "tags": [
+    "House of reps",
+    "renewable energy authority"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "health-council-netzence-test-ai-platform-to-track-climate-related-health-risks",
+   "title": "Health council, Netzence test AI platform to track climate-related health risks",
+   "type": "news",
+   "url": "/2026/10/15/health-council-netzence-test-ai-platform-to-track-climate-related-health-risks/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "climate health risks",
+    "Environmental Health Council of Nigeria (EHCON)",
+    "Netzence Sustainability Limited"
+   ],
+   "cat": "health",
+   "sub": "",
+   "tags": [
+    "Environmental Health Council of Nigeria (EHCON)",
+    "Netzence Sustainability Limited",
+    "climate health risks"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "alert-nnpc-says-fuel-discount-does-not-restore-petrol-subsidy",
+   "title": "ALERT: NNPC says fuel discount does not restore petrol subsidy",
+   "type": "news",
+   "url": "/2026/10/09/alert-nnpc-says-fuel-discount-does-not-restore-petrol-subsidy/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "fuel subsidy",
+    "NNPC"
+   ],
+   "cat": "energy",
+   "sub": "oil-gas",
+   "tags": [
+    "NNPC",
+    "fuel subsidy"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "kenya-activates-flood-response-as-el-nino-rains-begin",
+   "title": "Kenya activates flood response as El Ni\u00f1o rains begin",
+   "type": "news",
+   "url": "/2026/10/05/kenya-activates-flood-response-as-el-nino-rains-begin/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "El Ni\u00f1o",
+    "Kenya"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "El Ni\u00f1o",
+    "Kenya"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "adeleke-orders-flood-risk-assessment-across-osun-communities",
+   "title": "Adeleke orders flood risk assessment across Osun communities",
+   "type": "news",
+   "url": "/2026/10/01/adeleke-orders-flood-risk-assessment-across-osun-communities/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Ademola Adeleke",
+    "flood",
+    "Osun"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Ademola Adeleke",
+    "Osun"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "west-africa-climate-crisis-threatening-regional-stability-ecowas-warns",
+   "title": "West Africa climate crisis threatening regional stability, ECOWAS warns",
+   "type": "news",
+   "url": "/2026/09/23/west-africa-climate-crisis-threatening-regional-stability-ecowas-warns/",
+   "oldCats": [
+    "climate-change"
+   ],
+   "oldTags": [
+    "ECOWAS",
+    "West Africa climate risks"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "ECOWAS",
+    "West Africa climate risks"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-launches-300m-renewable-energy-fund-to-expand-solar-systems",
+   "title": "Nigeria launches $300m renewable energy fund to expand solar systems",
+   "type": "news",
+   "url": "/2026/09/23/nigeria-launches-300m-renewable-energy-fund-to-expand-solar-systems/",
+   "oldCats": [
+    "climate-action",
+    "renewable-energy"
+   ],
+   "oldTags": [
+    "$300m renewable energy fund",
+    "renewable energy",
+    "Sustainable Energy for All (SEforALL)"
+   ],
+   "cat": "energy",
+   "sub": "renewables",
+   "tags": [
+    "$300m renewable energy fund",
+    "Sustainable Energy for All (SEforALL)"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "nema-red-cross-to-tackle-calabar-varsity-flooding",
+   "title": "NEMA, Red Cross to tackle Calabar varsity flooding",
+   "type": "news",
+   "url": "/2026/09/17/nema-red-cross-to-tackle-calabar-varsity-flooding/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Calabar varsity flooding",
+    "NEMA",
+    "Red Cross",
+    "University of Cross River State"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Calabar varsity flooding",
+    "NEMA",
+    "Red Cross",
+    "University of Cross River State"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-sierra-leone-guinea-bissau-seek-stronger-waste-management-laws",
+   "title": "Nigeria, Sierra Leone, Guinea-Bissau seek stronger waste management laws",
+   "type": "news",
+   "url": "/2026/09/17/nigeria-sierra-leone-guinea-bissau-seek-stronger-waste-management-laws/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Nigeria",
+    "Sierra Leone",
+    "waste management"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "Nigeria",
+    "Sierra Leone",
+    "waste management"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "safrica-probes-wildlife-trafficking-after-seizing-endangered-parrot-eggs-at-airport",
+   "title": "S\u2019Africa probes wildlife trafficking after seizing endangered parrot eggs at airport",
+   "type": "news",
+   "url": "/2026/09/15/safrica-probes-wildlife-trafficking-after-seizing-endangered-parrot-eggs-at-airport/",
+   "oldCats": [
+    "africa"
+   ],
+   "oldTags": [
+    "parrot eggs",
+    "South Africa",
+    "wildlife trafficking"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "Africa",
+    "South Africa",
+    "parrot eggs",
+    "wildlife trafficking"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nnpc-commissions-solar-powered-smart-fuelling-station-in-abuja",
+   "title": "NNPC commissions solar-powered smart fuelling station in Abuja",
+   "type": "news",
+   "url": "/2026/09/11/nnpc-commissions-solar-powered-smart-fuelling-station-in-abuja/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "NNPC",
+    "NNPC retail",
+    "smart fuelling station"
+   ],
+   "cat": "energy",
+   "sub": "renewables",
+   "tags": [
+    "NNPC",
+    "NNPC retail",
+    "smart fuelling station"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "ghana-begins-controlled-weija-dam-spillage-to-mitigate-flooding",
+   "title": "Ghana begins controlled Weija Dam spillage to mitigate flooding",
+   "type": "news",
+   "url": "/2026/09/09/ghana-begins-controlled-weija-dam-spillage-to-mitigate-flooding/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Ghana",
+    "Weija Dam"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Ghana",
+    "Weija Dam"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "drc-moves-to-tighten-state-control-over-critical-minerals-data",
+   "title": "DRC moves to tighten state control over critical minerals data",
+   "type": "news",
+   "url": "/2026/09/09/drc-moves-to-tighten-state-control-over-critical-minerals-data/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "DRC"
+   ],
+   "cat": "environment",
+   "sub": "",
+   "tags": [
+    "DRC"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "hyprep-begins-five-year-plan-for-next-phase-of-ogoni-cleanup",
+   "title": "HYPREP begins five-year plan for next phase of Ogoni cleanup",
+   "type": "news",
+   "url": "/2026/09/07/hyprep-begins-five-year-plan-for-next-phase-of-ogoni-cleanup/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Hydrocarbon Pollution Remediation Project",
+    "HYPREP",
+    "Ogoni cleanup"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "HYPREP",
+    "Ogoni cleanup"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "two-hydropower-workers-rescued-alive-nine-days-after-nepal-china-floods",
+   "title": "Two hydropower workers rescued alive nine days after Nepal-China floods",
+   "type": "news",
+   "url": "/2026/09/04/two-hydropower-workers-rescued-alive-nine-days-after-nepal-china-floods/",
+   "oldCats": [
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Nepal-China floods"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Nepal-China flood"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "ogun-issues-fresh-flood-alert-as-september-rains-intensify",
+   "title": "Ogun issues fresh flood alert as September rains intensify",
+   "type": "news",
+   "url": "/2026/09/04/ogun-issues-fresh-flood-alert-as-september-rains-intensify/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Ogun",
+    "Ogun floods"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Ogun",
+    "Ogun floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "gabon-launches-200m-conservation-programme-to-protect-ecosystems",
+   "title": "Gabon launches $200m conservation programme to protect ecosystems",
+   "type": "news",
+   "url": "/2026/09/01/gabon-launches-200m-conservation-programme-to-protect-ecosystems/",
+   "oldCats": [
+    "climate-action",
+    "climate-finance"
+   ],
+   "oldTags": [
+    "Gabon"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "Gabon"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "death-toll-from-nepal-china-flood-surpasses-900-as-rescuers-search-hydropower-tunnels",
+   "title": "Death toll from Nepal-China flood surpasses 900 as rescuers search hydropower tunnels",
+   "type": "news",
+   "url": "/2026/08/31/death-toll-from-nepal-china-flood-surpasses-900-as-rescuers-search-hydropower-tunnels/",
+   "oldCats": [
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Nepal-China flood"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Nepal-China flood"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-begins-nationwide-consultations-on-national-water-compact",
+   "title": "Nigeria begins nationwide consultations on national water compact",
+   "type": "news",
+   "url": "/2026/08/28/nigeria-begins-nationwide-consultations-on-national-water-compact/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "National water compact"
+   ],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [
+    "National water compact"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "unep-commits-32-million-to-support-kenyas-climate-action",
+   "title": "UNEP commits $32 million to support Kenya\u2019s climate action",
+   "type": "news",
+   "url": "/2026/08/28/unep-commits-32-million-to-support-kenyas-climate-action/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Kenya",
+    "UNEP"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "Kenya",
+    "UNEP"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "at-least-180-killed-as-glacial-collapse-triggers-deadly-floods-along-nepal-china-border",
+   "title": "At least 180 killed as glacial collapse triggers deadly floods along Nepal-China border",
+   "type": "news",
+   "url": "/2026/08/27/at-least-180-killed-as-glacial-collapse-triggers-deadly-floods-along-nepal-china-border/",
+   "oldCats": [
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Nepal-China flood"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Nepal-China flood"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "bauchi-seeks-fg-support-for-resumption-of-kolmani-oil-exploration-four-years-after-flag-off",
+   "title": "Bauchi seeks FG support for resumption of Kolmani oil exploration \u2014 four years after flag-off",
+   "type": "news",
+   "url": "/2026/08/25/bauchi-seeks-fg-support-for-resumption-of-kolmani-oil-exploration-four-years-after-flag-off/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "Kolmani oil field"
+   ],
+   "cat": "energy",
+   "sub": "oil-gas",
+   "tags": [
+    "Kolmani oil field"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-pushes-for-drought-management-land-restoration-ahead-of-cop17",
+   "title": "Nigeria pushes for drought management, land restoration at COP17",
+   "type": "news",
+   "url": "/2026/08/25/nigeria-pushes-for-drought-management-land-restoration-ahead-of-cop17/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "COP17"
+   ],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [
+    "COP17"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fg-calls-for-shift-toward-bankable-climate-projects-to-accelerate-energy-transit",
+   "title": "FG calls for shift toward bankable climate projects to accelerate energy transition",
+   "type": "news",
+   "url": "/2026/08/21/fg-calls-for-shift-toward-bankable-climate-projects-to-accelerate-energy-transit/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "energy transition"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "energy transition"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "environment-ministry-attributes-abuja-flash-floods-to-blocked-underground-drains",
+   "title": "Environment ministry attributes Abuja flash floods to blocked underground drains",
+   "type": "news",
+   "url": "/2026/08/21/environment-ministry-attributes-abuja-flash-floods-to-blocked-underground-drains/",
+   "oldCats": [
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Abuja floods"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Abuja floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fg-rolls-out-new-methane-reduction-policies-to-curb-dumpsite-emissions-flooding",
+   "title": "FG rolls out new methane reduction policies to curb dumpsite emissions, flooding",
+   "type": "news",
+   "url": "/2026/08/21/fg-rolls-out-new-methane-reduction-policies-to-curb-dumpsite-emissions-flooding/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "methane reduction"
+   ],
+   "cat": "policy",
+   "sub": "",
+   "tags": [
+    "methane reduction"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "stakeholders-press-for-urgent-intervention-as-flash-floods-hit-parts-of-abuja",
+   "title": "Stakeholders press for urgent intervention as flash floods hit parts of Abuja",
+   "type": "news",
+   "url": "/2026/08/19/stakeholders-press-for-urgent-intervention-as-flash-floods-hit-parts-of-abuja/",
+   "oldCats": [
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Abuja floods"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Abuja floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "yobe-varsity-makes-tree-planting-mandatory-for-graduation",
+   "title": "Yobe varsity makes tree planting mandatory for graduation",
+   "type": "news",
+   "url": "/2026/08/14/yobe-varsity-makes-tree-planting-mandatory-for-graduation/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "tree planting",
+    "Yobe State University"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "Yobe State University",
+    "tree planting"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "oyo-unveils-2026-2040-climate-action-plan-targets-50000-green-jobs",
+   "title": "Oyo unveils 2026-2040 climate action plan, targets 50,000 green jobs",
+   "type": "news",
+   "url": "/2026/08/14/oyo-unveils-2026-2040-climate-action-plan-targets-50000-green-jobs/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Oyo",
+    "Oyo climate action plan"
+   ],
+   "cat": "policy",
+   "sub": "",
+   "tags": [
+    "Oyo",
+    "Oyo climate action plan"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "no-cause-for-alarm-earthquake-not-imminent-fg-speaks-after-abuja-records-tremor",
+   "title": "'No cause for alarm, earthquake not imminent'-- FG speaks after Abuja records tremor",
+   "type": "news",
+   "url": "/2026/08/14/no-cause-for-alarm-earthquake-not-imminent-fg-speaks-after-abuja-records-tremor/",
+   "oldCats": [
+    "climate-science"
+   ],
+   "oldTags": [
+    "Abuja tremor",
+    "NGSA",
+    "Nigerian Geological Survey Agency"
+   ],
+   "cat": "environment",
+   "sub": "",
+   "tags": [
+    "Abuja tremor",
+    "NGSA"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nimet-issues-flash-flood-alert-for-13-states",
+   "title": "NiMet issues flash flood alert for 13 states",
+   "type": "news",
+   "url": "/2026/08/11/nimet-issues-flash-flood-alert-for-13-states/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "flash floods",
+    "NiMet"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "NiMet"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "maritime-experts-urge-shift-to-coastal-shipping-to-slash-carbon-emissions",
+   "title": "Maritime experts urge shift to coastal shipping to slash carbon emissions",
+   "type": "news",
+   "url": "/2026/08/11/maritime-experts-urge-shift-to-coastal-shipping-to-slash-carbon-emissions/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "coastal shipping"
+   ],
+   "cat": "energy",
+   "sub": "",
+   "tags": [
+    "coastal shipping"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "ogun-revives-moribund-forest-reserves-to-combat-climate-change",
+   "title": "Ogun revives moribund forest reserves to combat climate change",
+   "type": "news",
+   "url": "/2026/08/10/ogun-revives-moribund-forest-reserves-to-combat-climate-change/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "forest reserves",
+    "Ogun"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "Ogun",
+    "forest reserves"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fg-steps-up-support-for-lagos-amid-rising-flood-risks",
+   "title": "FG steps up support for Lagos amid rising flood risks",
+   "type": "news",
+   "url": "/2026/08/08/fg-steps-up-support-for-lagos-amid-rising-flood-risks/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Lagos flood"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Lagos floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "lasepa-seals-12-businesses-over-persistent-violations-of-environmental-regulations",
+   "title": "LASEPA seals 12 businesses over 'persistent violations of environmental regulations'",
+   "type": "news",
+   "url": "/2026/08/07/lasepa-seals-12-businesses-over-persistent-violations-of-environmental-regulations/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "environmental regulations",
+    "Lagos",
+    "LASEPA"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "LASEPA",
+    "Lagos",
+    "environmental regulations"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "climate-change-may-reduce-malaria-transmission-in-nigeria-study-finds",
+   "title": "Climate change may reduce malaria transmission in Nigeria, study finds",
+   "type": "news",
+   "url": "/2026/08/05/climate-change-may-reduce-malaria-transmission-in-nigeria-study-finds/",
+   "oldCats": [
+    "climate-change"
+   ],
+   "oldTags": [
+    "Climate Change"
+   ],
+   "cat": "health",
+   "sub": "",
+   "tags": [
+    "Malaria",
+    "Nigeria"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "wmo-warns-strong-el-nino-could-intensify-global-heat-climate-disruptions",
+   "title": "WMO warns strong El Ni\u00f1o could intensify global heat, climate disruptions",
+   "type": "news",
+   "url": "/2026/08/04/wmo-warns-strong-el-nino-could-intensify-global-heat-climate-disruptions/",
+   "oldCats": [
+    "uncategorized"
+   ],
+   "oldTags": [
+    "El Ni\u00f1o",
+    "WMO"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "El Ni\u00f1o",
+    "WMO"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "rea-despite-2bn-investment-only-76000-jobs-created-from-nigerias-renewable-energ",
+   "title": "REA: Despite $2bn investment, only 76,000 jobs created from Nigeria\u2019s renewable energy sector",
+   "type": "news",
+   "url": "/2026/07/28/rea-despite-2bn-investment-only-76000-jobs-created-from-nigerias-renewable-energ/",
+   "oldCats": [
+    "renewable-energy"
+   ],
+   "oldTags": [],
+   "cat": "energy",
+   "sub": "renewables",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "global-hunger-declines-across-continents-but-climate-risks-loom-un-warns",
+   "title": "Global hunger declines across continents but climate risks loom, UN warns",
+   "type": "news",
+   "url": "/2026/07/21/global-hunger-declines-across-continents-but-climate-risks-loom-un-warns/",
+   "oldCats": [
+    "food-creative"
+   ],
+   "oldTags": [
+    "Global hunger"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "Global hunger"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "fact-check-lagos-dismisses-bangladesh-flood-video-shared-as-local-footage",
+   "title": "FACT CHECK: Lagos dismisses Bangladesh flood video shared as local footage",
+   "type": "fact_check",
+   "url": "/2026/07/19/fact-check-lagos-dismisses-bangladesh-flood-video-shared-as-local-footage/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Lagos flood",
+    "Lekki",
+    "Tokunbo Wahab"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Lagos floods",
+    "Lekki",
+    "Tokunbo Wahab"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "hazardous-wildfire-smoke-chokes-millions-in-us-canada",
+   "title": "Hazardous wildfire smoke chokes millions in US, Canada",
+   "type": "news",
+   "url": "/2026/07/16/hazardous-wildfire-smoke-chokes-millions-in-us-canada/",
+   "oldCats": [
+    "uncategorized"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-joins-global-coalition-to-strengthen-food-security-climate-resilience",
+   "title": "Nigeria joins global coalition to strengthen food security, climate resilience",
+   "type": "news",
+   "url": "/2026/07/16/nigeria-joins-global-coalition-to-strengthen-food-security-climate-resilience/",
+   "oldCats": [
+    "climate-change"
+   ],
+   "oldTags": [
+    "Convergence Initiative",
+    "Nigeria"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "Convergence Initiative",
+    "Nigeria"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "europe-recorded-10000-excess-deaths-during-june-heatwave",
+   "title": "Europe recorded 10,000 excess deaths during June heatwave",
+   "type": "news",
+   "url": "/2026/07/13/europe-recorded-10000-excess-deaths-during-june-heatwave/",
+   "oldCats": [
+    "uncategorized"
+   ],
+   "oldTags": [
+    "Europe heatwave"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Europe heatwave"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fg-delegation-visits-rivers-community-battling-gas-leak-pledges-lasting-solution",
+   "title": "FG delegation visits Rivers community battling gas leak, pledges lasting solution",
+   "type": "news",
+   "url": "/2026/07/02/fg-delegation-visits-rivers-community-battling-gas-leak-pledges-lasting-solution/",
+   "oldCats": [
+    "uncategorized"
+   ],
+   "oldTags": [
+    "Rivers gas leak"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "Rivers gas leak"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "from-fields-to-fire-women-farmers-battling-extreme-heat-in-sierra-leone",
+   "title": "From fields to fire women farmers battling extreme heat in Sierra Leone\u00a0  \u00a0",
+   "type": "news",
+   "url": "/2026/02/03/from-fields-to-fire-women-farmers-battling-extreme-heat-in-sierra-leone/",
+   "oldCats": [
+    "extreme-heat",
+    "heatwave"
+   ],
+   "oldTags": [
+    "Extreme heat",
+    "farmers",
+    "Sierra Leone",
+    "women"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Sierra Leone",
+    "farmers",
+    "women"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "floods-once-considered-rare-are-now-routine-in-southern-africa",
+   "title": "Floods once considered rare are now routine in southern Africa",
+   "type": "news",
+   "url": "/2026/01/30/floods-once-considered-rare-are-now-routine-in-southern-africa/",
+   "oldCats": [
+    "climate-change",
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Climate Crisis",
+    "Flooding",
+    "La Nina",
+    "South Africa"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "La Nina",
+    "South Africa"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "rising-livestock-and-climate-stress-put-africas-grasslands-at-risk",
+   "title": "Rising livestock and climate stress put Africa\u2019s grasslands at risk",
+   "type": "news",
+   "url": "/2026/01/24/rising-livestock-and-climate-stress-put-africas-grasslands-at-risk/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-the-night-get-darkest-before-dawn",
+   "title": "FACT CHECK: Does the night get darkest before dawn?",
+   "type": "fact_check",
+   "url": "/2025/12/24/fact-check-does-the-night-get-darkest-before-dawn/",
+   "oldCats": [],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "nigerias-mounting-heat-burden-a-case-for-pregnant-women",
+   "title": "Nigeria\u2019s mounting heat burden: A case for pregnant women",
+   "type": "news",
+   "url": "/2025/12/24/nigerias-mounting-heat-burden-a-case-for-pregnant-women/",
+   "oldCats": [
+    "climate-resilience",
+    "heat-waves",
+    "resilience-and-adaptation"
+   ],
+   "oldTags": [
+    "Extreme heat",
+    "Pregnant women"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Pregnant women"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "nigeria-seeks-private-sector-funding-to-confront-growing-climate-threats",
+   "title": "Nigeria seeks private sector funding to confront growing climate threats",
+   "type": "news",
+   "url": "/2025/12/19/nigeria-seeks-private-sector-funding-to-confront-growing-climate-threats/",
+   "oldCats": [
+    "climate-action",
+    "climate-policy"
+   ],
+   "oldTags": [
+    "Katsina",
+    "Nigeria"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "Katsina",
+    "Nigeria"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "how-shifting-weather-is-reshaping-the-food-basket",
+   "title": "How shifting weather is reshaping the food basket",
+   "type": "news",
+   "url": "/2025/12/12/how-shifting-weather-is-reshaping-the-food-basket/",
+   "oldCats": [
+    "agriculture",
+    "climate-change"
+   ],
+   "oldTags": [
+    "Africa",
+    "agriculture",
+    "Food prices"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "Africa",
+    "Food prices"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "cop30-puts-climate-disinformation-on-global-agenda-as-talks-stall-on-fossil-fuels",
+   "title": "COP30 puts climate disinformation on global agenda as talks stall on fossil fuels",
+   "type": "news",
+   "url": "/2025/11/25/cop30-puts-climate-disinformation-on-global-agenda-as-talks-stall-on-fossil-fuels/",
+   "oldCats": [
+    "climate-disinformation"
+   ],
+   "oldTags": [
+    "Climate disinformation",
+    "Climate Fact Check",
+    "COP 30"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "COP30"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "at-cop30-countries-unite-on-finance-but-split-on-ending-fossil-fuels",
+   "title": "At COP30, countries unite on finance but split on ending fossil fuels",
+   "type": "news",
+   "url": "/2025/11/24/at-cop30-countries-unite-on-finance-but-split-on-ending-fossil-fuels/",
+   "oldCats": [
+    "climate-disinformation",
+    "climate-finance"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "as-waterways-turn-toxic-jema-leads-a-fight-against-galamsey-in-ghana",
+   "title": "As waterways turn toxic, Jema leads a fight against galamsey in Ghana",
+   "type": "news",
+   "url": "/2025/11/23/as-waterways-turn-toxic-jema-leads-a-fight-against-galamsey-in-ghana/",
+   "oldCats": [
+    "africa",
+    "environment"
+   ],
+   "oldTags": [
+    "Galamsey",
+    "Ghana",
+    "Jema"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "Africa",
+    "Galamsey",
+    "Ghana",
+    "Jema"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "ghanas-amoah-to-lead-africas-climate-negotiators-from-2026",
+   "title": "Ghana\u2019s Amoah to lead Africa\u2019s climate negotiators from 2026",
+   "type": "news",
+   "url": "/2025/11/23/ghanas-amoah-to-lead-africas-climate-negotiators-from-2026/",
+   "oldCats": [
+    "africa",
+    "climate-change"
+   ],
+   "oldTags": [
+    "Antwi-Boasiako Amoah",
+    "climate negotiators"
+   ],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [
+    "Africa",
+    "Antwi-Boasiako Amoah",
+    "climate negotiators"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "africas-cities-are-losing-their-cool-at-night",
+   "title": "Africa\u2019s cities are losing their cool at night",
+   "type": "news",
+   "url": "/2025/11/11/africas-cities-are-losing-their-cool-at-night/",
+   "oldCats": [
+    "africa",
+    "heat-waves"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Resilience for All"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa",
+    "Climate Resilience for All"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-change-threatens-east-africas-unique-samburu-special-five",
+   "title": "Climate change threatens East Africa\u2019s unique \u2018Samburu special five\u2019",
+   "type": "news",
+   "url": "/2025/11/08/climate-change-threatens-east-africas-unique-samburu-special-five/",
+   "oldCats": [
+    "africa",
+    "resilience-and-adaptation",
+    "wildfire"
+   ],
+   "oldTags": [
+    "Kenya",
+    "Samburu Special Five"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "Africa",
+    "Kenya",
+    "Samburu Special Five"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "from-amazon-to-congo-global-south-unites-for-climate-justice-at-cop30",
+   "title": "From Amazon to Congo, Global South unites for climate justice at COP30",
+   "type": "news",
+   "url": "/2025/11/08/from-amazon-to-congo-global-south-unites-for-climate-justice-at-cop30/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "AfDB",
+    "Brazil",
+    "Climate Action",
+    "COP30"
+   ],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [
+    "AfDB",
+    "Brazil",
+    "COP30"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigeria-activates-climate-fund-and-carbon-market-plan-ahead-of-cop30",
+   "title": "Nigeria activates climate fund and carbon market plan ahead of COP30",
+   "type": "news",
+   "url": "/2025/11/02/nigeria-activates-climate-fund-and-carbon-market-plan-ahead-of-cop30/",
+   "oldCats": [
+    "climate-finance"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "can-yaounde-cool-down-before-its-too-late",
+   "title": "Can Yaound\u00e9 cool down before it\u2019s too late?",
+   "type": "news",
+   "url": "/2025/11/02/can-yaounde-cool-down-before-its-too-late/",
+   "oldCats": [
+    "africa",
+    "climate-change"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "adapt-for-2c-and-build-resilience-for-3c-says-leading-climate-scientist",
+   "title": "Adapt for 2\u00b0C and build resilience for 3\u00b0C, says climate scientist",
+   "type": "news",
+   "url": "/2025/10/28/adapt-for-2c-and-build-resilience-for-3c-says-leading-climate-scientist/",
+   "oldCats": [
+    "climate-change",
+    "resilience-and-adaptation"
+   ],
+   "oldTags": [
+    "Adaptation",
+    "IPCC",
+    "Professor Debra Roberts",
+    "Resilience"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "IPCC",
+    "Professor Debra Roberts"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "new-reports-show-planet-nearing-irreversible-climate-tipping-points",
+   "title": "New reports show planet nearing irreversible climate tipping points",
+   "type": "news",
+   "url": "/2025/10/20/new-reports-show-planet-nearing-irreversible-climate-tipping-points/",
+   "oldCats": [
+    "climate-change",
+    "climate-crisis"
+   ],
+   "oldTags": [
+    "Climate Action",
+    "Climate Change",
+    "COP30",
+    "WMOI"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "COP30",
+    "WMO"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "young-africans-turn-creativity-into-climate-action",
+   "title": "Young Africans turn creativity into climate action",
+   "type": "news",
+   "url": "/2025/10/16/young-africans-turn-creativity-into-climate-action/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "unesco-backs-stronger-climate-and-disaster-reporting-in-african-island-nations",
+   "title": "UNESCO strengthens climate, disaster reporting in African island nations",
+   "type": "news",
+   "url": "/2025/10/15/unesco-backs-stronger-climate-and-disaster-reporting-in-african-island-nations/",
+   "oldCats": [
+    "africa",
+    "climate-reporting"
+   ],
+   "oldTags": [
+    "Climate Reporting",
+    "UNESCO"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "Africa",
+    "UNESCO"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-voices-stifled-as-oxford-ends-training-and-trump-censors-science",
+   "title": "Climate voices stifled as Oxford ends training and Trump censors science",
+   "type": "news",
+   "url": "/2025/10/10/climate-voices-stifled-as-oxford-ends-training-and-trump-censors-science/",
+   "oldCats": [
+    "climate-change",
+    "climate-disinformation"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Donald Trump",
+    "OCJN",
+    "Oxford Climate Journalism Network",
+    "Reuters Institute for the Study of Journalism",
+    "RISJ"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Donald Trump",
+    "OCJN",
+    "RISJ"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "the-pure-water-nigerians-rely-on-may-be-making-them-sick",
+   "title": "The \u2018pure water\u2019 Nigerians rely on may be making them sick",
+   "type": "news",
+   "url": "/2025/09/26/the-pure-water-nigerians-rely-on-may-be-making-them-sick/",
+   "oldCats": [
+    "health"
+   ],
+   "oldTags": [],
+   "cat": "health",
+   "sub": "",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "nigerias-updated-climate-plan-aims-for-32-emissions-cut-by-2035",
+   "title": "Nigeria\u2019s updated climate plan aims for 32% emissions cut by 2035",
+   "type": "news",
+   "url": "/2025/09/23/nigerias-updated-climate-plan-aims-for-32-emissions-cut-by-2035/",
+   "oldCats": [
+    "climate-change"
+   ],
+   "oldTags": [
+    "COP30",
+    "National Council on Climate Change",
+    "Net Zero",
+    "UNFCC"
+   ],
+   "cat": "policy",
+   "sub": "",
+   "tags": [
+    "COP30",
+    "National Council on Climate Change",
+    "Net Zero",
+    "UNFCCC"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "cra-backs-four-african-cities-with-heat-resilience-funding",
+   "title": "CRA backs four African cities with heat resilience funding",
+   "type": "news",
+   "url": "/2025/09/12/cra-backs-four-african-cities-with-heat-resilience-funding/",
+   "oldCats": [
+    "africa",
+    "climate-resilience"
+   ],
+   "oldTags": [
+    "Accra",
+    "Climate Resilience for All",
+    "CRA",
+    "Ethiopia",
+    "Kassa",
+    "Liberia",
+    "Monrovia",
+    "Paynesville",
+    "Republic of Guinea"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "Accra",
+    "Africa",
+    "CRA",
+    "Climate Resilience for All",
+    "Ethiopia",
+    "Kassa",
+    "Liberia",
+    "Monrovia",
+    "Paynesville",
+    "Republic of Guinea"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-solutions-may-hold-the-key-to-reversing-global-news-fatigue",
+   "title": "Climate solutions may hold the key to reversing global news fatigue",
+   "type": "news",
+   "url": "/2025/09/09/climate-solutions-may-hold-the-key-to-reversing-global-news-fatigue/",
+   "oldCats": [
+    "climate-action",
+    "research"
+   ],
+   "oldTags": [
+    "Climate Action",
+    "Climate Journalism",
+    "Climate Solution",
+    "Jon Batiste"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "Climate solutions",
+    "Jon Batiste"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "climate-change-demands-innovative-media-storytelling-sos-director",
+   "title": "Climate change demands innovative media storytelling \u2013 SOS director",
+   "type": "news",
+   "url": "/2025/09/05/climate-change-demands-innovative-media-storytelling-sos-director/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "SOS village",
+    "Youth engagement"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "SOS village",
+    "Youth engagement"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "who-and-wmo-warn-rising-heat-is-putting-african-workers-at-risk",
+   "title": "WHO and WMO warn rising heat is putting African workers at risk",
+   "type": "news",
+   "url": "/2025/09/05/who-and-wmo-warn-rising-heat-is-putting-african-workers-at-risk/",
+   "oldCats": [
+    "africa",
+    "climate-crisis",
+    "heat-waves"
+   ],
+   "oldTags": [
+    "African Worker",
+    "Climate Change",
+    "Extreme heat",
+    "World Health Organisation",
+    "World meteorological organisation"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa",
+    "African Worker",
+    "WHO",
+    "WMO"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "nccc-calls-for-more-funds-to-tackle-climate-change",
+   "title": "NCCC calls for more funds to tackle climate change",
+   "type": "news",
+   "url": "/2025/08/30/nccc-calls-for-more-funds-to-tackle-climate-change/",
+   "oldCats": [
+    "climate-change",
+    "climate-finance",
+    "climate-policy"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "climate finance",
+    "NDC 3.0",
+    "Nigeria",
+    "Paris Agreement"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "NDC 3.0",
+    "Nigeria",
+    "Paris Agreement"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "researchers-say-hopeful-storytelling-could-inspire-climate-action",
+   "title": "Researchers say hopeful storytelling could inspire climate action",
+   "type": "news",
+   "url": "/2025/08/27/researchers-say-hopeful-storytelling-could-inspire-climate-action/",
+   "oldCats": [
+    "climate-action",
+    "research"
+   ],
+   "oldTags": [
+    "Charles Darwin University",
+    "climate solutions",
+    "Hopeful storytelling"
+   ],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [
+    "Charles Darwin University",
+    "Climate solutions",
+    "Hopeful storytelling"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "the-wetland-that-feeds-a-village",
+   "title": "The wetland that feeds a village",
+   "type": "news",
+   "url": "/2025/08/27/the-wetland-that-feeds-a-village/",
+   "oldCats": [
+    "africa",
+    "agriculture",
+    "climate-resilience",
+    "resilience-and-adaptation"
+   ],
+   "oldTags": [
+    "agriculture",
+    "climate resilience",
+    "Wetland",
+    "Zimbabwe"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "Africa",
+    "Wetland",
+    "Zimbabwe"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "how-climate-change-is-complicating-the-fight-against-cancer",
+   "title": "How climate change is complicating the fight against cancer",
+   "type": "news",
+   "url": "/2025/08/26/how-climate-change-is-complicating-the-fight-against-cancer/",
+   "oldCats": [
+    "climate-change",
+    "health",
+    "wildfire"
+   ],
+   "oldTags": [
+    "Cancer",
+    "Climate Change",
+    "health"
+   ],
+   "cat": "health",
+   "sub": "",
+   "tags": [
+    "Cancer"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "japan-pledges-2-5m-for-climate-resilience-in-south-sudan",
+   "title": "Japan pledges $2.5m to boost climate resilience in South Sudan",
+   "type": "news",
+   "url": "/2025/08/26/japan-pledges-2-5m-for-climate-resilience-in-south-sudan/",
+   "oldCats": [
+    "africa",
+    "climate-change",
+    "climate-resilience"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Change",
+    "Flooding",
+    "japan",
+    "South Sudan"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "Africa",
+    "South Sudan",
+    "japan"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-change-driving-newborn-mortality-in-sub-saharan-africa",
+   "title": "Climate change driving newborn mortality in sub-Saharan Africa",
+   "type": "news",
+   "url": "/2025/08/21/climate-change-driving-newborn-mortality-in-sub-saharan-africa/",
+   "oldCats": [
+    "climate-change",
+    "heatwave",
+    "research"
+   ],
+   "oldTags": [
+    "Extreme heat",
+    "Neonatal mortality",
+    "Newborn",
+    "Pregnant women"
+   ],
+   "cat": "health",
+   "sub": "",
+   "tags": [
+    "Neonatal mortality",
+    "Newborn",
+    "Pregnant women"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "extreme-heat-is-reshaping-work-and-business-in-africa-and-beyond",
+   "title": "How extreme heat is reshaping work and business in Africa",
+   "type": "news",
+   "url": "/2025/08/21/extreme-heat-is-reshaping-work-and-business-in-africa-and-beyond/",
+   "oldCats": [
+    "africa",
+    "news",
+    "research"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Extreme heat",
+    "Morgan Stanley",
+    "WHO"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa",
+    "Morgan Stanley",
+    "WHO"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "africa-faces-stronger-heat-waves-than-40-years-ago",
+   "title": "Africa faces stronger heat waves than 40 years ago",
+   "type": "news",
+   "url": "/2025/08/20/africa-faces-stronger-heat-waves-than-40-years-ago/",
+   "oldCats": [
+    "africa",
+    "climate-change",
+    "heat-waves"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Change",
+    "climate news",
+    "Heat waves"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-solutions-can-help-ease-africas-growing-debt-burden",
+   "title": "Climate solutions can help ease Africa\u2019s growing debt burden",
+   "type": "news",
+   "url": "/2025/08/13/climate-solutions-can-help-ease-africas-growing-debt-burden/",
+   "oldCats": [
+    "climate-action"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "ethiopians-rally-together-to-rebuild-forests-with-700-million-trees",
+   "title": "Ethiopians rally together to rebuild forests with 700 million trees",
+   "type": "news",
+   "url": "/2025/08/04/ethiopians-rally-together-to-rebuild-forests-with-700-million-trees/",
+   "oldCats": [
+    "agriculture",
+    "environment",
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "nigerias-water-tragedies-expose-weak-safety-measures-amid-climate-warnings",
+   "title": "Nigeria\u2019s flooding exposes weak measures amid climate warnings",
+   "type": "news",
+   "url": "/2025/07/30/nigerias-water-tragedies-expose-weak-safety-measures-amid-climate-warnings/",
+   "oldCats": [
+    "climate-crisis",
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-no-snow-did-not-fall-in-nigeria",
+   "title": "FACT CHECK: No, snow did not fall in Nigeria",
+   "type": "fact_check",
+   "url": "/2025/07/09/fact-check-no-snow-did-not-fall-in-nigeria/",
+   "oldCats": [
+    "climate-disinformation",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate disinformation",
+    "Nigeria",
+    "Snowfall"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Nigeria",
+    "Snowfall"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "new-report-shows-heat-seasons-now-last-most-of-the-year-in-parts-of-africa",
+   "title": "New report shows heat seasons span most of the year in Africa",
+   "type": "news",
+   "url": "/2025/07/03/new-report-shows-heat-seasons-now-last-most-of-the-year-in-parts-of-africa/",
+   "oldCats": [
+    "climate-change",
+    "heatwave",
+    "research"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Change",
+    "Climate Resilience for All",
+    "Heatwaves"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Africa",
+    "Climate Resilience for All"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "when-faith-meets-a-warming-world",
+   "title": "When faith meets a warming world\u200a",
+   "type": "opinion",
+   "url": "/2025/06/19/when-faith-meets-a-warming-world/",
+   "oldCats": [
+    "opinion"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "africas-blue-economy-holds-promise-but-time-is-running-out",
+   "title": "Africa's blue economy holds promise, but time is running out",
+   "type": "news",
+   "url": "/2025/06/11/africas-blue-economy-holds-promise-but-time-is-running-out/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "Africa",
+    "Blue Economy"
+   ],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [
+    "Africa",
+    "Blue Economy"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nasa-imagery-reveals-lake-chad-may-be-vanishing-forever",
+   "title": "NASA imagery reveals Lake Chad may be vanishing forever",
+   "type": "news",
+   "url": "/2025/06/11/nasa-imagery-reveals-lake-chad-may-be-vanishing-forever/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "Lake Chad",
+    "NASA"
+   ],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [
+    "Lake Chad",
+    "NASA"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "heatwaves-are-harming-womens-health-in-ways-were-not-tracking",
+   "title": "Heatwaves are harming women's health in ways we're not tracking",
+   "type": "opinion",
+   "url": "/2025/06/02/heatwaves-are-harming-womens-health-in-ways-were-not-tracking/",
+   "oldCats": [
+    "health",
+    "opinion"
+   ],
+   "oldTags": [],
+   "cat": "health",
+   "sub": "",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "new-research-shows-plastics-are-fuelling-climate-change-in-more-ways-than-we-thought",
+   "title": "New research shows plastics are fuelling climate change in more ways than we thought",
+   "type": "news",
+   "url": "/2025/05/28/new-research-shows-plastics-are-fuelling-climate-change-in-more-ways-than-we-thought/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Change",
+    "emissions data",
+    "Environmental Law Institute",
+    "Plastics and Climate",
+    "UNIPCC"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "Africa",
+    "Environmental Law Institute",
+    "IPCC",
+    "Plastics and Climate",
+    "emissions data"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "the-unequal-toll-of-climate-chaos-hits-africas-poorest-hardest",
+   "title": "The unequal toll of climate chaos hits Africa\u2019s poorest hardest",
+   "type": "news",
+   "url": "/2025/05/28/the-unequal-toll-of-climate-chaos-hits-africas-poorest-hardest/",
+   "oldCats": [
+    "agriculture",
+    "sustainability"
+   ],
+   "oldTags": [
+    "Climate Loss",
+    "Ethiopia",
+    "Haiti",
+    "ODI Global",
+    "Somalia",
+    "Uganda"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "Climate Loss",
+    "Ethiopia",
+    "Haiti",
+    "ODI Global",
+    "Somalia",
+    "Uganda"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "cra-wins-climate-innovation-award-for-heat-insurance-initiative",
+   "title": "CRA wins climate innovation award for heat insurance initiative",
+   "type": "news",
+   "url": "/2025/05/21/cra-wins-climate-innovation-award-for-heat-insurance-initiative/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [
+    "Climate Innovation Leadership Award",
+    "Climate Resilience for All",
+    "CRA",
+    "Kathy Baughman McLeod",
+    "Ricardo Lara"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "CRA",
+    "Climate Innovation Leadership Award",
+    "Climate Resilience for All",
+    "Kathy Baughman McLeod",
+    "Ricardo Lara"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "letthebuildingsbreathe-architectural-solutions-for-surviving-extreme-heat",
+   "title": "#LetTheBuildingsBreathe: Architectural solutions for surviving extreme heat",
+   "type": "news",
+   "url": "/2025/05/19/letthebuildingsbreathe-architectural-solutions-for-surviving-extreme-heat/",
+   "oldCats": [
+    "environment",
+    "sustainability"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "when-the-fish-vanish-and-the-storms-hit-women-pay-the-price",
+   "title": "When the fish vanish and the storms hit, women pay the price",
+   "type": "news",
+   "url": "/2025/05/18/when-the-fish-vanish-and-the-storms-hit-women-pay-the-price/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "AfDB",
+    "African Carbon Support Facility",
+    "Pangani",
+    "Tanzania"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "AfDB",
+    "African Carbon Support Facility",
+    "Pangani",
+    "Tanzania"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "coca-cola-rewrites-the-recycling-story-on-its-bottles-after-greenwashing-complaint",
+   "title": "Coca-Cola agrees to rewrite recycling labels on bottles after greenwashing complaint",
+   "type": "news",
+   "url": "/2025/05/15/coca-cola-rewrites-the-recycling-story-on-its-bottles-after-greenwashing-complaint/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [
+    "Coca Cola",
+    "greenwashing",
+    "recyling"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "Coca Cola",
+    "greenwashing"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "why-net-zero-may-not-end-southern-africas-heatwaves",
+   "title": "Why net zero may not end Southern Africa\u2019s heatwaves",
+   "type": "news",
+   "url": "/2025/05/13/why-net-zero-may-not-end-southern-africas-heatwaves/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "CSIRO",
+    "Day Zero",
+    "Net Zero",
+    "Southern Africa"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "CSIRO",
+    "Day Zero",
+    "Net Zero",
+    "Southern Africa"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "as-heat-and-floods-rise-so-do-african-solutions",
+   "title": "As heat and floods rise so do African solutions",
+   "type": "news",
+   "url": "/2025/05/13/as-heat-and-floods-rise-so-do-african-solutions/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "Extreme heat",
+    "State of the Climate in Africa report"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [
+    "State of the Climate in Africa report"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-cold-snap-mean-global-warming-isnt-real",
+   "title": "FACT CHECK: Does cold snap mean global warming isn't real?",
+   "type": "fact_check",
+   "url": "/2025/05/08/fact-check-does-cold-snap-mean-global-warming-isnt-real/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate",
+    "Climate Fact Check",
+    "Cold Snaps",
+    "Global warming",
+    "Weather"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Cold Snaps"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "funding-cuts-stall-us-climate-adaptation",
+   "title": "Funding cuts stall US climate adaptation",
+   "type": "news",
+   "url": "/2025/05/03/funding-cuts-stall-us-climate-adaptation/",
+   "oldCats": [
+    "news",
+    "sustainability"
+   ],
+   "oldTags": [
+    "climate funding",
+    "climate news",
+    "climate resilience"
+   ],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "scientists-trace-land-movement-in-south-africa-to-shrinking-water-stores",
+   "title": "Scientists trace land movement in South Africa to shrinking water stores",
+   "type": "news",
+   "url": "/2025/05/01/scientists-trace-land-movement-in-south-africa-to-shrinking-water-stores/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "GNSS",
+    "land movement",
+    "South Africa"
+   ],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [
+    "GNSS",
+    "South Africa",
+    "land movement"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "drought-tightens-grip-on-africa-smarter-use-of-water-needed",
+   "title": "Drought tightens grip on Africa, smarter use of water needed",
+   "type": "news",
+   "url": "/2025/04/30/drought-tightens-grip-on-africa-smarter-use-of-water-needed/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "Africa",
+    "Climate Change",
+    "Drought",
+    "JRC MARS Bulletin"
+   ],
+   "cat": "weather",
+   "sub": "drought",
+   "tags": [
+    "Africa",
+    "JRC MARS Bulletin"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "measuring-natural-capital-offers-new-path-to-climate-resilience-in-africa",
+   "title": "Measuring natural capital offers new path to climate resilience in Africa",
+   "type": "news",
+   "url": "/2025/04/29/measuring-natural-capital-offers-new-path-to-climate-resilience-in-africa/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "adaptation-resilience",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "study-shows-few-africans-blame-historical-emitters-for-climate-crisis",
+   "title": "Study shows few Africans blame historical emitters for climate crisis",
+   "type": "news",
+   "url": "/2025/04/16/study-shows-few-africans-blame-historical-emitters-for-climate-crisis/",
+   "oldCats": [
+    "fact-check",
+    "news",
+    "research"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Risk Lab",
+    "Historical emitters"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Climate Risk Lab",
+    "Historical emitters"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "community-led-planning-takes-centre-stage-in-nigerias-flood-response",
+   "title": "Community-led planning takes centre stage in Nigeria\u2019s flood response",
+   "type": "news",
+   "url": "/2025/04/16/community-led-planning-takes-centre-stage-in-nigerias-flood-response/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "how-greenwashing-threatens-global-climate-progress",
+   "title": "How greenwashing threatens global climate progress",
+   "type": "opinion",
+   "url": "/2025/04/15/how-greenwashing-threatens-global-climate-progress/",
+   "oldCats": [
+    "environment",
+    "news",
+    "opinion"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "young-african-farmers-face-mental-health-struggles-as-the-climate-crisis-deepens",
+   "title": "Young African farmers face mental health struggles as the climate crisis deepens",
+   "type": "news",
+   "url": "/2025/04/11/young-african-farmers-face-mental-health-struggles-as-the-climate-crisis-deepens/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "health",
+   "sub": "",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "new-research-reveals-climate-concern-gap-widens-with-wealth",
+   "title": "New research reveals climate concern gap widens with wealth",
+   "type": "news",
+   "url": "/2025/04/09/new-research-reveals-climate-concern-gap-widens-with-wealth/",
+   "oldCats": [
+    "research"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-reporting",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "africas-water-crisis-is-starving-millions-and-its-getting-worse",
+   "title": "Africa\u2019s water crisis is starving millions \u2014 and it\u2019s getting worse",
+   "type": "opinion",
+   "url": "/2025/03/21/africas-water-crisis-is-starving-millions-and-its-getting-worse/",
+   "oldCats": [
+    "environment",
+    "news",
+    "opinion"
+   ],
+   "oldTags": [],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "the-war-on-truth-how-climate-disinformation-threatens-global-action",
+   "title": "The war on truth: How climate disinformation threatens global action",
+   "type": "opinion",
+   "url": "/2025/03/21/the-war-on-truth-how-climate-disinformation-threatens-global-action/",
+   "oldCats": [
+    "environment",
+    "fact-check",
+    "opinion"
+   ],
+   "oldTags": [
+    "Climate Denial",
+    "Climate disinformation",
+    "COVID-19 pandemic",
+    "foreign influence",
+    "fossil fuel reliance",
+    "information manipulation"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "COVID-19 pandemic",
+    "foreign influence",
+    "fossil fuel reliance"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "lagos-to-experience-heavier-than-usual-rainfall-in-2025",
+   "title": "Lagos to experience heavier-than-usual rainfall in 2025",
+   "type": "news",
+   "url": "/2025/03/21/lagos-to-experience-heavier-than-usual-rainfall-in-2025/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [
+    "Lagos",
+    "rainfall"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Lagos",
+    "rainfall"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "does-nigeria-have-what-it-takes-to-host-cop32",
+   "title": "Does Nigeria have what it takes to host COP32?",
+   "type": "opinion",
+   "url": "/2025/03/17/does-nigeria-have-what-it-takes-to-host-cop32/",
+   "oldCats": [
+    "opinion"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "excelsa-south-sudans-weapon-against-climate-changes-impact-on-coffee-check",
+   "title": "Excelsa: South Sudan\u2019s weapon against climate change's impact on coffee",
+   "type": "news",
+   "url": "/2025/03/08/excelsa-south-sudans-weapon-against-climate-changes-impact-on-coffee-check/",
+   "oldCats": [
+    "agriculture",
+    "news"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "climate news",
+    "coffee production",
+    "Excelsa coffee",
+    "South Sudan"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "Excelsa coffee",
+    "South Sudan",
+    "coffee production"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "mitigating-heat-stress-in-abeokutas-expanding-cityscape",
+   "title": "Mitigating heat stress in Abeokuta\u2019s expanding cityscape",
+   "type": "news",
+   "url": "/2025/03/06/mitigating-heat-stress-in-abeokutas-expanding-cityscape/",
+   "oldCats": [
+    "environment",
+    "news"
+   ],
+   "oldTags": [
+    "Abeokuta",
+    "Climate Change",
+    "climate news",
+    "Heat waves",
+    "Taiwo Ogundeji"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "Abeokuta",
+    "Taiwo Ogundeji"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "chinas-role-in-climate-action-grows-as-cop30-nears",
+   "title": "China\u2019s role in climate action grows as COP30 nears",
+   "type": "news",
+   "url": "/2025/03/03/chinas-role-in-climate-action-grows-as-cop30-nears/",
+   "oldCats": [
+    "china",
+    "climate-action",
+    "solar-panel"
+   ],
+   "oldTags": [
+    "China",
+    "Climate Action",
+    "COP30",
+    "renewable energy",
+    "Solar Panel"
+   ],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [
+    "COP30",
+    "China",
+    "Solar"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "false-climate-narratives-surge-amid-global-environmental-crises-says-report",
+   "title": "False climate narratives surge amid global environmental crises, says report",
+   "type": "news",
+   "url": "/2025/02/28/false-climate-narratives-surge-amid-global-environmental-crises-says-report/",
+   "oldCats": [
+    "fact-check",
+    "news"
+   ],
+   "oldTags": [
+    "Climate disinformation",
+    "Epoch Times",
+    "LinkedIn",
+    "NGO Global Witness"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Epoch Times",
+    "NGO Global Witness"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nimet-issues-heatwave-advisory-across-nigeria",
+   "title": "NiMet issues heatwave advisory across Nigeria",
+   "type": "news",
+   "url": "/2025/02/20/nimet-issues-heatwave-advisory-across-nigeria/",
+   "oldCats": [
+    "heatwave",
+    "nimet"
+   ],
+   "oldTags": [
+    "heatwave",
+    "NiMet"
+   ],
+   "cat": "weather",
+   "sub": "heat",
+   "tags": [
+    "NiMet"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "fact-check-south-african-firefighters-didnt-go-to-us-to-quell-wildfire",
+   "title": "FACT CHECK: South African firefighters didn't go to US to quell wildfire",
+   "type": "fact_check",
+   "url": "/2025/01/26/fact-check-south-african-firefighters-didnt-go-to-us-to-quell-wildfire/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "California",
+    "Climate disinformation",
+    "Firefighters",
+    "Los Angeles",
+    "South Africa",
+    "WildFire"
+   ],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [
+    "California",
+    "Firefighters",
+    "Los Angeles",
+    "South Africa"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "us-joins-iran-libya-and-yemen-as-paris-climate-agreement-holdouts",
+   "title": "US joins Iran, Libya, and Yemen as Paris climate agreement holdouts",
+   "type": "news",
+   "url": "/2025/01/22/us-joins-iran-libya-and-yemen-as-paris-climate-agreement-holdouts/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "cabo-verde-needs-140m-annually-to-tackle-climate-challenges-world-bank",
+   "title": "Cabo Verde needs $140M annually to tackle climate crisis",
+   "type": "news",
+   "url": "/2025/01/16/cabo-verde-needs-140m-annually-to-tackle-climate-challenges-world-bank/",
+   "oldCats": [
+    "climate-crisis",
+    "news"
+   ],
+   "oldTags": [
+    "Cabo Verde",
+    "World Bank"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "Cabo Verde",
+    "World Bank"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigerias-president-tinubu-pushes-for-green-investment-at-abu-dhabi-summit",
+   "title": "Nigeria's President Tinubu pushes for green investment at Abu Dhabi summit",
+   "type": "news",
+   "url": "/2025/01/15/nigerias-president-tinubu-pushes-for-green-investment-at-abu-dhabi-summit/",
+   "oldCats": [
+    "news",
+    "sustainability"
+   ],
+   "oldTags": [
+    "Abu Dhabi Summit",
+    "climate resilience",
+    "Sustainability"
+   ],
+   "cat": "policy",
+   "sub": "climate-finance",
+   "tags": [
+    "Abu Dhabi Summit"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "paris-agreement-at-risk-as-2024-becomes-hottest-year-ever",
+   "title": "Paris agreement at risk as 2024 becomes hottest year ever",
+   "type": "news",
+   "url": "/2025/01/14/paris-agreement-at-risk-as-2024-becomes-hottest-year-ever/",
+   "oldCats": [
+    "news"
+   ],
+   "oldTags": [
+    "2024",
+    "hottest year ever",
+    "Paris Agreement"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "Paris Agreement",
+    "hottest year ever"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "how-grocery-stores-can-join-the-climate-fight",
+   "title": "How grocery stores can join the climate fight",
+   "type": "news",
+   "url": "/2025/01/12/how-grocery-stores-can-join-the-climate-fight/",
+   "oldCats": [
+    "agriculture",
+    "news",
+    "sustainability"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Grocery"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "Grocery"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "climate-driven-sea-level-rise-threatens-oil-ports-in-saudi-arabia-us",
+   "title": "Climate-driven sea level rise threatens oil ports in Saudi Arabia, US",
+   "type": "news",
+   "url": "/2025/01/10/climate-driven-sea-level-rise-threatens-oil-ports-in-saudi-arabia-us/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "Saudi Aramco"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "Saudi Aramco"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "california-wildfires-claim-five-lives-destroy-over-1000-homes",
+   "title": "California wildfires claim five lives, destroy over 1,000 homes",
+   "type": "news",
+   "url": "/2025/01/10/california-wildfires-claim-five-lives-destroy-over-1000-homes/",
+   "oldCats": [
+    "california",
+    "climate-change",
+    "wildfire"
+   ],
+   "oldTags": [
+    "California",
+    "Climate Change",
+    "WildFire"
+   ],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [
+    "California"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "fact-check-no-sierra-leones-harmattan-weather-is-not-extreme-air-pollution",
+   "title": "FACT CHECK: No, Sierra Leone\u2019s harmattan weather is not extreme air pollution",
+   "type": "fact_check",
+   "url": "/2025/01/03/fact-check-no-sierra-leones-harmattan-weather-is-not-extreme-air-pollution/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "harmattan",
+    "Nigeria",
+    "Sierra Leone"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Nigeria",
+    "Sierra Leone",
+    "harmattan"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "ai-warns-of-imminent-3c-temperature-rise-in-africa",
+   "title": "AI warns of imminent 3\u00b0C temperature rise in Africa\u00a0",
+   "type": "news",
+   "url": "/2024/12/30/ai-warns-of-imminent-3c-temperature-rise-in-africa/",
+   "oldCats": [
+    "agriculture",
+    "environment"
+   ],
+   "oldTags": [
+    "AI enhanced climate modelling",
+    "temperature in Africa"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "AI enhanced climate modelling",
+    "temperature in Africa"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-has-the-euphrates-river-dried-up-this-is-what-we-know",
+   "title": "FACT CHECK: Has the Euphrates River dried up?",
+   "type": "fact_check",
+   "url": "/2024/12/27/fact-check-has-the-euphrates-river-dried-up-this-is-what-we-know/",
+   "oldCats": [
+    "agriculture",
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate disinformation",
+    "Climate Fact Check",
+    "Euphrates River"
+   ],
+   "cat": "environment",
+   "sub": "water",
+   "tags": [
+    "Euphrates River"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "nigerias-environmental-concerns-deepen-as-recycling-declines-by-19",
+   "title": "Nigeria's environmental concerns deepen as recycling declines by 19%",
+   "type": "news",
+   "url": "/2024/12/25/nigerias-environmental-concerns-deepen-as-recycling-declines-by-19/",
+   "oldCats": [
+    "recycling",
+    "unido"
+   ],
+   "oldTags": [
+    "Recycling",
+    "UNIDO"
+   ],
+   "cat": "environment",
+   "sub": "pollution",
+   "tags": [
+    "UNIDO"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "ey-survey-85-of-investors-say-greenwashing-is-worsening",
+   "title": "EY Survey: 85% of investors say greenwashing is worsening",
+   "type": "news",
+   "url": "/2024/12/13/ey-survey-85-of-investors-say-greenwashing-is-worsening/",
+   "oldCats": [
+    "news",
+    "sustainability"
+   ],
+   "oldTags": [
+    "EY Institutional Investors",
+    "EY survey"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "EY Institutional Investors",
+    "EY survey"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "global-witness-report-highlights-tiktoks-struggles-with-climate-denialism",
+   "title": "Global Witness report highlights TikTok\u2019s struggles with climate denialism",
+   "type": "news",
+   "url": "/2024/12/08/global-witness-report-highlights-tiktoks-struggles-with-climate-denialism/",
+   "oldCats": [
+    "climate-disinformation",
+    "denialism",
+    "tiktok"
+   ],
+   "oldTags": [
+    "Climate disinformation",
+    "Denialism",
+    "TIkTok"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "TikTok"
+   ],
+   "by": "rule"
+  },
+  {
+   "slug": "fact-check-lagos-is-not-below-sea-level",
+   "title": "FACT CHECK: Lagos is NOT below sea level",
+   "type": "fact_check",
+   "url": "/2024/11/21/fact-check-lagos-is-not-below-sea-level/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Arise News",
+    "Climate Fact Check",
+    "Lagos"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Arise News",
+    "Lagos"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "climate-disinformation-the-bigger-threat-to-our-planets-future",
+   "title": "Climate disinformation: The bigger threat to our planet\u2019s future",
+   "type": "opinion",
+   "url": "/2023/08/04/climate-disinformation-the-bigger-threat-to-our-planets-future/",
+   "oldCats": [
+    "fact-check",
+    "opinion"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate disinformation",
+    "Climate Fact Check"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-no-this-video-does-not-show-cyclone-biparjoy",
+   "title": "FACT CHECK: No, this video does not show Cyclone Biparjoy",
+   "type": "fact_check",
+   "url": "/2023/07/18/fact-check-no-this-video-does-not-show-cyclone-biparjoy/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Cyclones. Cyclone Biparjoy"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Cyclone Biparjoy"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "co2-emission-from-volcano-at-mount-etna-not-more-than-man-made-co2-emissions",
+   "title": "CO2 Emission from volcano at Mount Etna not more than man-made CO2 emissions",
+   "type": "news",
+   "url": "/2023/07/14/co2-emission-from-volcano-at-mount-etna-not-more-than-man-made-co2-emissions/",
+   "oldCats": [
+    "environment"
+   ],
+   "oldTags": [
+    "Carbon emission",
+    "Mount Etna",
+    "Volcano"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "Carbon emission",
+    "Mount Etna",
+    "Volcano"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-massive-amount-of-co2-doesnt-increase-human-life",
+   "title": "FACT CHECK: Massive Amount of CO2 Doesn\u2019t Increase Human Life",
+   "type": "fact_check",
+   "url": "/2023/07/12/fact-check-massive-amount-of-co2-doesnt-increase-human-life/",
+   "oldCats": [
+    "fact-check",
+    "sustainability"
+   ],
+   "oldTags": [
+    "Carbon footprint",
+    "CO2"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "CO2",
+    "Carbon footprint"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "john-kerry-never-told-farmers-to-stop-growing-food-to-meet-net-zero-goals",
+   "title": "John Kerry never told farmers to stop growing food to meet \u2018Net Zero\u2019 goals",
+   "type": "news",
+   "url": "/2023/07/11/john-kerry-never-told-farmers-to-stop-growing-food-to-meet-net-zero-goals/",
+   "oldCats": [
+    "uncategorized"
+   ],
+   "oldTags": [
+    "AIM Summit",
+    "Climate Change",
+    "Climate Fact Check",
+    "John Kerry",
+    "Net Zero"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "AIM Summit",
+    "John Kerry",
+    "Net Zero"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-yes-canada-wildfire-is-related-to-climate-change",
+   "title": "Fact-check: Yes, Canada Wildfire is Related to Climate Change",
+   "type": "fact_check",
+   "url": "/2023/07/10/fact-check-yes-canada-wildfire-is-related-to-climate-change/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Canada",
+    "Canadian wildfires",
+    "Climate Change",
+    "Climate Fact Check",
+    "wildfires in Canada"
+   ],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [
+    "Canada",
+    "Canadian wildfires"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-no-canadian-wildfires-were-not-orchestrated",
+   "title": "FACT CHECK: No, Canadian wildfires were not orchestrated",
+   "type": "fact_check",
+   "url": "/2023/07/10/fact-check-no-canadian-wildfires-were-not-orchestrated/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Canadian wildfires",
+    "Climate Fact Check",
+    "wildfires",
+    "wildfires in Canada"
+   ],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [
+    "Canadian wildfires"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-carbon-emission-from-canadas-recent-wildfires-outweigh-that-of-last-100-years",
+   "title": "FACT CHECK: Does carbon emission from Canada\u2019s recent wildfires outweigh that of last 100 years?",
+   "type": "fact_check",
+   "url": "/2023/07/06/fact-check-does-carbon-emission-from-canadas-recent-wildfires-outweigh-that-of-last-100-years/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Canada",
+    "Canadian wildfires",
+    "Climate Fact Check",
+    "wildfires"
+   ],
+   "cat": "weather",
+   "sub": "wildfires",
+   "tags": [
+    "Canada",
+    "Canadian wildfires"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-this-video-doesnt-show-geo-engineering-process-accelerating-climate-change",
+   "title": "FACT CHECK: This video doesn\u2019t show geo-engineering process accelerating climate change\u00a0",
+   "type": "fact_check",
+   "url": "/2023/07/05/fact-check-this-video-doesnt-show-geo-engineering-process-accelerating-climate-change/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-no-short-term-data-cant-determine-overall-decline-of-arctic-sea-ice",
+   "title": "FACT CHECK: No, short term data can\u2019t determine overall decline of arctic sea ice",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-no-short-term-data-cant-determine-overall-decline-of-arctic-sea-ice/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "albedo effect",
+    "arctic ocean",
+    "arctic sea ice"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "albedo effect",
+    "arctic ocean",
+    "arctic sea ice"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-albedo-effect-prove-that-global-warming-is-engineered",
+   "title": "FACT CHECK: Does albedo effect prove that global warming is engineered?\u00a0",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-does-albedo-effect-prove-that-global-warming-is-engineered/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "albedo effect",
+    "Climate Fact Check",
+    "Global warming"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "albedo effect"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-did-john-kerry-say-govt-will-confiscate-farms-at-us-climate-summit",
+   "title": "FACT CHECK: Did John Kerry say govt will confiscate farms at US climate summit?",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-did-john-kerry-say-govt-will-confiscate-farms-at-us-climate-summit/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "fact check",
+    "John Kerry",
+    "US farms"
+   ],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [
+    "John Kerry",
+    "US farms"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-atmospheric-co2-affect-temperature",
+   "title": "FACT CHECK: Does atmospheric CO2 affect temperature?\u00a0",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-does-atmospheric-co2-affect-temperature/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "agriculture"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-tree-planting-reduce-the-effect-of-climate-change",
+   "title": "FACT CHECK: Does tree planting reduce the effect of climate change?\u00a0",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-does-tree-planting-reduce-the-effect-of-climate-change/",
+   "oldCats": [
+    "agriculture",
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-are-contrails-the-same-as-chemtrails",
+   "title": "FACT CHECK: Are contrails the same as chemtrails?\u00a0",
+   "type": "fact_check",
+   "url": "/2023/06/07/fact-check-are-contrails-the-same-as-chemtrails/",
+   "oldCats": [
+    "aviation",
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Aviation"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-the-quantity-of-co2-in-atmosphere-substantial-to-cause-global-warming",
+   "title": "FACT CHECK: Is the quantity of CO2 in atmosphere substantial to cause global warming?",
+   "type": "fact_check",
+   "url": "/2023/06/06/fact-check-is-the-quantity-of-co2-in-atmosphere-substantial-to-cause-global-warming/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "scientific-evidence-shows-climate-change-is-not-a-hoax",
+   "title": "Scientific evidence shows climate change is not a hoax",
+   "type": "fact_check",
+   "url": "/2023/06/06/scientific-evidence-shows-climate-change-is-not-a-hoax/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "US"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "United States"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-no-green-energy-is-neither-a-scam-nor-hoax-for-wealth-transfer",
+   "title": "FACT CHECK: No, green energy is neither a scam nor hoax for wealth transfer\u00a0",
+   "type": "fact_check",
+   "url": "/2023/06/04/fact-check-no-green-energy-is-neither-a-scam-nor-hoax-for-wealth-transfer/",
+   "oldCats": [
+    "fact-check",
+    "green-energy"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "fact check",
+    "fossil fuels",
+    "Green energy",
+    "renewable energy"
+   ],
+   "cat": "energy",
+   "sub": "renewables",
+   "tags": [
+    "fossil fuels"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-yes-co2-warms-the-planet-and-influences-climate-change",
+   "title": "FACT CHECK: Yes, CO2 warms the planet and influences climate change",
+   "type": "fact_check",
+   "url": "/2023/06/03/fact-check-yes-co2-warms-the-planet-and-influences-climate-change/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Agenda2030",
+    "Agenda21",
+    "ClimateCult",
+    "ClimateScam",
+    "GreatReset",
+    "NetZero"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "Net Zero"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-video-shows-somalia-floods-not-cyclone-mocha-in-myanmar",
+   "title": "FACT CHECK: Video shows Somalia floods, not Cyclone Mocha in Myanmar",
+   "type": "fact_check",
+   "url": "/2023/06/02/fact-check-video-shows-somalia-floods-not-cyclone-mocha-in-myanmar/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-hillary-clinton-didnt-advocate-for-cash-ban-to-fight-climate-change",
+   "title": "FACT CHECK: Hillary Clinton didn\u2019t advocate for cash ban to fight climate change",
+   "type": "fact_check",
+   "url": "/2023/06/02/fact-check-hillary-clinton-didnt-advocate-for-cash-ban-to-fight-climate-change/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-was-the-devastating-rainstorm-in-brazil-due-to-mockery-of-jesus",
+   "title": "FACT CHECK: Was the devastating rainstorm in Brazil due to mockery of Jesus?",
+   "type": "fact_check",
+   "url": "/2023/05/12/fact-check-was-the-devastating-rainstorm-in-brazil-due-to-mockery-of-jesus/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Brazil",
+    "Brazil carnival",
+    "fact check"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Brazil",
+    "Brazil carnival"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-a-lioness-truly-giving-birth-when-it-rains-while-sunny",
+   "title": "FACT CHECK: Is a lioness truly giving birth when it rains while sunny?",
+   "type": "fact_check",
+   "url": "/2023/05/02/fact-check-is-a-lioness-truly-giving-birth-when-it-rains-while-sunny/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "fact check",
+    "Nigerians",
+    "sun shower",
+    "Sun showers"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Sun showers"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-tv-host-says-climate-change-improves-lives-how-true-is-the-claim",
+   "title": "FACT CHECK: TV host says climate change improves lives, how true is the claim?",
+   "type": "fact_check",
+   "url": "/2023/04/28/fact-check-tv-host-says-climate-change-improves-lives-how-true-is-the-claim/",
+   "oldCats": [
+    "fact-check",
+    "sustainability"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-video-shows-catkins-from-poplar-tree-not-rain-of-worms",
+   "title": "FACT CHECK: Video shows catkins from poplar tree, not rain of worms\u00a0",
+   "type": "fact_check",
+   "url": "/2023/04/24/fact-check-video-shows-catkins-from-poplar-tree-not-rain-of-worms/",
+   "oldCats": [
+    "agriculture",
+    "fact-check"
+   ],
+   "oldTags": [
+    "China"
+   ],
+   "cat": "environment",
+   "sub": "nature-wildlife",
+   "tags": [
+    "China"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-does-video-of-camels-show-saudi-arabias-first-snowfall-in-100-years",
+   "title": "FACT CHECK: Does video of camels show Saudi Arabia\u2019s first snowfall in 100 years?",
+   "type": "fact_check",
+   "url": "/2023/03/31/fact-check-does-video-of-camels-show-saudi-arabias-first-snowfall-in-100-years/",
+   "oldCats": [
+    "agriculture",
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "\u0627\u0644\u062e\u0645\u064a\u0633",
+    "\u062a\u0628\u0648\u0643"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-climate-change-caused-by-geoengineering",
+   "title": "FACT CHECK: Is climate change caused by geoengineering?",
+   "type": "fact_check",
+   "url": "/2023/03/30/fact-check-is-climate-change-caused-by-geoengineering/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-video-of-toddler-linked-with-earthquakes-in-turkey-and-syria-is-old",
+   "title": "FACT CHECK: Video of toddler linked with earthquakes in Turkey and Syria is old",
+   "type": "fact_check",
+   "url": "/2023/03/25/fact-check-video-of-toddler-linked-with-earthquakes-in-turkey-and-syria-is-old/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "earthquake in Syria",
+    "earthquake in Turkey",
+    "earthquakes",
+    "social media"
+   ],
+   "cat": "environment",
+   "sub": "",
+   "tags": [
+    "earthquake in Syria",
+    "earthquake in Turkey",
+    "earthquakes"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-how-true-is-the-claim-that-us-hasnt-warmed-in-18-years",
+   "title": "FACT CHECK: How true is the claim that US hasn\u2019t warmed in 18 years?",
+   "type": "fact_check",
+   "url": "/2023/03/23/fact-check-how-true-is-the-claim-that-us-hasnt-warmed-in-18-years/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-yes-carbon-dioxide-has-significant-effect-on-climate-change",
+   "title": "FACT CHECK: Yes, carbon dioxide has significant effect on climate change",
+   "type": "fact_check",
+   "url": "/2023/03/11/fact-check-yes-carbon-dioxide-has-significant-effect-on-climate-change/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Change"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-animal-agriculture-the-biggest-contributor-to-climate-change",
+   "title": "FACT CHECK: Is animal agriculture the biggest contributor to climate change?",
+   "type": "fact_check",
+   "url": "/2023/03/09/fact-check-is-animal-agriculture-the-biggest-contributor-to-climate-change/",
+   "oldCats": [
+    "agriculture",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "agriculture",
+   "sub": "",
+   "tags": [],
+   "by": "rule"
+  },
+  {
+   "slug": "fact-check-no-greenhouse-effect-is-not-a-hoax",
+   "title": "FACT CHECK: No, greenhouse effect is not a hoax",
+   "type": "fact_check",
+   "url": "/2023/02/17/fact-check-no-greenhouse-effect-is-not-a-hoax/",
+   "oldCats": [
+    "fact-check",
+    "green-energy"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Fact Check",
+    "fact check",
+    "greenhouse effect",
+    "United States"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "United States",
+    "greenhouse effect"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-will-climate-change-increase-worsen-flight-turbulence",
+   "title": "FACT CHECK: Will climate change increase, worsen flight turbulence?",
+   "type": "fact_check",
+   "url": "/2023/02/02/fact-check-will-climate-change-increase-worsen-flight-turbulence/",
+   "oldCats": [
+    "aviation",
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "Aviation"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-monthly-snowfall-data-doesnt-annul-global-warming",
+   "title": "FACT CHECK: Monthly snowfall data doesn\u2019t annul global warming",
+   "type": "fact_check",
+   "url": "/2023/01/30/fact-check-monthly-snowfall-data-doesnt-annul-global-warming/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Change"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-do-planes-leave-trails-in-the-sky-to-manipulate-weather",
+   "title": "FACT CHECK: Do planes leave trails in the sky to manipulate weather?\u00a0",
+   "type": "fact_check",
+   "url": "/2023/01/18/fact-check-do-planes-leave-trails-in-the-sky-to-manipulate-weather/",
+   "oldCats": [
+    "aviation",
+    "fact-check"
+   ],
+   "oldTags": [
+    "chemtrails",
+    "Climate Fact Check",
+    "fact check"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [
+    "Aviation",
+    "chemtrails"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-are-poor-countries-affected-by-climate-change",
+   "title": "FACT CHECK: Are poor countries affected by climate change?",
+   "type": "fact_check",
+   "url": "/2023/01/03/fact-check-are-poor-countries-affected-by-climate-change/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Fact Check"
+   ],
+   "cat": "climate",
+   "sub": "climate-disinformation",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-do-fossil-fuels-have-impact-on-climate-change",
+   "title": "FACT CHECK: Do fossil fuels have impact on climate change?",
+   "type": "fact_check",
+   "url": "/2022/12/20/fact-check-do-fossil-fuels-have-impact-on-climate-change/",
+   "oldCats": [
+    "fact-check",
+    "green-energy"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Fact Check",
+    "fact check",
+    "fossil fuels"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "fossil fuels"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-yes-climate-change-poses-great-threat-to-humanity",
+   "title": "FACT CHECK: Yes, climate change poses great threat to humanity",
+   "type": "fact_check",
+   "url": "/2022/12/16/fact-check-yes-climate-change-poses-great-threat-to-humanity/",
+   "oldCats": [
+    "fact-check",
+    "sustainability"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Fact Check",
+    "fact check"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-john-kerrys-speech-at-cop27-focused-on-climate-change-not-wiping-out-middle-class",
+   "title": "FACT CHECK: John Kerry\u2019s speech at COP27 focused on climate change, not wiping out middle class",
+   "type": "fact_check",
+   "url": "/2022/12/08/fact-check-john-kerrys-speech-at-cop27-focused-on-climate-change-not-wiping-out-middle-class/",
+   "oldCats": [
+    "fact-check",
+    "sustainability"
+   ],
+   "oldTags": [],
+   "cat": "policy",
+   "sub": "cop-negotiations",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-qatar-world-cup-not-carbon-neutral-as-fifa-claimed",
+   "title": "FACT CHECK: Qatar World Cup not carbon-neutral as FIFA claimed",
+   "type": "fact_check",
+   "url": "/2022/12/02/fact-check-qatar-world-cup-not-carbon-neutral-as-fifa-claimed/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [
+    "carbon neutral",
+    "Climate Fact Check",
+    "fact check",
+    "FIFA",
+    "Qatar",
+    "Qatar World Cup",
+    "World Cup"
+   ],
+   "cat": "policy",
+   "sub": "",
+   "tags": [
+    "FIFA",
+    "Qatar",
+    "Qatar World Cup",
+    "carbon neutral"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-yes-photo-comparison-of-melted-glacier-is-real-but-werent-taken-100-years-apart",
+   "title": "FACT CHECK: Yes, photo comparison of melted glacier is real, but weren\u2019t taken 100 years apart",
+   "type": "fact_check",
+   "url": "/2022/11/23/fact-check-yes-photo-comparison-of-melted-glacier-is-real-but-werent-taken-100-years-apart/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "ActOnClimate",
+    "Climate",
+    "ClimateEmergency",
+    "cop27",
+    "energy",
+    "GreenNewDeal",
+    "renewables"
+   ],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [
+    "COP27"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-this-picture-shows-fort-gibson-dam-in-us-not-lagdo-dam-in-cameroon",
+   "title": "FACT CHECK: This picture shows Fort Gibson dam in US, not Lagdo dam in Cameroon",
+   "type": "fact_check",
+   "url": "/2022/11/21/fact-check-this-picture-shows-fort-gibson-dam-in-us-not-lagdo-dam-in-cameroon/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "Fort Gibson",
+    "Lagdo dam"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Fort Gibson",
+    "Lagdo dam"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-were-31-states-in-nigeria-submerged-by-flooding",
+   "title": "FACT CHECK: Were 31 states in Nigeria submerged by flooding?",
+   "type": "fact_check",
+   "url": "/2022/11/20/fact-check-were-31-states-in-nigeria-submerged-by-flooding/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Fact Check",
+    "fact check",
+    "floods",
+    "floods in Nigeria",
+    "state"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Nigeria floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-the-devastating-flood-in-nigeria-influenced-by-climate-change",
+   "title": "FACT CHECK: Is the devastating flood in Nigeria influenced by climate change?",
+   "type": "fact_check",
+   "url": "/2022/11/15/fact-check-is-the-devastating-flood-in-nigeria-influenced-by-climate-change/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "Climate Change",
+    "Climate Fact Check",
+    "floods",
+    "floods in Nigeria"
+   ],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [
+    "Nigeria floods"
+   ],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-climate-change-a-natural-phenomenon-or-caused-by-human-activities",
+   "title": "FACT CHECK: Is climate change a natural phenomenon or caused by human activities?",
+   "type": "fact_check",
+   "url": "/2022/11/04/fact-check-is-climate-change-a-natural-phenomenon-or-caused-by-human-activities/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-water-level-at-third-mainland-bridge-not-filled-to-the-brim",
+   "title": "FACT CHECK: Water level at Third Mainland Bridge not filled to the brim",
+   "type": "fact_check",
+   "url": "/2022/10/28/fact-check-water-level-at-third-mainland-bridge-not-filled-to-the-brim/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "weather",
+   "sub": "floods",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-is-the-earths-distance-from-the-sun-five-light-minutes-or-90-million-km",
+   "title": "FACT CHECK: Is the earth\u2019s distance from the sun five light minutes or 90 million km?",
+   "type": "fact_check",
+   "url": "/2022/10/22/fact-check-is-the-earths-distance-from-the-sun-five-light-minutes-or-90-million-km/",
+   "oldCats": [
+    "fact-check"
+   ],
+   "oldTags": [],
+   "cat": "climate",
+   "sub": "climate-science",
+   "tags": [],
+   "by": "reading"
+  },
+  {
+   "slug": "fact-check-aphelion-phenomenon-not-unique-to-2022-nor-responsible-for-cold-weather",
+   "title": "FACT CHECK: Aphelion phenomenon not unique to 2022 nor responsible for cold weather",
+   "type": "fact_check",
+   "url": "/2022/10/20/fact-check-aphelion-phenomenon-not-unique-to-2022-nor-responsible-for-cold-weather/",
+   "oldCats": [
+    "environment",
+    "fact-check"
+   ],
+   "oldTags": [
+    "aphelion",
+    "aphelion phenomenon",
+    "Climate Fact Check",
+    "climate news"
+   ],
+   "cat": "weather",
+   "sub": "",
+   "tags": [
+    "Aphelion"
+   ],
+   "by": "reading"
+  }
+ ]
+}

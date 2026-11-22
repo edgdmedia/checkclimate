@@ -1,0 +1,64 @@
+---
+/** Section heading: optional eyebrow, title, description and "see all" link. */
+interface Props {
+	title: string;
+	id?: string;
+	eyebrow?: string | null;
+	description?: string | null;
+	moreHref?: string | null;
+	moreLabel?: string | null;
+	/** Dark band variant: white title, amber eyebrow and link. */
+	onBrand?: boolean;
+	rule?: boolean;
+	headingLevel?: 2 | 3;
+}
+
+const {
+	title,
+	id,
+	eyebrow,
+	description,
+	moreHref,
+	moreLabel = "See All →",
+	onBrand = false,
+	rule = false,
+	headingLevel = 2,
+} = Astro.props;
+
+const Heading = `h${headingLevel}` as const;
+---
+
+<div class:list={["sechead", rule && "sechead--rule", onBrand && "sechead--brand"]}>
+	<div>
+		{
+			eyebrow && (
+				<span class="sechead__eyebrow">
+					<slot name="eyebrow-icon" />
+					{eyebrow}
+				</span>
+			)
+		}
+		<Heading id={id} class="sechead__title">{title}</Heading>
+		{description && <p class="sechead__desc">{description}</p>}
+	</div>
+	{moreHref && <a class="more" href={moreHref}>{moreLabel}</a>}
+</div>
+
+<style>
+	.sechead--brand .sechead__title {
+		color: var(--on-brand);
+		margin-top: 8px;
+	}
+
+	.sechead--brand .sechead__eyebrow {
+		color: var(--brand-amber);
+	}
+
+	.sechead--brand .sechead__desc {
+		color: var(--on-image);
+	}
+
+	.sechead--brand .more {
+		color: var(--brand-amber);
+	}
+</style>

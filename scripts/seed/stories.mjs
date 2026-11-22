@@ -1,0 +1,240 @@
+/**
+ * Sample stories for seed/seed.json. Copy comes from the page designs.
+ * Body lines: plain text is a paragraph, "## " is an h2, "> " is a pull
+ * quote, and "> -- " is the attribution line under a quote.
+ */
+export const stories = [
+	{
+		slug: "reps-advance-bill-renewable-energy-authority",
+		title: "Reps advance bill to establish renewable energy authority",
+		excerpt:
+			"The Electricity Act (Amendment) Bill, 2025 passed its second reading and was referred to committee.",
+		date: "2026-10-15T09:00:00.000Z",
+		category: "environment",
+		tags: ["house-of-reps", "renewable-energy-authority", "green-energy"],
+		byline: "byline-check-climate",
+		minutes: 4,
+		kicker: "none",
+		glance: [
+			"The Electricity Act (Amendment) Bill, 2025 would create a National Authority for Renewable Energy.",
+			"It would take 40% of the Rural Electrification Fund's annual resources.",
+			"Status: passed second reading; referred to committee.",
+		],
+		body: [
+			"The house of representatives has advanced a bill seeking to establish a National Authority for Renewable Energy to coordinate renewable energy development, expand off-grid electricity access and attract investment in clean power.",
+			"The Electricity Act (Amendment) Bill, 2025, sponsored by Afam Ogene, representative of Ogbaru federal constituency in Anambra state and chair of the house committee on renewable energy, passed its second reading on Thursday following debate among lawmakers.",
+			"Ogene argued that transferring renewable energy responsibilities currently handled by the Nigerian Electricity Regulatory Commission (NERC), the Rural Electrification Agency (REA) and the Rural Electrification Fund (REF) to a dedicated authority would reduce overlapping functions and improve coordination across sectors.",
+			"The proposed authority would promote solar, wind, hydropower, geothermal, biomass and hydrogen energy, while supporting mini-grid and off-grid electricity projects in rural and underserved communities.",
+			"It would also encourage local manufacturing, research and technical training through incentives designed to attract investment and create jobs.",
+			"> A key provision of the bill proposes allocating 40% of the rural electrification fund's annual resources to the new authority.",
+			"## Opposition in the chamber",
+			"However, the proposal faced opposition during the debate. Victor Nwokolo, chair of the house committee on power, questioned the need for another institution, warning that separating renewable energy responsibilities from existing electricity oversight could duplicate functions and increase governance costs.",
+			"Ahmadu Jaha also raised concerns about institutional duplication.",
+			"Lawmakers adopted the bill for a second reading and referred it to the relevant committee for further examination. The proposed authority and funding arrangement remain subject to the legislative process.",
+		],
+	},
+	{
+		slug: "lagos-dismisses-bangladesh-flood-video",
+		title: "Lagos dismisses Bangladesh flood video shared as local footage",
+		excerpt:
+			"A viral clip said to show Lekki under water was filmed in Bangladesh, the state environment commissioner said.",
+		date: "2026-07-19T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["lagos-flood", "lekki", "tokunbo-wahab", "climate-disinformation"],
+		byline: "byline-check-climate",
+		minutes: 2,
+		kicker: "fact_check",
+		claim: "A viral clip shows a heavily flooded road in Lekki, Lagos.",
+		claimSource: "Posted on X, July 2026 (since deleted)",
+		verdict: "False",
+		verdictSummary: "The footage is from Bangladesh, not Lagos.",
+		verdictNote:
+			"Confirmed by Tokunbo Wahab, Lagos State commissioner for the environment and water resources.",
+		sources: [
+			"Statement by Tokunbo Wahab, Lagos State commissioner for the environment and water resources, on X, July 14",
+			"The original post on X (deleted after the commissioner's reply)",
+		],
+		body: [
+			"Tokunbo Wahab, Lagos state commissioner for the environment and water resources, has dismissed a trending flood video said to be from Lekki, an upscale area in the state.",
+			"An X user posted a since deleted clip of a heavily flooded road and claimed it was a situation report from Lekki.",
+			"## Why the claim spread",
+			"Because Lekki is a naturally formed peninsula, the area is often prone to flooding during rainy seasons.",
+			"An unprecedented volume of rainfall recorded over the past few weeks has overwhelmed the state, resulting in flooding in some communities including Lekki.",
+			"## What the state said",
+			"Reacting to the viral clip on July 14, Wahab said the video attributed to Lekki was a deliberate dissemination of false information.",
+			"> Dear @iamscrummy_ The flood video you shared and attributed to Lagos State is actually from Bangladesh. We kindly encourage you to verify the authenticity and origin of such content before sharing it, as the dissemination of inaccurate information can mislead the public and undermine genuine discussions about issues affecting Lagos. Thank you for your understanding.",
+			"> -- Tokunbo Wahab on X, July 14",
+			"While we acknowledge and respect everyone's right to freedom of expression, it is important to recognize that every right comes with corresponding responsibilities and legal limits. The deliberate dissemination of false information and misleading narratives not only undermines the efforts of the Lagos State Government but also diminishes the credibility of genuine complaints raised by well-meaning residents, he said.",
+			"The X user took down the video after Wahab's post.",
+		],
+	},
+	{
+		slug: "nnpc-fuel-discount-petrol-subsidy",
+		title: "NNPC says fuel discount does not restore petrol subsidy",
+		excerpt:
+			"The state oil company said its new retail discount is a commercial decision, not a return to a subsidy regime.",
+		date: "2026-11-16T07:30:00.000Z",
+		category: "news",
+		tags: ["energy", "nigeria", "climate-action"],
+		byline: "byline-check-climate",
+		minutes: 3,
+		kicker: "alert",
+		body: [
+			"The Nigerian National Petroleum Company Limited says the discount it introduced on petrol at its retail stations does not amount to a restoration of the fuel subsidy removed in 2023.",
+			"The company said the price adjustment is a commercial decision taken to move stock and compete with private marketers, and that it does not change the deregulated pricing framework.",
+			"## Why it matters",
+			"Fuel prices shape transport costs, food prices and the case for cleaner alternatives. A return to a broad subsidy would also redirect public money away from adaptation and grid investment.",
+			"Climate and energy analysts say the distinction matters because a subsidy would weaken the price signal that has slowly made solar, mini-grids and efficient appliances more competitive.",
+			"The company did not publish the volume of fuel sold under the discount or say how long it would last.",
+		],
+	},
+	{
+		slug: "no-snow-did-not-fall-in-nigeria",
+		title: "No, snow did not fall in Nigeria",
+		excerpt:
+			"Posts showing snow-covered streets were filmed in another country and recaptioned.",
+		date: "2025-07-09T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["climate-disinformation", "nigeria"],
+		byline: "byline-lanre",
+		minutes: 5,
+		kicker: "fact_check",
+		claim: "Snow fell in northern Nigeria during a cold spell.",
+		claimSource: "Facebook post, July 2025",
+		verdict: "False",
+		verdictSummary: "The images were taken abroad and recaptioned.",
+		verdictNote:
+			"Nigeria's climate does not produce snow; the earliest frames trace to a winter storm in North America.",
+		sources: [
+			"Reverse image search results for the earliest frame in the post",
+			"Nigerian Meteorological Agency seasonal outlook, 2025",
+		],
+		body: [
+			"Posts circulating on Facebook and WhatsApp show streets covered in snow, with captions claiming the scenes were filmed in northern Nigeria.",
+			"Reverse image searches trace the earliest versions of the clip to a winter storm in North America. Later reposts cropped out street signs and shop names.",
+			"## Why it spread",
+			"Unusual weather is easy to share and hard to check. The post arrived during a harmattan cold spell, when temperatures in parts of the north dip enough for people to reach for blankets.",
+			"Snow requires sustained temperatures below freezing and enough moisture in the air. Nigeria's climate does not supply both, even during an unusually cold harmattan.",
+			"The Nigerian Meteorological Agency's seasonal outlook described cooler nights and dusty air, not snowfall.",
+		],
+	},
+	{
+		slug: "cold-snap-does-not-disprove-global-warming",
+		title: "Does cold snap mean global warming isn't real?",
+		excerpt:
+			"A short cold spell is weather. The long-term trend is climate, and it is still warming.",
+		date: "2025-05-08T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["climate-disinformation", "climate-crisis"],
+		byline: "byline-lanre",
+		minutes: 5,
+		kicker: "fact_check",
+		claim: "A cold snap proves that global warming is a hoax.",
+		claimSource: "Comment thread on X, May 2025",
+		verdict: "Misleading",
+		verdictSummary:
+			"One cold week is weather, not a trend. Global average temperatures keep rising.",
+		verdictNote:
+			"Warming increases the variability of the jet stream and can push cold air further south.",
+		sources: [
+			"WMO State of the Global Climate reports",
+			"IPCC Sixth Assessment Report, Working Group I",
+		],
+		body: [
+			"Cold snaps are a normal part of a warming climate. They are weather: short, local and highly variable.",
+			"Climate is the long-run average and the distribution around it. Every decade since the 1980s has been warmer than the one before it, and the last ten years are the warmest on record.",
+			"## Why cold air still reaches Africa",
+			"A warming Arctic weakens and wobbles the jet stream. That can let cold air spill further south than usual, even as the average global temperature climbs.",
+			"Confusing a single cold week with the global trend is like judging a country's economy from one shop's takings on a slow Tuesday.",
+		],
+	},
+	{
+		slug: "south-african-firefighters-did-not-go-to-us-wildfire",
+		title: "South African firefighters didn't go to US to quell wildfire",
+		excerpt:
+			"A photo of a deployment ceremony was reused with a false caption about a US wildfire.",
+		date: "2025-01-26T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["climate-disinformation", "south-africa"],
+		byline: "byline-lanre",
+		minutes: 3,
+		kicker: "fact_check",
+		claim: "South African firefighters were deployed to the United States to fight a wildfire.",
+		claimSource: "Facebook post, January 2025",
+		verdict: "False",
+		verdictSummary: "The photo is from a domestic deployment exercise.",
+		verdictNote:
+			"Working on Fire said the image was taken during a South African training exercise.",
+		sources: [
+			"Working on Fire statement, January 2025",
+			"Original photo published by the programme",
+		],
+		body: [
+			"A photo of firefighters in yellow protective gear was shared with a caption claiming the crew had been sent to the United States to help contain a wildfire.",
+			"The image was first published by Working on Fire, a South African government-funded programme, during a domestic deployment and training exercise.",
+			"## What the programme said",
+			"Working on Fire said no crew had been deployed to the United States at the time. The programme does send teams abroad for mutual aid, but those deployments are announced publicly.",
+			"Wildfire seasons are getting longer and more intense in many regions, which makes accurate information about response capacity more important, not less.",
+		],
+	},
+	{
+		slug: "sierra-leone-harmattan-not-air-pollution",
+		title: "No, Sierra Leone's harmattan weather is not extreme air pollution",
+		excerpt:
+			"Dust haze is seasonal and natural. It is not the same as the pollution that comes from traffic and burning.",
+		date: "2025-01-03T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["environment", "sierra-leone", "climate-disinformation"],
+		byline: "byline-lanre",
+		minutes: 4,
+		kicker: "fact_check",
+		claim: "The harmattan haze over Sierra Leone is extreme air pollution caused by industry.",
+		claimSource: "WhatsApp forward, January 2025",
+		verdict: "False context",
+		verdictSummary:
+			"Harmattan dust is seasonal and natural, though it does worsen air quality.",
+		verdictNote:
+			"Health authorities advised people with respiratory conditions to take precautions; that is not proof of an industrial pollution event.",
+		sources: [
+			"Sierra Leone Meteorological Agency seasonal advisory",
+			"World Health Organization guidance on particulate matter",
+		],
+		body: [
+			"A WhatsApp forward described the annual harmattan haze as extreme air pollution and blamed industrial emissions.",
+			"Harmattan is a seasonal wind that carries dust from the Sahara across West Africa. It reduces visibility, dries the air and can irritate eyes and throats.",
+			"## Why the distinction matters",
+			"Dust and combustion pollution are different mixtures. They can both harm health, but they call for different responses: dust episodes call for protection and monitoring, while industrial or traffic pollution calls for emissions controls.",
+			"Health officials advised people with asthma and other respiratory conditions to limit outdoor exposure during the worst days. That advice does not support the claim that an industrial pollution event caused the haze.",
+		],
+	},
+	{
+		slug: "does-the-night-get-darkest-before-dawn",
+		title: "Does the night get darkest before dawn?",
+		excerpt:
+			"The phrase is a proverb about hope, not a description of how light works.",
+		date: "2025-12-24T09:00:00.000Z",
+		category: "fact-check",
+		tags: ["climate-action", "opinion"],
+		byline: "byline-lanre",
+		minutes: 3,
+		kicker: "fact_check",
+		claim: "The night is always darkest just before dawn.",
+		claimSource: "Quote attributed to climate negotiators, December 2025",
+		verdict: "Unproven",
+		verdictSummary:
+			"It is a proverb, not a measurable fact. Light increases gradually before sunrise.",
+		verdictNote:
+			"Astronomical twilight begins well before sunrise, so the darkest moment is earlier in the night.",
+		sources: [
+			"Astronomical twilight definitions, International Astronomical Union",
+			"Sunrise and twilight tables for Lagos, December 2025",
+		],
+		body: [
+			"The line is usually offered as encouragement during difficult negotiations. It is not a claim about astronomy.",
+			"Before sunrise, the sky passes through astronomical, nautical and civil twilight. Light increases throughout, so the darkest moment comes earlier, not immediately before dawn.",
+			"## Why we checked it",
+			"Climate talks often end in long nights and short sleep. Quoting a proverb is fine; presenting it as evidence about progress is not.",
+			"Whether a deal is close is a question about text, finance and trust, not about the colour of the sky.",
+		],
+	},
+];

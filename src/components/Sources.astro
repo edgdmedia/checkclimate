@@ -1,0 +1,63 @@
+---
+/**
+ * Sources panel on a fact check. JSON array of strings or {text, url} objects.
+ */
+import { sourceItems } from "../utils/content";
+
+interface Props {
+	value: unknown;
+}
+
+const { value } = Astro.props;
+const items = sourceItems(value);
+---
+
+{
+	items.length > 0 && (
+		<section aria-labelledby="src-title" class="sources">
+			<h2 id="src-title" class="sources__label">Sources</h2>
+			<ul>
+				{items.map((item) =>
+					item.url ? (
+						<li>
+							<a href={item.url} rel="noopener noreferrer">{item.text}</a>
+						</li>
+					) : (
+						<li>{item.text}</li>
+					),
+				)}
+			</ul>
+		</section>
+	)
+}
+
+<style>
+	.sources {
+		margin-top: 36px;
+		padding: 22px 24px;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+	}
+
+	.sources__label {
+		margin: 0 0 10px;
+		font-size: 13px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: var(--link);
+	}
+
+	.sources ul {
+		margin: 0;
+		padding-left: 20px;
+		font-size: 16px;
+		line-height: 26px;
+		color: var(--ink);
+	}
+
+	.sources a {
+		color: var(--link);
+		text-decoration: underline;
+	}
+</style>

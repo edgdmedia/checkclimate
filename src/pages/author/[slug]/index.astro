@@ -1,0 +1,11 @@
+---
+import Archive from "../../../components/Archive.astro";
+import { authorView } from "../../../utils/archive";
+import { decodeSlug } from "emdash";
+
+const slug = decodeSlug(Astro.params.slug) ?? "";
+const view = await authorView(slug, 1);
+if (!view) return Astro.rewrite("/404");
+---
+
+<Archive {...view} />

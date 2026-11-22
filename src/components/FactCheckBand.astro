@@ -1,0 +1,129 @@
+---
+/**
+ * The fact-check desk band on the home page: one lead check, a list of the
+ * rest, and the claim invitation. Green fill, white text, amber accents.
+ */
+import type { Post } from "../utils/content";
+import {
+	isFactCheck,
+	metaLine,
+	postPath,
+	titleWithoutKicker,
+} from "../utils/content";
+import ClaimCard from "./ClaimCard.astro";
+import SectionHeading from "./SectionHeading.astro";
+import StoryCard from "./StoryCard.astro";
+import StoryMedia from "./StoryMedia.astro";
+import mark from "../assets/brand/check-climate-mark-simple.png";
+
+interface Props {
+	posts: Post[];
+}
+
+const { posts } = Astro.props;
+const checks = posts.filter(isFactCheck);
+const [lead, ...rest] = checks;
+const list = rest.slice(0, 4);
+---
+
+{
+	lead && (
+		<section class="fcband" aria-labelledby="fc-title">
+			<div class="wrap">
+				<SectionHeading
+					id="fc-title"
+					eyebrow="The fact-check desk"
+					title="Latest Factchecks"
+					description="Climate claims circulating across Africa, checked against the evidence."
+					moreHref="/category/fact-check/"
+					moreLabel="See all fact checks →"
+					onBrand
+				>
+					<img slot="eyebrow-icon" src={mark.src} width={22} height={22} alt="" />
+				</SectionHeading>
+				<div class="fcgrid">
+					<a href={postPath(lead)} class="story fcband__lead">
+						<StoryMedia
+							image={lead.data.featured_image}
+							seed={lead.data.id}
+							alt=""
+							width={960}
+							height={540}
+							class="fcband__media"
+						/>
+						<h3 class="fcband__title">
+							<span class="story__kicker">FACT CHECK:</span>{" "}
+							{titleWithoutKicker(lead)}
+						</h3>
+						<span class="fcband__meta">{metaLine(lead)}</span>
+					</a>
+					<div class="fcband__side">
+						{list.map((post) => (
+							<StoryCard post={post} variant="band" headingLevel={5} />
+						))}
+						<div class="fcband__claim">
+							<ClaimCard />
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.fcband {
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		padding-block: 56px;
+	}
+
+	.fcgrid {
+		display: grid;
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		gap: 40px;
+	}
+
+	.fcband__lead {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.fcband__lead :global(.fcband__media) {
+		aspect-ratio: 16 / 9;
+	}
+
+	.fcband__title {
+		margin: 0;
+		font-size: 28px;
+		line-height: 34px;
+		font-weight: 700;
+		color: var(--on-brand);
+	}
+
+	.fcband__lead:hover .fcband__title {
+		color: var(--brand-amber);
+	}
+
+	.fcband__meta {
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--on-image);
+	}
+
+	.fcband__side {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.fcband__claim {
+		margin-top: 24px;
+	}
+
+	@media (max-width: 900px) {
+		.fcgrid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

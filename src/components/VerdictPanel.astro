@@ -1,0 +1,137 @@
+---
+/** Claim / verdict panel on a fact check. Always light-on-white, per design. */
+import Icon from "./Icon.astro";
+
+interface Props {
+	claim?: string | null;
+	claimSource?: string | null;
+	verdict?: string | null;
+	verdictSummary?: string | null;
+	verdictNote?: string | null;
+}
+
+const { claim, claimSource, verdict, verdictSummary, verdictNote } = Astro.props;
+
+const label = (verdict ?? "Unproven").toUpperCase();
+/** FALSE and FALSE CONTEXT use the danger fill; everything else amber. */
+const danger = label === "FALSE" || label === "FALSE CONTEXT";
+---
+
+{
+	(claim || verdict) && (
+		<div class="verdict">
+			{claim && (
+				<div class="verdict__claim">
+					<span class="verdict__label">The claim</span>
+					<p class="verdict__text">{claim}</p>
+					{claimSource && <span class="verdict__note">{claimSource}</span>}
+				</div>
+			)}
+			<div class="verdict__answer">
+				<span class="verdict__label">Our verdict</span>
+				<div class="verdict__row">
+					<span
+						class:list={["verdict__badge", danger && "verdict__badge--danger"]}
+					>
+						{danger ? (
+							<Icon name="x" size={16} />
+						) : (
+							<Icon name="check" size={16} />
+						)}
+						{label}
+					</span>
+					{verdictSummary && (
+						<strong class="verdict__summary">{verdictSummary}</strong>
+					)}
+				</div>
+				{verdictNote && <span class="verdict__note">{verdictNote}</span>}
+			</div>
+		</div>
+	)
+}
+
+<style>
+	.verdict {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		margin-top: 32px;
+		border-radius: var(--radius);
+		overflow: hidden;
+		background: #ffffff;
+		color: #000000;
+	}
+
+	.verdict__claim {
+		padding: 24px 28px;
+		border-inline-end: 1px solid #e6e6e6;
+	}
+
+	.verdict__answer {
+		padding: 24px 28px;
+		background: #f0f2f5;
+	}
+
+	.verdict__label {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: #65676b;
+	}
+
+	.verdict__text {
+		margin: 8px 0 10px;
+		font-size: 21px;
+		line-height: 28px;
+		font-weight: 700;
+	}
+
+	.verdict__row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin: 8px 0 10px;
+		flex-wrap: wrap;
+	}
+
+	.verdict__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 14px;
+		border-radius: var(--radius-small);
+		background: var(--brand-amber);
+		color: #000000;
+		font-size: 18px;
+		font-weight: 900;
+		letter-spacing: 0.06em;
+	}
+
+	.verdict__badge--danger {
+		background: var(--danger);
+	}
+
+	.verdict__summary {
+		font-size: 19px;
+		line-height: 26px;
+		font-weight: 700;
+	}
+
+	.verdict__note {
+		display: block;
+		font-size: 13px;
+		line-height: 18px;
+		color: #666666;
+	}
+
+	@media (max-width: 900px) {
+		.verdict {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.verdict__claim {
+			border-inline-end: 0;
+			border-block-end: 1px solid #e6e6e6;
+		}
+	}
+</style>

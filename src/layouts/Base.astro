@@ -1,0 +1,175 @@
+---
+import { getMenuWithCacheHint, getSiteSettingsWithCacheHint } from "emdash";
+import {
+	EmDashBodyStart,
+	EmDashBodyEnd,
+	EmDashHead,
+} from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import { getSiteLocale } from "../utils/locale";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import BackToTop from "../components/BackToTop.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import "../styles/global.css";
+import "../styles/site.css";
+
+interface Props {
+	title: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	robots?: string | null;
+	type?: "website" | "article";
+	publishedTime?: string | null;
+	modifiedTime?: string | null;
+	author?: string | null;
+	content?: { collection: string; id: string; slug?: string | null };
+	/** Trail for BreadcrumbList structured data, root first. */
+	breadcrumbs?: Array<{ label: string; href?: string }>;
+	/** Full-screen page with no header, footer or floating buttons (the /admin door). */
+	bare?: boolean;
+}
+
+const {
+	title,
+	pageTitle,
+	description,
+	image,
+	canonical,
+	robots,
+	type = "website",
+	publishedTime,
+	modifiedTime,
+	author,
+	content,
+	breadcrumbs,
+	bare = false,
+} = Astro.props;
+
+const [settingsResult, primaryResult, footerResult] = await Promise.all([
+	getSiteSettingsWithCacheHint(),
+	getMenuWithCacheHint("primary"),
+	getMenuWithCacheHint("footer"),
+]);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(settingsResult.cacheHint);
+	Astro.cache.set(primaryResult.cacheHint);
+	Astro.cache.set(footerResult.cacheHint);
+}
+
+const settings = settingsResult.data ?? {};
+const siteTitle = settings.title ?? "Check Climate Africa";
+const siteTagline =
+	settings.tagline ?? "Disseminating Critical Climate Information";
+const titleIncludesSite = title === siteTitle || title.endsWith(`— ${siteTitle}`);
+const fullTitle = titleIncludesSite ? title : `${title} — ${siteTitle}`;
+
+// Canonical and og:url have to be absolute: EmDash passes `page.canonical`
+// through verbatim, and a site-relative one is dropped as an unsafe link.
+const siteOrigin = (Astro.site ?? Astro.url.origin).toString();
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
+const crumbs = breadcrumbs?.map((item) => ({
+	name: item.label,
+	url: item.href ? new URL(item.href, siteOrigin).toString() : canonicalUrl,
+}));
+
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: type,
+	title: fullTitle,
+	pageTitle: pageTitle ?? title,
+	description,
+	canonical: canonical ?? canonicalUrl,
+	image,
+	content,
+	seo: { ogImage: image, robots },
+	articleMeta: { publishedTime, modifiedTime, author },
+	siteName: siteTitle,
+	siteUrl: siteOrigin,
+	...(crumbs ? { breadcrumbs: crumbs } : {}),
+});
+
+const lang = getSiteLocale() ?? "en";
+const breadcrumbJsonLd =
+	crumbs && crumbs.length > 0
+		? JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "BreadcrumbList",
+				itemListElement: crumbs.map((crumb, index) => ({
+					"@type": "ListItem",
+					position: index + 1,
+					name: crumb.name,
+					item: crumb.url,
+				})),
+			})
+		: null;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light" class="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{fullTitle}</title>
+		<link rel="icon" href="/favicon.ico" sizes="48x48" />
+		<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+		<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="theme-color" content="#003c25" />
+		<EmDashHead page={pageCtx} />
+		{breadcrumbJsonLd && (
+			<script type="application/ld+json" is:inline set:html={breadcrumbJsonLd} />
+		)}
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={`${siteTitle} RSS Feed`}
+			href="/feed/"
+		/>
+		<script is:inline>
+			// Set the theme before paint. Light by default; dark only when the
+			// reader picked it with the toggle (the OS setting is ignored).
+			(function () {
+				try {
+					var theme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+					document.documentElement.setAttribute("data-theme", theme);
+					// EmDash's image CSS reads a .light/.dark class and otherwise
+					// falls back to the OS setting.
+					document.documentElement.classList.remove("light", "dark");
+					document.documentElement.classList.add(theme);
+				} catch (error) {
+					document.documentElement.setAttribute("data-theme", "light");
+				}
+			})();
+		</script>
+	</head>
+	<body>
+		<EmDashBodyStart page={pageCtx} />
+		{!bare && <a href="#main" class="skip-link">Skip to content</a>}
+		{!bare && (
+			<SiteHeader
+				siteTitle={siteTitle}
+				siteTagline={siteTagline}
+				items={primaryResult.data?.items ?? []}
+			/>
+		)}
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		{!bare && (
+			<>
+				<SiteFooter
+					siteTitle={siteTitle}
+					sections={primaryResult.data?.items ?? []}
+					items={footerResult.data?.items ?? []}
+				/>
+				<ThemeToggle />
+				<BackToTop />
+			</>
+		)}
+		<EmDashBodyEnd page={pageCtx} />
+	</body>
+</html>

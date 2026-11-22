@@ -1,0 +1,86 @@
+---
+import type { MenuItem } from "emdash";
+import logoLight from "../assets/brand/check-climate-lockup.png";
+import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
+import { SECTIONS, siteConfig } from "../utils/site";
+
+interface Props {
+	siteTitle: string;
+	sections: MenuItem[];
+	items: MenuItem[];
+}
+
+const { siteTitle, sections, items } = Astro.props;
+const { contactEmail, socials } = await siteConfig();
+const year = new Date().getFullYear();
+const sectionItems = (sections.length > 0
+	? sections.filter((item) => item.url && item.url !== "/")
+	: SECTIONS.map((section) => ({
+			label: section.label,
+			url: section.href,
+		}))) as Array<{ label: string; url: string }>;
+---
+
+<footer class="site-footer">
+	<div class="wrap site-footer__grid">
+		<div class="site-footer__brand">
+			<a href="/" aria-label={`${siteTitle} home`}>
+				<img
+					class="masthead__logo masthead__logo--light"
+					src={logoLight.src}
+					width={logoLight.width}
+					height={logoLight.height}
+					alt="Check Climate"
+					loading="lazy"
+				/>
+				<img
+					class="masthead__logo masthead__logo--dark"
+					src={logoDark.src}
+					width={logoDark.width}
+					height={logoDark.height}
+					alt="Check Climate"
+					loading="lazy"
+				/>
+			</a>
+			<p>
+				Africa-centred climate news and fact checks. We are dedicated to
+				providing accurate climate information and promoting climate
+				awareness.
+			</p>
+			<p>
+				For questions, concerns, adverts or climate claim submissions, email{" "}
+				<a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+			</p>
+		</div>
+
+		<nav class="site-footer__col" aria-labelledby="footer-sections">
+			<h2 id="footer-sections">Sections</h2>
+			{sectionItems.map((item) => (
+				<a href={item.url}>{item.label}</a>
+			))}
+		</nav>
+
+		<nav class="site-footer__col" aria-labelledby="footer-about">
+			<h2 id="footer-about">Check Climate</h2>
+			{items.map((item) => (
+				<a href={item.url ?? "/"}>{item.label}</a>
+			))}
+			<h2 class="site-footer__follow">Follow</h2>
+			{socials.map((link) => (
+				<a href={link.href} rel="noopener noreferrer">{link.label}</a>
+			))}
+			<a href="/feed/">RSS feed</a>
+		</nav>
+	</div>
+
+	<div class="site-footer__bottom">
+		<div class="wrap site-footer__bottom-inner">
+			<p>© {year} {siteTitle}. All rights reserved.</p>
+			<p>
+				<a href="/privacy-policy-2/">Privacy</a>
+				<span aria-hidden="true"> · </span>
+				<a href="/accessibility-statement/">Accessibility</a>
+			</p>
+		</div>
+	</div>
+</footer>

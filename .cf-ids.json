@@ -1,0 +1,18 @@
+{
+  "account": "Security Focus",
+  "account_id": "9c8aaa232a52d145430685011e9fff9c",
+  "r2_media_bucket": "checkclimate-media",
+  "kv_cache_id": "27eed96a6bd24524807c4c2dd29b34de",
+  "kv_session_id": "9a385e5821bf4b56a630466e637f74d0",
+  "hyperdrive_id": "2b3bccf24eec455e83134ad7b2f4fef2",
+  "hyperdrive_cached_id": "c67dc2046be04de9a2070be50b51b14f",
+  "hyperdrive_note": "checkclimate-db, caching disabled -> Neon main",
+  "hyperdrive_cached_note": "checkclimate-db-cached, caching on -> Neon main",
+  "neon_org": "org-rough-sunset-47356920",
+  "neon_project_id": "nameless-recipe-90782158",
+  "neon_region": "aws-eu-central-1",
+  "neon_branches": [
+    "main (prod)",
+    "dev"
+  ]
+}

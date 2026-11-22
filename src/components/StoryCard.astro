@@ -1,0 +1,133 @@
+---
+/**
+ * One story, in the shapes the design uses:
+ *   hero  — lead photo card with the headline over a dark fade
+ *   card  — grid tile (Top Stories, related, more fact checks)
+ *   row   — archive list item with a 220px thumbnail
+ *   rail  — "Latest" list item with a square thumbnail
+ *   news  — News grid item with a small 4/3 thumbnail
+ *   text  — headline-only list row
+ *   band  — headline-only row inside the green fact-check band
+ */
+import type { Post } from "../utils/content";
+import {
+	categoryOf,
+	isFactCheck,
+	kickerPrefix,
+	metaLine,
+	postPath,
+	primaryByline,
+	publishedAt,
+	titleWithoutKicker,
+} from "../utils/content";
+import { formatDate } from "../utils/locale";
+import { formatReadingTime, getReadingTime } from "../utils/reading-time";
+import StoryMedia from "./StoryMedia.astro";
+
+interface Props {
+	post: Post;
+	variant?: "hero" | "card" | "row" | "rail" | "news" | "text" | "band";
+	headingLevel?: 2 | 3 | 4 | 5;
+	priority?: boolean;
+	/** Show author · date · reading time under the headline. */
+	meta?: boolean;
+	credit?: string | null;
+}
+
+const {
+	post,
+	variant = "card",
+	headingLevel = 3,
+	priority = false,
+	meta = variant === "row",
+	credit = null,
+} = Astro.props;
+
+const Heading = `h${headingLevel}` as const;
+const href = postPath(post);
+const title = titleWithoutKicker(post);
+const prefix = kickerPrefix(post);
+const category = categoryOf(post);
+const byline = primaryByline(post);
+const factCheck = isFactCheck(post);
+const date = formatDate(publishedAt(post), "long");
+const readingTime = formatReadingTime(getReadingTime(post.data.content));
+const image = post.data.featured_image;
+const classes = {
+	hero: "hero",
+	card: "card",
+	row: "row",
+	rail: "railrow",
+	news: "newsrow",
+	text: "textrow",
+	band: "bandrow",
+}[variant];
+---
+
+<a href={href} class:list={["story", classes]}>
+	{
+		variant === "hero" ? (
+			<>
+				{image ? (
+					<StoryMedia
+						image={image}
+						seed={post.data.id}
+						alt=""
+						priority={priority}
+						width={1200}
+						height={800}
+						class="hero__media"
+					/>
+				) : null}
+				{credit && <span class="story__credit hero__credit">{credit}</span>}
+				<div class="hero__body">
+					{category && <span class="cat-pill">{category.label}</span>}
+					<Heading class="hero__title">
+						{prefix && <span class="story__kicker">{prefix} </span>}
+						{title}
+					</Heading>
+					<span class="hero__byline">{byline.name}</span>
+				</div>
+			</>
+		) : variant === "text" || variant === "band" ? (
+			<Heading class="story__title">
+				{prefix && <span class="story__kicker">{prefix} </span>}
+				{title}
+			</Heading>
+		) : (
+			<>
+				<StoryMedia
+					image={image}
+					seed={post.data.id}
+					alt=""
+					priority={priority}
+					flag={variant === "row" && factCheck ? "FACT CHECK" : null}
+					credit={variant === "card" ? credit : null}
+				/>
+				<div>
+					{variant !== "news" && (
+						<span class="story__cat">
+							{variant === "rail" ? category?.label : metaLine(post) || category?.label}
+						</span>
+					)}
+					<Heading class="story__title">
+						{prefix && <span class="story__kicker">{prefix} </span>}
+						{title}
+					</Heading>
+					{variant === "news" ? (
+						<span class="story__meta">{readingTime}</span>
+					) : meta ? (
+						<span class="story__meta">
+							<strong>{byline.name}</strong> · {date} · {readingTime}
+						</span>
+					) : (
+						<span class="story__meta">
+							<strong>{byline.name}</strong>
+						</span>
+					)}
+				</div>
+			</>
+		)
+	}
+</a>
+

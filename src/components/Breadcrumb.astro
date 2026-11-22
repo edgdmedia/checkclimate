@@ -1,0 +1,36 @@
+---
+/** Breadcrumb: Home / Section / current. */
+interface Item {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	items: Item[];
+	onBrand?: boolean;
+}
+
+const { items, onBrand = false } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<nav aria-label="Breadcrumb" class:list={["crumbs", onBrand && "crumbs--on-brand"]}>
+			{items.map((item, i) => {
+				const isLast = i === items.length - 1;
+				return (
+					<>
+						{item.href && !isLast ? (
+							<a href={item.href}>{item.label}</a>
+						) : (
+							<span aria-current={isLast ? "page" : undefined}>
+								{item.label}
+							</span>
+						)}
+						{!isLast && <span aria-hidden="true">/</span>}
+					</>
+				);
+			})}
+		</nav>
+	)
+}

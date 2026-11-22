@@ -1,0 +1,55 @@
+---
+/**
+ * "At a glance" summary panel on an article. Reads the JSON field and renders
+ * a short bulleted list.
+ */
+import { glanceItems } from "../utils/content";
+
+interface Props {
+	value: unknown;
+}
+
+const { value } = Astro.props;
+const items = glanceItems(value);
+---
+
+{
+	items.length > 0 && (
+		<aside aria-label="At a glance" class="glance">
+			<strong class="glance__label">At a glance</strong>
+			<ul>
+				{items.map((item) => <li>{item}</li>)}
+			</ul>
+		</aside>
+	)
+}
+
+<style>
+	.glance {
+		margin: 0 0 32px;
+		padding: 22px 24px;
+		border-radius: var(--radius);
+		background: var(--surface-muted);
+		font-size: 16px;
+		line-height: 24px;
+	}
+
+	.glance__label {
+		display: block;
+		margin-bottom: 10px;
+		font-size: 13px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: var(--link);
+	}
+
+	.glance ul {
+		margin: 0;
+		padding-left: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		color: var(--ink);
+	}
+</style>

@@ -1,0 +1,20 @@
+---
+/**
+ * Article body Portable Text. Adds the site's X-post link card on top of
+ * EmDash's built-in renderers (headings, lists, links, figures with captions,
+ * pull quotes, YouTube / Vimeo embeds, tables, code).
+ */
+import type { PortableTextBlock } from "emdash";
+import { PortableText } from "emdash/ui";
+import Embed from "./Embed.astro";
+
+interface Props {
+	value: PortableTextBlock[] | null | undefined;
+}
+
+const { value } = Astro.props;
+
+const components = { type: { embed: Embed } };
+---
+
+<PortableText value={value} components={components} />

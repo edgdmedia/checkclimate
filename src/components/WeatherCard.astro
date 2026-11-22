@@ -1,0 +1,159 @@
+---
+/**
+ * Inline weather reading in the top bar, next to the date — the rewrite of
+ * the WordPress "EDGD Weather" plugin, kept deliberately quiet: icon,
+ * temperature, place and humidity. On phones only the icon and temperature
+ * show.
+ *
+ * The page stays the same for every visitor (and cacheable at the edge); the
+ * browser asks /api/weather, which reads the visitor's city from Cloudflare
+ * (src/worker.ts). The site-settings place goes along as the fallback. The
+ * card keeps its space while loading (no layout shift) and is removed if the
+ * reading fails, rather than showing placeholder numbers.
+ */
+import Icon from "./Icon.astro";
+import { siteConfig } from "../utils/site";
+
+const { weather } = await siteConfig();
+
+const conditionIcons = [
+	["clear-day", "sun"],
+	["clear-night", "moon"],
+	["partly-day", "cloud-sun"],
+	["partly-night", "cloud-moon"],
+	["cloudy", "cloud"],
+	["fog", "cloud-fog"],
+	["drizzle", "cloud-drizzle"],
+	["rain", "cloud-rain"],
+	["snow", "cloud-snow"],
+	["storm", "cloud-lightning"],
+] as const;
+---
+
+<div
+	class="wcard"
+	role="group"
+	aria-label="Local weather"
+	data-weather
+	data-city={weather.city}
+	data-country={weather.country}
+	data-lat={weather.latitude}
+	data-lon={weather.longitude}
+>
+	<span class="wcard__icon" aria-hidden="true">
+		{conditionIcons.map(([key, name]) => (
+			<span data-cond={key} hidden>
+				<Icon name={name} size={18} />
+			</span>
+		))}
+	</span>
+	<strong class="wcard__temp"><span data-w="temp">--</span>°C</strong>
+	<span class="wcard__text">
+		<span class="wcard__place" data-w="place"></span>
+		<span class="wcard__meta" data-w="humidity"></span>
+	</span>
+	<span class="sr-only" data-w="summary"></span>
+</div>
+
+<script>
+	interface Reading {
+		city: string;
+		country: string;
+		temp: number;
+		humidity: number;
+		condition: string;
+		isDay: boolean;
+		label: string;
+	}
+
+	/** Half an hour per tab, matching the Worker's cache. */
+	const CACHE_KEY = "cca-weather-v2";
+	const CACHE_MS = 30 * 60 * 1000;
+
+	function set(card: HTMLElement, field: string, text: string): void {
+		const node = card.querySelector<HTMLElement>(`[data-w="${field}"]`);
+		if (node) node.textContent = text;
+	}
+
+	function iconKey(reading: Reading): string {
+		const time = reading.isDay ? "day" : "night";
+		if (reading.condition === "clear" || reading.condition === "partly") {
+			return `${reading.condition}-${time}`;
+		}
+		return reading.condition;
+	}
+
+	function paint(card: HTMLElement, reading: Reading): void {
+		const place = [reading.city, reading.country].filter(Boolean).join(", ");
+		set(card, "temp", String(reading.temp));
+		set(card, "place", place);
+		set(card, "humidity", `Humidity ${reading.humidity}%`);
+		set(
+			card,
+			"summary",
+			`${place}: ${reading.temp}°C, ${reading.label}, humidity ${reading.humidity}%`,
+		);
+
+		const key = iconKey(reading);
+		for (const icon of card.querySelectorAll<HTMLElement>("[data-cond]")) {
+			icon.hidden = icon.dataset.cond !== key;
+		}
+		card.title = reading.label;
+		card.classList.add("wcard--ready");
+	}
+
+	function cached(): Reading | null {
+		try {
+			const raw = sessionStorage.getItem(CACHE_KEY);
+			if (!raw) return null;
+			const entry = JSON.parse(raw) as { at: number; reading: Reading };
+			if (Date.now() - entry.at > CACHE_MS) return null;
+			return typeof entry.reading?.temp === "number" ? entry.reading : null;
+		} catch {
+			return null;
+		}
+	}
+
+	async function load(card: HTMLElement): Promise<void> {
+		const hit = cached();
+		if (hit) {
+			paint(card, hit);
+			return;
+		}
+
+		const query = new URLSearchParams({
+			lat: card.dataset.lat ?? "",
+			lon: card.dataset.lon ?? "",
+			city: card.dataset.city ?? "",
+			country: card.dataset.country ?? "",
+		});
+		try {
+			const response = await fetch(`/api/weather?${query}`, {
+				signal: AbortSignal.timeout(8000),
+			});
+			if (!response.ok) throw new Error(String(response.status));
+			const reading = (await response.json()) as Reading;
+			if (typeof reading.temp !== "number") throw new Error("bad reading");
+			try {
+				sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), reading }));
+			} catch {
+				// Private mode or a full quota: the reading still paints.
+			}
+			paint(card, reading);
+		} catch {
+			card.remove();
+		}
+	}
+
+	function start(): void {
+		for (const card of document.querySelectorAll<HTMLElement>("[data-weather]")) {
+			void load(card);
+		}
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", start, { once: true });
+	} else {
+		start();
+	}
+</script>

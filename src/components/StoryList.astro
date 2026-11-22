@@ -1,0 +1,25 @@
+---
+/**
+ * StoryList — the compact vertical list beside a HeroStory and inside the
+ * fact-check band: square thumbnail, category, short headline.
+ */
+import type { Post } from "../utils/content";
+import StoryCard from "./StoryCard.astro";
+
+interface Props {
+	posts: Post[];
+	/** Section label above the list, e.g. "Latest". */
+	title?: string | null;
+	variant?: "rail" | "text";
+	headingLevel?: 3 | 4 | 5;
+}
+
+const { posts, title = null, variant = "rail", headingLevel = 3 } = Astro.props;
+---
+
+<div class="rail">
+	{title && <h2 class="rail__title">{title}</h2>}
+	{posts.map((post) => (
+		<StoryCard post={post} variant={variant} headingLevel={headingLevel} />
+	))}
+</div>

@@ -1,0 +1,33 @@
+---
+/**
+ * "Seen a climate claim you doubt?" invitation. Amber by default, forest on
+ * article sidebars. Amber is a fill only: black text on it, never white.
+ */
+import { CLAIM_URL } from "../utils/site";
+import mark from "../assets/brand/check-climate-mark-simple.png";
+
+interface Props {
+	variant?: "amber" | "forest";
+	title?: string;
+	body?: string;
+	label?: string;
+}
+
+const {
+	variant = "amber",
+	title = "Seen a climate claim you doubt?",
+	body = "Send us the post, video or quote. Our desk will check it and publish what we find.",
+	label = "Submit a claim",
+} = Astro.props;
+---
+
+<div class:list={["claim-card", variant === "forest" && "claim-card--forest"]}>
+	{
+		variant === "forest" && (
+			<img src={mark.src} width={40} height={40} alt="" loading="lazy" />
+		)
+	}
+	<strong>{title}</strong>
+	<span>{body}</span>
+	<a href={CLAIM_URL} class="claim-card__btn">{label}</a>
+</div>

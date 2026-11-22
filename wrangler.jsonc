@@ -1,0 +1,60 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "checkclimate",
+	"main": "./src/worker.ts",
+	"compatibility_date": "2026-11-19",
+	// Sender for sign-in links and notifications. The domain must be the one
+	// verified in Resend (notify.checkclimate.africa).
+	"vars": {
+		"EMAIL_FROM": "Check Climate Africa <newsroom@notify.checkclimate.africa>"
+	},
+	"compatibility_flags": ["nodejs_compat"],
+	"account_id": "9c8aaa232a52d145430685011e9fff9c",
+	"workers_dev": true,
+	// Place the Worker in the Cloudflare data centre closest to Neon
+	// (aws-eu-central-1, Frankfurt) so each request avoids a transatlantic hop.
+	"placement": {
+		"region": "aws:eu-central-1"
+	},
+	"observability": {
+		"enabled": true
+	},
+	// Two Hyperdrive configs over the same Neon database:
+	// HYPERDRIVE (caching disabled) for admin/writes/migrations, and
+	// HYPERDRIVE_CACHED (query caching on) for anonymous public reads.
+	// `localConnectionString` is only used by `wrangler dev`; the
+	// CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_<BINDING> env var set by
+	// scripts/with-env.mjs from NEON_DEV_DATABASE_URL takes precedence.
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			"id": "2b3bccf24eec455e83134ad7b2f4fef2",
+			"localConnectionString": "postgres://REPLACE_ME:REPLACE_ME@localhost:5432/checkclimate"
+		},
+		{
+			"binding": "HYPERDRIVE_CACHED",
+			"id": "c67dc2046be04de9a2070be50b51b14f",
+			"localConnectionString": "postgres://REPLACE_ME:REPLACE_ME@localhost:5432/checkclimate"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "checkclimate-media"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "CACHE",
+			"id": "27eed96a6bd24524807c4c2dd29b34de"
+		},
+		{
+			"binding": "SESSION",
+			"id": "9a385e5821bf4b56a630466e637f74d0"
+		}
+	],
+	// Scheduled publishing and EmDash maintenance.
+	"triggers": {
+		"crons": ["*/15 * * * *"]
+	}
+}
