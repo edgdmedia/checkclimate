@@ -5,6 +5,11 @@
 	"compatibility_date": "2026-11-19",
 	// Sender for sign-in links and notifications. The domain must be the one
 	// verified in Resend (notify.checkclimate.africa).
+	// Per-visitor search limit (src/middleware.ts). Counts are per Cloudflare
+	// location and approximate; 20 searches a minute is far above a reader.
+	"ratelimits": [
+		{ "name": "SEARCH_LIMITER", "namespace_id": "2201", "simple": { "limit": 20, "period": 60 } }
+	],
 	"vars": {
 		"EMAIL_FROM": "Check Climate Africa <newsroom@notify.checkclimate.africa>"
 	},

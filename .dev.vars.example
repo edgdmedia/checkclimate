@@ -10,4 +10,4 @@ TURNSTILE_SECRET_KEY=
 
 # Public values (safe to keep as Wrangler vars instead of secrets).
 TURNSTILE_SITE_KEY=
-EMDASH_SITE_URL=https://www.checkclimate.africa
+EMDASH_SITE_URL=https://checkclimate.africa

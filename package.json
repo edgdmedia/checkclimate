@@ -17,7 +17,7 @@
     "prebuild": "node scripts/build-tokens.mjs",
     "build": "astro build",
     "deploy:preview": "EMDASH_SITE_URL=https://checkclimate.security-focus.workers.dev pnpm build && wrangler deploy",
-    "deploy:production": "EMDASH_SITE_URL=https://www.checkclimate.africa pnpm build && wrangler deploy",
+    "deploy:production": "EMDASH_SITE_URL=https://checkclimate.africa pnpm build && wrangler deploy",
     "preview": "node scripts/with-env.mjs astro preview",
     "typecheck": "astro check",
     "test": "vitest run",

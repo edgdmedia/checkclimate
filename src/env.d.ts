@@ -72,6 +72,8 @@ interface Env {
 	HYPERDRIVE: HyperdriveLike;
 	HYPERDRIVE_CACHED: HyperdriveLike;
 	IMAGES: ImagesBindingLike;
+	/** Workers rate limiter for search (wrangler.jsonc `ratelimits`). */
+	SEARCH_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 	EMDASH_SITE_URL: string;
 	NEON_DATABASE_URL: string;
 	NEON_DEV_DATABASE_URL: string;

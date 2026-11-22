@@ -46,13 +46,15 @@
 							"opinion"
 						]
 					},
-					"widget": "checkclimate-post-editor:post-type"
+					"widget": "checkclimate-post-editor:post-type",
+					"indexed": true
 				},
 				{
 					"slug": "alert",
 					"label": "Show as alert",
 					"type": "boolean",
-					"defaultValue": false
+					"defaultValue": false,
+					"indexed": true
 				},
 				{
 					"slug": "excerpt",
