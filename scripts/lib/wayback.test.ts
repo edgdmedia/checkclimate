@@ -6,6 +6,7 @@ import {
 	isOwnSiteOriginal,
 	lookupMediaUrl,
 	rootRelativePath,
+	unwrapLinksInContent,
 	unwrapWayback,
 } from "./wayback";
 
@@ -303,5 +304,49 @@ describe("collectWaybackEdits", () => {
 		const { fields, strings } = collectWaybackEdits(blocks);
 		expect(fields).toHaveLength(0);
 		expect(strings).toHaveLength(0);
+	});
+});
+
+describe("unwrapLinksInContent", () => {
+	const wrap = (url: string) => `https://web.archive.org/web/20250318160154/${url}`;
+
+	it("unwraps external links to the original URL", () => {
+		const content = [
+			{
+				_type: "block",
+				markDefs: [{ _type: "link", _key: "a", href: wrap("http://www.globalfuturecities.org/federal-republic-nigeria/cities/abeokuta") }],
+			},
+		];
+		const changes = unwrapLinksInContent(content);
+		expect(changes).toHaveLength(1);
+		expect(content[0]!.markDefs[0]!.href).toBe(
+			"http://www.globalfuturecities.org/federal-republic-nigeria/cities/abeokuta",
+		);
+	});
+
+	it("turns own-site links into root-relative paths", () => {
+		const content = [{ _type: "image", link: { href: wrap("https://www.checkclimate.africa/tag/flood/") } }];
+		unwrapLinksInContent(content);
+		expect(content[0]!.link.href).toBe("/tag/flood/");
+	});
+
+	it("leaves image assets and own-site image links alone", () => {
+		const img = wrap("https://checkclimate.africa/wp-content/uploads/2025/05/a.jpg");
+		const content = [{ _type: "image", asset: { url: img, _ref: img }, link: { href: img } }];
+		expect(unwrapLinksInContent(content)).toHaveLength(0);
+		expect(content[0]!.asset.url).toBe(img);
+		expect(content[0]!.link.href).toBe(img);
+	});
+
+	it("rewrites href attributes inside HTML blocks only", () => {
+		const html = `<a href="${wrap("https://ipcc.ch/")}">IPCC</a> <img src="${wrap("https://example.com/x.png")}">`;
+		const content = [{ _type: "htmlBlock", html }];
+		unwrapLinksInContent(content);
+		expect(content[0]!.html).toBe(`<a href="https://ipcc.ch/">IPCC</a> <img src="${wrap("https://example.com/x.png")}">`);
+	});
+
+	it("is idempotent and ignores archive.ph citations", () => {
+		const content = [{ _type: "block", markDefs: [{ href: "https://archive.ph/abc" }, { href: "https://ipcc.ch/" }] }];
+		expect(unwrapLinksInContent(content)).toHaveLength(0);
 	});
 });

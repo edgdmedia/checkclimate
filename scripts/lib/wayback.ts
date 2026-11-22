@@ -382,3 +382,61 @@ export function rewriteImageAsset(block: Record<string, unknown>, mediaUrl: stri
 	block.asset = asset;
 	if (typeof block.srcset === "string") delete block.srcset;
 }
+
+/**
+ * Link rule (2026-11): the Wayback wrappers came from restoring the site after
+ * a data loss, not from deliberate archiving, so every wrapped *link* goes
+ * back to its original — external originals verbatim, own-site originals as
+ * root-relative paths. Images are left alone: own-site images belong in R2
+ * (unwrap-wayback.ts), and an external image may only survive in the archive.
+ */
+export function unwrapLink(url: string): string | null {
+	const unwrapped = unwrapWayback(url);
+	if (!unwrapped) return null;
+	if (isImageOriginal(unwrapped.original)) return null;
+	return isOwnSiteOriginal(unwrapped.original)
+		? rootRelativePath(unwrapped.original)
+		: unwrapped.original;
+}
+
+/** `href="…"` / `href='…'` attributes inside an HTML string. */
+const HREF_ATTRIBUTE = /(\bhref\s*=\s*)(["'])(https?:\/\/web\.archive\.org\/web\/[^"']+)\2/gi;
+
+/**
+ * Rewrites every Wayback-wrapped link in a Portable Text value, in place:
+ * any `href` field at any depth, and `href` attributes inside HTML strings.
+ * Image fields (`asset.url`, `_ref`, `src`) are never touched. Returns the
+ * before/after pairs, in order.
+ */
+export function unwrapLinksInContent(value: unknown): Array<{ from: string; to: string }> {
+	const changes: Array<{ from: string; to: string }> = [];
+	const visit = (node: unknown): void => {
+		if (Array.isArray(node)) {
+			node.forEach(visit);
+			return;
+		}
+		if (!isRecord(node)) return;
+		for (const [key, field] of Object.entries(node)) {
+			if (typeof field === "string") {
+				if (key === "href") {
+					const to = unwrapLink(field);
+					if (to !== null && to !== field) {
+						changes.push({ from: field, to });
+						node[key] = to;
+					}
+				} else if ((key === "html" || key === "value") && field.includes("web.archive.org")) {
+					node[key] = field.replace(HREF_ATTRIBUTE, (whole, prefix: string, quote: string, url: string) => {
+						const to = unwrapLink(url);
+						if (to === null) return whole;
+						changes.push({ from: url, to });
+						return `${prefix}${quote}${to}${quote}`;
+					});
+				}
+			} else {
+				visit(field);
+			}
+		}
+	};
+	visit(value);
+	return changes;
+}
