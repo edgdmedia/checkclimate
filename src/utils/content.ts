@@ -1,7 +1,6 @@
 import type { ContentEntry, InferCollectionData } from "emdash";
 
 export type Post = ContentEntry<InferCollectionData<"posts">>;
-export type PageEntry = ContentEntry<InferCollectionData<"pages">>;
 export type Term = { slug: string; label: string };
 
 /** ISO timestamp for an entry, falling back to the epoch so URLs stay stable. */
@@ -29,29 +28,82 @@ export function postPath(post: Post): string {
 	return `/${date.getUTCFullYear()}/${pad(date.getUTCMonth() + 1)}/${pad(date.getUTCDate())}/${slug}/`;
 }
 
-export function pagePath(page: PageEntry): string {
-	return `/${page.data.slug ?? page.data.id}/`;
-}
+export type PostType = "news" | "fact_check" | "opinion";
 
-export function kickerOf(post: Post): "none" | "alert" | "fact_check" {
+/** The post's type (the `kicker` field, labelled "Post type" in the admin). */
+export function kickerOf(post: Post): PostType {
 	const kicker = post.data.kicker;
-	return kicker === "alert" || kicker === "fact_check" ? kicker : "none";
+	return kicker === "fact_check" || kicker === "opinion" ? kicker : "news";
 }
 
 export function isFactCheck(post: Post): boolean {
 	return kickerOf(post) === "fact_check";
 }
 
+/** "Show as alert": the amber card on the home page and the ALERT: label. */
+export function isAlert(post: Post): boolean {
+	const alert: unknown = post.data.alert;
+	return alert === true || alert === 1;
+}
+
 export function kickerPrefix(post: Post): string {
-	const kicker = kickerOf(post);
-	if (kicker === "fact_check") return "FACT CHECK:";
-	if (kicker === "alert") return "ALERT:";
+	if (isFactCheck(post)) return "FACT CHECK:";
+	if (isAlert(post)) return "ALERT:";
 	return "";
 }
 
+/**
+ * The seven sections and their subcategories (desk decision, 2026-11-22;
+ * applied by scripts/taxonomy-reorg.ts). A post carries its section and,
+ * where it has one, a subcategory, so a section page lists both.
+ */
+export const SECTIONS: ReadonlyArray<{ slug: string; label: string; subs: ReadonlyArray<{ slug: string; label: string }> }> = [
+	{ slug: "climate", label: "Climate", subs: [
+		{ slug: "climate-science", label: "Climate Science" },
+		{ slug: "adaptation-resilience", label: "Adaptation & Resilience" },
+		{ slug: "climate-disinformation", label: "Climate Disinformation" },
+		{ slug: "climate-reporting", label: "Climate Reporting" },
+	] },
+	{ slug: "weather", label: "Weather", subs: [
+		{ slug: "heat", label: "Heat" },
+		{ slug: "floods", label: "Floods" },
+		{ slug: "wildfires", label: "Wildfires" },
+		{ slug: "drought", label: "Drought" },
+	] },
+	{ slug: "energy", label: "Energy", subs: [
+		{ slug: "renewables", label: "Renewables" },
+		{ slug: "oil-gas", label: "Oil & Gas" },
+	] },
+	{ slug: "agriculture", label: "Agriculture", subs: [] },
+	{ slug: "environment", label: "Environment", subs: [
+		{ slug: "pollution", label: "Pollution" },
+		{ slug: "water", label: "Water" },
+		{ slug: "nature-wildlife", label: "Nature & Wildlife" },
+	] },
+	{ slug: "health", label: "Health", subs: [] },
+	{ slug: "policy", label: "Policy", subs: [
+		{ slug: "climate-finance", label: "Climate Finance" },
+		{ slug: "cop-negotiations", label: "COP & Negotiations" },
+	] },
+];
+
+const SECTION_SLUGS = new Set(SECTIONS.map((section) => section.slug));
+
+/**
+ * Fact Check, News and Opinion are post types, not categories; their
+ * /category/<slug>/ pages list posts by type.
+ */
+export const TYPE_SECTIONS: Record<string, { type: PostType; label: string; description: string | null }> = {
+	"fact-check": { type: "fact_check", label: "Fact Check", description: "Climate claims circulating across Africa, checked against the evidence." },
+	news: { type: "news", label: "News", description: null },
+	opinion: { type: "opinion", label: "Opinion", description: null },
+};
+
+/** The post's section (top-level category), falling back to any category. */
 export function categoryOf(post: Post): Term | null {
 	const terms = post.data.terms as Record<string, Term[]> | undefined;
-	return terms?.category?.[0] ?? null;
+	const categories = terms?.category ?? [];
+	return categories.find((term) => SECTION_SLUGS.has(term.slug)) ?? categories[0] ?? null;
 }
 
 export function categoriesOf(post: Post): Term[] {

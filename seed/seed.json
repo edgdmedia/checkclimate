@@ -13,6 +13,7 @@
 	"collections": [
 		{
 			"slug": "posts",
+			"sortOrder": 0,
 			"label": "Posts",
 			"labelSingular": "Post",
 			"urlPattern": "/{year}/{month}/{day}/{slug}",
@@ -34,6 +35,26 @@
 					"searchable": true
 				},
 				{
+					"slug": "kicker",
+					"label": "Post type",
+					"type": "select",
+					"defaultValue": "news",
+					"validation": {
+						"options": [
+							"news",
+							"fact_check",
+							"opinion"
+						]
+					},
+					"widget": "checkclimate-post-editor:post-type"
+				},
+				{
+					"slug": "alert",
+					"label": "Show as alert",
+					"type": "boolean",
+					"defaultValue": false
+				},
+				{
 					"slug": "excerpt",
 					"label": "Excerpt",
 					"type": "text"
@@ -50,32 +71,16 @@
 					"type": "image"
 				},
 				{
-					"slug": "kicker",
-					"label": "Kicker",
-					"type": "select",
-					"defaultValue": "none",
-					"validation": {
-						"options": [
-							"none",
-							"alert",
-							"fact_check"
-						]
-					}
-				},
-				{
-					"slug": "at_a_glance",
-					"label": "At a glance",
-					"type": "json"
-				},
-				{
 					"slug": "claim",
 					"label": "Claim",
-					"type": "text"
+					"type": "text",
+					"widget": "checkclimate-post-editor:fc-heading-text"
 				},
 				{
 					"slug": "claim_source",
 					"label": "Claim source",
-					"type": "string"
+					"type": "string",
+					"widget": "checkclimate-post-editor:fc-text"
 				},
 				{
 					"slug": "verdict",
@@ -90,27 +95,39 @@
 							"True",
 							"Unproven"
 						]
-					}
+					},
+					"widget": "checkclimate-post-editor:fc-verdict"
 				},
 				{
 					"slug": "verdict_summary",
 					"label": "Verdict summary",
-					"type": "text"
+					"type": "text",
+					"widget": "checkclimate-post-editor:fc-textarea"
 				},
 				{
 					"slug": "verdict_note",
 					"label": "Verdict note",
-					"type": "text"
+					"type": "text",
+					"widget": "checkclimate-post-editor:fc-textarea"
+				},
+				{
+					"slug": "at_a_glance",
+					"label": "At a glance",
+					"type": "json",
+					"widget": "checkclimate-post-editor:fc-list"
 				},
 				{
 					"slug": "sources",
 					"label": "Sources",
-					"type": "json"
+					"type": "json",
+					"widget": "checkclimate-post-editor:fc-sources"
 				}
 			]
 		},
 		{
 			"slug": "pages",
+			"sortOrder": 2,
+			"hidden": true,
 			"label": "Pages",
 			"labelSingular": "Page",
 			"urlPattern": "/{slug}",
@@ -144,6 +161,7 @@
 		},
 		{
 			"slug": "claims",
+			"sortOrder": 1,
 			"label": "Claims",
 			"labelSingular": "Claim",
 			"description": "Reader claim submissions. Never rendered publicly.",
@@ -239,12 +257,66 @@
 			],
 			"terms": [
 				{
-					"slug": "news",
-					"label": "News"
+					"slug": "climate",
+					"label": "Climate"
 				},
 				{
-					"slug": "fact-check",
-					"label": "Fact Check"
+					"slug": "climate-science",
+					"label": "Climate Science",
+					"parent": "climate"
+				},
+				{
+					"slug": "adaptation-resilience",
+					"label": "Adaptation & Resilience",
+					"parent": "climate"
+				},
+				{
+					"slug": "climate-disinformation",
+					"label": "Climate Disinformation",
+					"parent": "climate"
+				},
+				{
+					"slug": "climate-reporting",
+					"label": "Climate Reporting",
+					"parent": "climate"
+				},
+				{
+					"slug": "weather",
+					"label": "Weather"
+				},
+				{
+					"slug": "heat",
+					"label": "Heat",
+					"parent": "weather"
+				},
+				{
+					"slug": "floods",
+					"label": "Floods",
+					"parent": "weather"
+				},
+				{
+					"slug": "wildfires",
+					"label": "Wildfires",
+					"parent": "weather"
+				},
+				{
+					"slug": "drought",
+					"label": "Drought",
+					"parent": "weather"
+				},
+				{
+					"slug": "energy",
+					"label": "Energy"
+				},
+				{
+					"slug": "renewables",
+					"label": "Renewables",
+					"parent": "energy"
+				},
+				{
+					"slug": "oil-gas",
+					"label": "Oil & Gas",
+					"parent": "energy"
 				},
 				{
 					"slug": "agriculture",
@@ -255,32 +327,37 @@
 					"label": "Environment"
 				},
 				{
-					"slug": "green-energy",
-					"label": "Green Energy"
+					"slug": "pollution",
+					"label": "Pollution",
+					"parent": "environment"
 				},
 				{
-					"slug": "sustainability",
-					"label": "Sustainability"
+					"slug": "water",
+					"label": "Water",
+					"parent": "environment"
 				},
 				{
-					"slug": "aviation",
-					"label": "Aviation"
+					"slug": "nature-wildlife",
+					"label": "Nature & Wildlife",
+					"parent": "environment"
 				},
 				{
-					"slug": "energy",
-					"label": "Energy"
+					"slug": "health",
+					"label": "Health"
 				},
 				{
-					"slug": "climate-action",
-					"label": "Climate Action"
+					"slug": "policy",
+					"label": "Policy"
 				},
 				{
-					"slug": "africa",
-					"label": "Africa"
+					"slug": "climate-finance",
+					"label": "Climate Finance",
+					"parent": "policy"
 				},
 				{
-					"slug": "climate-resilience",
-					"label": "Climate Resilience"
+					"slug": "cop-negotiations",
+					"label": "COP & Negotiations",
+					"parent": "policy"
 				}
 			]
 		},
@@ -294,60 +371,92 @@
 			],
 			"terms": [
 				{
+					"slug": "afdb",
+					"label": "AfDB"
+				},
+				{
 					"slug": "africa",
 					"label": "Africa"
+				},
+				{
+					"slug": "african-carbon-support-facility",
+					"label": "African Carbon Support Facility"
 				},
 				{
 					"slug": "blue-economy",
 					"label": "Blue Economy"
 				},
 				{
-					"slug": "climate-action",
-					"label": "Climate Action"
+					"slug": "brazil",
+					"label": "Brazil"
 				},
 				{
-					"slug": "climate-crisis",
-					"label": "Climate Crisis"
+					"slug": "california",
+					"label": "California"
 				},
 				{
-					"slug": "climate-disinformation",
-					"label": "Climate Disinformation"
+					"slug": "climate-innovation-leadership-award",
+					"label": "Climate Innovation Leadership Award"
 				},
 				{
-					"slug": "climate-resilience",
-					"label": "Climate Resilience"
+					"slug": "climate-resilience-for-all",
+					"label": "Climate Resilience for All"
+				},
+				{
+					"slug": "cold-snaps",
+					"label": "Cold Snaps"
 				},
 				{
 					"slug": "cop30",
-					"label": "Cop30"
+					"label": "COP30"
 				},
 				{
-					"slug": "energy",
-					"label": "Energy"
+					"slug": "cra",
+					"label": "CRA"
 				},
 				{
-					"slug": "environment",
-					"label": "Environment"
+					"slug": "csiro",
+					"label": "CSIRO"
 				},
 				{
-					"slug": "fisheries",
-					"label": "Fisheries"
+					"slug": "day-zero",
+					"label": "Day Zero"
 				},
 				{
-					"slug": "green-energy",
-					"label": "Green Energy"
+					"slug": "emissions-data",
+					"label": "emissions data"
 				},
 				{
-					"slug": "heatwaves",
-					"label": "Heatwaves"
+					"slug": "environmental-law-institute",
+					"label": "Environmental Law Institute"
+				},
+				{
+					"slug": "firefighters",
+					"label": "Firefighters"
+				},
+				{
+					"slug": "fuel-subsidy",
+					"label": "fuel subsidy"
+				},
+				{
+					"slug": "harmattan",
+					"label": "harmattan"
 				},
 				{
 					"slug": "house-of-reps",
-					"label": "House Of Reps"
+					"label": "House of reps"
 				},
 				{
-					"slug": "lagos-flood",
-					"label": "Lagos Flood"
+					"slug": "ipcc",
+					"label": "IPCC"
+				},
+				{
+					"slug": "kathy-baughman-mcleod",
+					"label": "Kathy Baughman McLeod"
+				},
+				{
+					"slug": "lagos-floods",
+					"label": "Lagos floods"
 				},
 				{
 					"slug": "lake-chad",
@@ -358,36 +467,72 @@
 					"label": "Lekki"
 				},
 				{
+					"slug": "los-angeles",
+					"label": "Los Angeles"
+				},
+				{
+					"slug": "morgan-stanley",
+					"label": "Morgan Stanley"
+				},
+				{
+					"slug": "nasa",
+					"label": "NASA"
+				},
+				{
+					"slug": "net-zero",
+					"label": "Net Zero"
+				},
+				{
 					"slug": "nigeria",
 					"label": "Nigeria"
 				},
 				{
-					"slug": "opinion",
-					"label": "Opinion"
+					"slug": "nnpc",
+					"label": "NNPC"
 				},
 				{
-					"slug": "plastics",
-					"label": "Plastics"
+					"slug": "pangani",
+					"label": "Pangani"
+				},
+				{
+					"slug": "plastics-and-climate",
+					"label": "Plastics and Climate"
 				},
 				{
 					"slug": "renewable-energy-authority",
-					"label": "Renewable Energy Authority"
+					"label": "renewable energy authority"
 				},
 				{
-					"slug": "research",
-					"label": "Research"
+					"slug": "ricardo-lara",
+					"label": "Ricardo Lara"
 				},
 				{
 					"slug": "sierra-leone",
 					"label": "Sierra Leone"
 				},
 				{
+					"slug": "snowfall",
+					"label": "Snowfall"
+				},
+				{
 					"slug": "south-africa",
 					"label": "South Africa"
 				},
 				{
+					"slug": "southern-africa",
+					"label": "Southern Africa"
+				},
+				{
+					"slug": "tanzania",
+					"label": "Tanzania"
+				},
+				{
 					"slug": "tokunbo-wahab",
 					"label": "Tokunbo Wahab"
+				},
+				{
+					"slug": "who",
+					"label": "WHO"
 				}
 			]
 		}
@@ -428,6 +573,16 @@
 				},
 				{
 					"type": "custom",
+					"label": "Opinion",
+					"url": "/category/opinion/"
+				},
+				{
+					"type": "custom",
+					"label": "Weather",
+					"url": "/category/weather/"
+				},
+				{
+					"type": "custom",
 					"label": "Agriculture",
 					"url": "/category/agriculture/"
 				},
@@ -438,18 +593,13 @@
 				},
 				{
 					"type": "custom",
-					"label": "Green Energy",
-					"url": "/category/green-energy/"
+					"label": "Energy",
+					"url": "/category/energy/"
 				},
 				{
 					"type": "custom",
-					"label": "Sustainability",
-					"url": "/category/sustainability/"
-				},
-				{
-					"type": "custom",
-					"label": "Aviation",
-					"url": "/category/aviation/"
+					"label": "Policy",
+					"url": "/category/policy/"
 				}
 			]
 		},
@@ -630,12 +780,12 @@
 				],
 				"taxonomies": {
 					"category": [
-						"environment"
+						"energy",
+						"renewables"
 					],
 					"tag": [
 						"house-of-reps",
-						"renewable-energy-authority",
-						"green-energy"
+						"renewable-energy-authority"
 					]
 				}
 			},
@@ -798,13 +948,13 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"weather",
+						"floods"
 					],
 					"tag": [
-						"lagos-flood",
+						"lagos-floods",
 						"lekki",
-						"tokunbo-wahab",
-						"climate-disinformation"
+						"tokunbo-wahab"
 					]
 				}
 			},
@@ -898,12 +1048,12 @@
 				],
 				"taxonomies": {
 					"category": [
-						"news"
+						"energy",
+						"oil-gas"
 					],
 					"tag": [
-						"energy",
-						"nigeria",
-						"climate-action"
+						"nnpc",
+						"fuel-subsidy"
 					]
 				}
 			},
@@ -1006,11 +1156,11 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"weather"
 					],
 					"tag": [
-						"climate-disinformation",
-						"nigeria"
+						"nigeria",
+						"snowfall"
 					]
 				}
 			},
@@ -1101,11 +1251,11 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"climate",
+						"climate-disinformation"
 					],
 					"tag": [
-						"climate-disinformation",
-						"climate-crisis"
+						"cold-snaps"
 					]
 				}
 			},
@@ -1196,10 +1346,13 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"weather",
+						"wildfires"
 					],
 					"tag": [
-						"climate-disinformation",
+						"california",
+						"firefighters",
+						"los-angeles",
 						"south-africa"
 					]
 				}
@@ -1291,12 +1444,12 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"weather"
 					],
 					"tag": [
-						"environment",
+						"nigeria",
 						"sierra-leone",
-						"climate-disinformation"
+						"harmattan"
 					]
 				}
 			},
@@ -1387,12 +1540,10 @@
 				],
 				"taxonomies": {
 					"category": [
-						"fact-check"
+						"climate",
+						"climate-disinformation"
 					],
-					"tag": [
-						"climate-action",
-						"opinion"
-					]
+					"tag": []
 				}
 			},
 			{
@@ -1478,12 +1629,13 @@
 				],
 				"taxonomies": {
 					"category": [
-						"news"
+						"policy",
+						"cop-negotiations"
 					],
 					"tag": [
-						"cop30",
-						"climate-action",
-						"africa"
+						"afdb",
+						"brazil",
+						"cop30"
 					]
 				}
 			},
@@ -1553,12 +1705,13 @@
 				],
 				"taxonomies": {
 					"category": [
-						"environment"
+						"weather",
+						"heat"
 					],
 					"tag": [
-						"heatwaves",
-						"climate-crisis",
-						"africa"
+						"africa",
+						"morgan-stanley",
+						"who"
 					]
 				}
 			},
@@ -1628,12 +1781,12 @@
 				],
 				"taxonomies": {
 					"category": [
-						"sustainability"
+						"environment",
+						"water"
 					],
 					"tag": [
-						"blue-economy",
 						"africa",
-						"climate-action"
+						"blue-economy"
 					]
 				}
 			},
@@ -1703,12 +1856,12 @@
 				],
 				"taxonomies": {
 					"category": [
-						"environment"
+						"environment",
+						"water"
 					],
 					"tag": [
 						"lake-chad",
-						"africa",
-						"climate-crisis"
+						"nasa"
 					]
 				}
 			},
@@ -1778,12 +1931,15 @@
 				],
 				"taxonomies": {
 					"category": [
-						"news"
+						"environment",
+						"pollution"
 					],
 					"tag": [
-						"plastics",
-						"climate-crisis",
-						"research"
+						"africa",
+						"environmental-law-institute",
+						"ipcc",
+						"plastics-and-climate",
+						"emissions-data"
 					]
 				}
 			},
@@ -1853,12 +2009,15 @@
 				],
 				"taxonomies": {
 					"category": [
-						"sustainability"
+						"climate",
+						"adaptation-resilience"
 					],
 					"tag": [
-						"heatwaves",
-						"climate-action",
-						"research"
+						"cra",
+						"climate-innovation-leadership-award",
+						"climate-resilience-for-all",
+						"kathy-baughman-mcleod",
+						"ricardo-lara"
 					]
 				}
 			},
@@ -1928,12 +2087,14 @@
 				],
 				"taxonomies": {
 					"category": [
-						"agriculture"
+						"climate",
+						"adaptation-resilience"
 					],
 					"tag": [
-						"fisheries",
-						"africa",
-						"climate-resilience"
+						"afdb",
+						"african-carbon-support-facility",
+						"pangani",
+						"tanzania"
 					]
 				}
 			},
@@ -2003,12 +2164,14 @@
 				],
 				"taxonomies": {
 					"category": [
-						"news"
+						"weather",
+						"heat"
 					],
 					"tag": [
-						"heatwaves",
-						"climate-crisis",
-						"research"
+						"csiro",
+						"day-zero",
+						"net-zero",
+						"southern-africa"
 					]
 				}
 			}

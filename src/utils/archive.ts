@@ -5,6 +5,7 @@ import {
 	getTaxonomyTermsWithCacheHint,
 } from "emdash";
 import type { Post } from "./content";
+import { SECTIONS, TYPE_SECTIONS } from "./content";
 
 /** Stories per archive page. Keeps every archive query small for the Worker. */
 export const POSTS_PER_PAGE = 10;
@@ -32,6 +33,16 @@ export interface ArchiveView {
 	excludeSection: string | null;
 	learnPanel: boolean;
 	showClaim: boolean;
+}
+
+/** Finds a term anywhere in a hierarchical list (subcategories are nested under `children`). */
+export function findTerm<T extends { slug: string; children?: T[] }>(terms: T[], slug: string): T | undefined {
+	for (const term of terms) {
+		if (term.slug === slug) return term;
+		const child = term.children ? findTerm(term.children, slug) : undefined;
+		if (child) return child;
+	}
+	return undefined;
 }
 
 /** Read the page number from a `/page/[n]/` route param. */
@@ -102,59 +113,68 @@ export async function categoryView(
 	page: number,
 	topic: string | null,
 ): Promise<ArchiveView | null> {
-	const categories = await getTaxonomyTermsWithCacheHint("category", {
-		includeCounts: false,
-	});
-	const term = categories.data.find((item) => item.slug === slug);
-	if (!term) return null;
-
-	const isFactCheck = slug === "fact-check";
-	const activeTopic = isFactCheck ? topic : null;
-
-	const where: Record<string, WhereValue> = { category: slug };
-	if (activeTopic) where.tag = activeTopic;
-	const loaded = await pageOf(page, where);
-	const hints = [categories.cacheHint, ...loaded.hints];
-
+	const typeSection = TYPE_SECTIONS[slug];
+	const hints: CacheHint[] = [];
+	let label: string;
+	let where: Record<string, WhereValue>;
 	let filters: ArchiveFilter[] = [];
-	if (isFactCheck) {
-		const tags = await getTaxonomyTermsWithCacheHint("tag", {
-			includeCounts: true,
-		});
-		hints.push(tags.cacheHint);
+	let activeTopic: string | null = null;
+	let topicLabel: string | null = null;
+
+	if (typeSection) {
+		// Fact Check / News / Opinion: a post type, filtered by section.
+		label = typeSection.label;
+		activeTopic = SECTIONS.some((section) => section.slug === topic) ? topic : null;
+		where = { kicker: typeSection.type };
+		if (activeTopic) where.category = activeTopic;
 		filters = [
 			{ label: "All", slug: "", on: !activeTopic },
-			...tags.data
-				.filter((tag) => (tag.count ?? 0) > 0)
-				.slice(0, 6)
-				.map((tag) => ({
-					label: tag.label,
-					slug: tag.slug,
-					on: activeTopic === tag.slug,
-				})),
+			...SECTIONS.map((section) => ({ label: section.label, slug: section.slug, on: activeTopic === section.slug })),
 		];
+		topicLabel = SECTIONS.find((section) => section.slug === activeTopic)?.label ?? null;
+	} else {
+		const categories = await getTaxonomyTermsWithCacheHint("category", {
+			includeCounts: false,
+		});
+		hints.push(categories.cacheHint);
+		const term = findTerm(categories.data, slug);
+		if (!term) return null;
+		label = term.label;
+
+		// A section page offers its subcategories as chips.
+		const section = SECTIONS.find((item) => item.slug === slug);
+		const sub = section?.subs.find((item) => item.slug === topic);
+		activeTopic = sub?.slug ?? null;
+		topicLabel = sub?.label ?? null;
+		where = { category: activeTopic ?? slug };
+		if (section && section.subs.length > 0) {
+			filters = [
+				{ label: "All", slug: "", on: !activeTopic },
+				...section.subs.map((item) => ({ label: item.label, slug: item.slug, on: activeTopic === item.slug })),
+			];
+		}
 	}
 
+	const loaded = await pageOf(page, where);
+	hints.push(...loaded.hints);
+	const isFactCheck = slug === "fact-check";
+
 	return view({
-		title: term.label,
-		description: isFactCheck
-			? "Climate claims circulating across Africa, checked against the evidence."
-			: null,
-		breadcrumbs: [{ label: "Home", href: "/" }, { label: term.label }],
+		title: label,
+		description: typeSection?.description ?? null,
+		breadcrumbs: [{ label: "Home", href: "/" }, { label }],
 		posts: loaded.posts,
 		page: loaded.page,
 		hasMore: loaded.hasMore,
 		basePath: `/category/${slug}/`,
-		countLabel: activeTopic
-			? `Filtered by “${activeTopic}”`
-			: `Latest in ${term.label}`,
+		countLabel: topicLabel ? `${label} · ${topicLabel}` : `Latest in ${label}`,
 		cacheHints: hints,
 		filters,
-		excludeSection: term.label,
+		excludeSection: typeSection ? null : label,
 		learnPanel: isFactCheck,
-		empty: activeTopic
-			? `No fact checks tagged “${activeTopic}” yet.`
-			: `Nothing published in ${term.label} yet.`,
+		empty: topicLabel
+			? `Nothing in ${label} · ${topicLabel} yet.`
+			: `Nothing published in ${label} yet.`,
 	});
 }
 
