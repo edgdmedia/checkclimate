@@ -3,6 +3,11 @@
 	"name": "checkclimate",
 	"main": "./src/worker.ts",
 	"compatibility_date": "2026-11-19",
+	// Sender for sign-in links and notifications. The domain must be the one
+	// verified in Resend (notify.checkclimate.africa).
+	"vars": {
+		"EMAIL_FROM": "Check Climate Africa <newsroom@notify.checkclimate.africa>"
+	},
 	"compatibility_flags": ["nodejs_compat"],
 	"account_id": "9c8aaa232a52d145430685011e9fff9c",
 	"workers_dev": true,

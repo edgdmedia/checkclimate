@@ -1,0 +1,115 @@
+---
+/**
+ * Layout for the hardcoded static pages (About us, Contact us, Privacy
+ * policy, Accessibility statement). The text lives in each page file under
+ * src/pages/; edit it there. `hero` gives the green About-style header,
+ * otherwise the page is a breadcrumb, a title and plain prose.
+ */
+import Base from "./Base.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+
+interface Props {
+	title: string;
+	description?: string;
+	/** Green header with eyebrow and lede (About and Contact). */
+	hero?: { eyebrow: string; lede: string } | null;
+}
+
+const { title, description, hero = null } = Astro.props;
+---
+
+<Base title={title} description={description ?? hero?.lede}>
+	{hero ? (
+		<>
+			<section class="about-hero">
+				<div class="wrap about-hero__inner">
+					<div>
+						<span class="about-hero__eyebrow">{hero.eyebrow}</span>
+						<h1 class="about-hero__title">{title}</h1>
+						<p class="about-hero__lede">{hero.lede}</p>
+					</div>
+				</div>
+			</section>
+			<div class="wrap about-body prose">
+				<slot />
+			</div>
+		</>
+	) : (
+		<div class="wrap page-body">
+			<Breadcrumb items={[{ label: "Home", href: "/" }, { label: title }]} />
+			<h1 class="page-body__title">{title}</h1>
+			<div class="prose">
+				<slot />
+			</div>
+		</div>
+	)}
+</Base>
+
+<style>
+	.about-hero {
+		background: var(--brand-forest);
+		color: var(--on-brand);
+		padding-block: 56px 64px;
+	}
+
+	.about-hero__inner {
+		display: grid;
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		gap: 48px;
+		align-items: center;
+	}
+
+	.about-hero__eyebrow {
+		font-size: 13px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 900;
+		color: var(--brand-amber);
+	}
+
+	.about-hero__title {
+		/* The global h1 colour is --ink; this sits on the green bar. */
+		color: var(--on-brand);
+		margin: 12px 0 20px;
+		font-size: 54px;
+		line-height: 60px;
+		font-weight: 900;
+		letter-spacing: -0.01em;
+	}
+
+	.about-hero__lede {
+		margin: 0;
+		font-size: 19px;
+		line-height: 31px;
+		color: var(--on-image);
+		max-width: 640px;
+	}
+
+	.about-body {
+		padding-block: 64px 24px;
+		max-width: 720px;
+	}
+
+	.page-body {
+		padding-block: 36px 64px;
+	}
+
+	.page-body__title {
+		margin: 20px 0 28px;
+		font-size: 40px;
+		line-height: 46px;
+		font-weight: 900;
+		color: var(--ink);
+	}
+
+	@media (max-width: 900px) {
+		.about-hero__inner {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.about-hero__title {
+			font-size: 40px;
+			line-height: 46px;
+		}
+	}
+</style>

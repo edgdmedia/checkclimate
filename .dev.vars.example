@@ -4,7 +4,7 @@
 
 EMDASH_ENCRYPTION_KEY=
 RESEND_API_KEY=
-EMAIL_FROM=Check Climate Africa <newsroom@checkclimate.africa>
+EMAIL_FROM=Check Climate Africa <newsroom@notify.checkclimate.africa>
 CLAIMS_INBOX=CheckClimateAfrica@gmail.com
 TURNSTILE_SECRET_KEY=
 

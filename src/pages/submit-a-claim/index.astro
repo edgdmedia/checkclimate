@@ -390,6 +390,8 @@ const errorFor = (name: string): string | null => (errors[name] ?? [])[0] ?? nul
 	}
 
 	.sc-head__title {
+		/* The global h1 colour is --ink; this sits on the green bar. */
+		color: var(--on-brand);
 		margin: 10px 0 12px;
 		font-size: 50px;
 		line-height: 56px;

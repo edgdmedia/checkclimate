@@ -18,7 +18,7 @@ form:
 
 - `RESEND_API_KEY` — a Resend API key
 - `EMAIL_FROM` — the default From: header, e.g.
-  `Check Climate Africa <newsroom@checkclimate.africa>`
+  `Check Climate Africa <newsroom@notify.checkclimate.africa>`
 
 Set them with `wrangler secret put`. The capability
 `hooks.email-transport:register` is declared in the descriptor, so the admin
