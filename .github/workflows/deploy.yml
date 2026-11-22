@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://www.checkclimate.africa
+      url: https://checkclimate.africa
     steps:
       - uses: actions/checkout@v5
 
@@ -59,7 +59,7 @@ jobs:
       - name: Build
         run: pnpm astro build
         env:
-          EMDASH_SITE_URL: https://www.checkclimate.africa
+          EMDASH_SITE_URL: https://checkclimate.africa
 
       - name: Deploy
         run: pnpm wrangler deploy

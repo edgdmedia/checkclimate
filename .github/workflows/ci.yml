@@ -50,7 +50,7 @@ jobs:
         env:
           # The build bakes the public origin into the sitemap, feeds and
           # canonical URLs. Same value as production; not a secret.
-          EMDASH_SITE_URL: https://www.checkclimate.africa
+          EMDASH_SITE_URL: https://checkclimate.africa
 
       - name: Check the Worker bundle
         run: pnpm exec wrangler deploy --dry-run

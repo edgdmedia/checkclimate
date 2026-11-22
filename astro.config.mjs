@@ -11,7 +11,7 @@ import { loadEnv } from "vite";
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
 const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 
-const siteUrl = env.EMDASH_SITE_URL || "https://www.checkclimate.africa";
+const siteUrl = env.EMDASH_SITE_URL || "https://checkclimate.africa";
 
 // `.env` sets a localhost URL for `astro dev`, and loadEnv reads it during
 // `astro build` too. A build is always for a deployed Worker, so refuse to bake
