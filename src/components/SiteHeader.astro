@@ -1,13 +1,17 @@
 ---
+/**
+ * Three rows: the top bar (date, weather, social links), the logo row (logo,
+ * search, Submit a claim) and the menu row (sections). The light/dark switch
+ * floats above back-to-top (Base.astro).
+ */
 import type { MenuItem } from "emdash";
 import logoLight from "../assets/brand/check-climate-lockup.png";
 import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
 import CategoryNav from "./CategoryNav.astro";
 import Icon from "./Icon.astro";
-import ThemeToggle from "./ThemeToggle.astro";
-import WeatherWidget from "./WeatherWidget.astro";
+import WeatherCard from "./WeatherCard.astro";
 import { CLAIM_URL, SEARCH_URL, siteConfig } from "../utils/site";
-import { formatDateline } from "../utils/locale";
+import { formatDateline, getSiteLocale } from "../utils/locale";
 
 interface Props {
 	siteTitle: string;
@@ -18,25 +22,23 @@ interface Props {
 const { siteTitle, siteTagline, items } = Astro.props;
 const { socials } = await siteConfig();
 const today = new Date();
+const locale = getSiteLocale() ?? "en-GB";
 ---
 
 <header class="site-header">
 	<div class="topbar">
 		<div class="wrap topbar__inner">
 			<div class="topbar__left">
-				<time class="topbar__date" datetime={today.toISOString()}>
+				<time class="topbar__date" datetime={today.toISOString().slice(0, 10)} data-dateline={locale}>
 					{formatDateline(today)}
 				</time>
-				<WeatherWidget />
+				<WeatherCard />
 			</div>
-			<div class="topbar__right">
-				<ThemeToggle />
-				<nav class="topbar__social" aria-label="Social">
-					{socials.map((link) => (
-						<a href={link.href} rel="noopener noreferrer">{link.label}</a>
-					))}
-				</nav>
-			</div>
+			<nav class="topbar__social" aria-label="Social">
+				{socials.map((link) => (
+					<a href={link.href} rel="noopener noreferrer">{link.label}</a>
+				))}
+			</nav>
 		</div>
 	</div>
 
@@ -72,16 +74,31 @@ const today = new Date();
 						autocomplete="off"
 					/>
 				</form>
-				<a href={CLAIM_URL} class="btn btn--claim">
+				<a href={SEARCH_URL} class="searchbox-link" aria-label="Search">
+					<Icon name="search" size={20} />
+				</a>
+				<a href={CLAIM_URL} class="btn btn--claim" aria-label="Submit a claim">
 					<Icon name="check" size={18} />
 					<span>Submit a claim</span>
 				</a>
-				<a href={SEARCH_URL} class="searchbox-link" aria-label="Search">
-					<Icon name="search" size={22} />
-				</a>
 			</div>
 		</div>
-
-		<CategoryNav items={items} />
 	</div>
+
+	<CategoryNav items={items} />
 </header>
+
+<script>
+	// Pages are cached at the edge, so refresh the dateline in the browser.
+	const dateline = document.querySelector<HTMLTimeElement>("[data-dateline]");
+	if (dateline) {
+		const now = new Date();
+		dateline.textContent = now.toLocaleDateString(dateline.dataset.dateline || "en-GB", {
+			weekday: "long",
+			day: "numeric",
+			month: "long",
+			year: "numeric",
+		});
+		dateline.dateTime = now.toISOString().slice(0, 10);
+	}
+</script>

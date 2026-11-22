@@ -1,46 +1,44 @@
 ---
+/**
+ * Floating light/dark switch, stacked above the back-to-top button. Light is
+ * the default (Base.astro); the reader's choice is remembered in localStorage.
+ * The button shows the mode it will switch to.
+ */
 import Icon from "./Icon.astro";
 ---
 
-<div class="theme-toggle" role="group" aria-label="Colour mode">
-	<button type="button" class="theme-toggle__btn" data-set-theme="light">
-		<Icon name="sun" size={14} />
-		<span>Light</span>
-	</button>
-	<button type="button" class="theme-toggle__btn" data-set-theme="dark">
-		<Icon name="moon" size={14} />
-		<span>Dark</span>
-	</button>
-</div>
+<button type="button" class="theme-fab" data-theme-toggle aria-label="Switch to dark mode">
+	<span class="theme-fab__to-dark"><Icon name="moon" size={20} /></span>
+	<span class="theme-fab__to-light"><Icon name="sun" size={20} /></span>
+</button>
 
 <script>
-	function syncThemeButtons() {
-		const theme = document.documentElement.getAttribute("data-theme") ?? "light";
-		for (const button of document.querySelectorAll<HTMLButtonElement>(
-			"[data-set-theme]",
-		)) {
-			button.setAttribute(
-				"aria-pressed",
-				button.dataset.setTheme === theme ? "true" : "false",
-			);
+	const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+
+	function current(): "light" | "dark" {
+		return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+	}
+
+	function label(): void {
+		button?.setAttribute(
+			"aria-label",
+			current() === "dark" ? "Switch to light mode" : "Switch to dark mode",
+		);
+	}
+
+	button?.addEventListener("click", () => {
+		const theme = current() === "dark" ? "light" : "dark";
+		const root = document.documentElement;
+		root.setAttribute("data-theme", theme);
+		root.classList.remove("light", "dark");
+		root.classList.add(theme);
+		try {
+			localStorage.setItem("theme", theme);
+		} catch {
+			// Storage can be blocked; the theme still applies for this page.
 		}
-	}
+		label();
+	});
 
-	for (const button of document.querySelectorAll<HTMLButtonElement>(
-		"[data-set-theme]",
-	)) {
-		button.addEventListener("click", () => {
-			const theme = button.dataset.setTheme;
-			if (theme !== "light" && theme !== "dark") return;
-			document.documentElement.setAttribute("data-theme", theme);
-			try {
-				localStorage.setItem("theme", theme);
-			} catch {
-				// Storage can be blocked; the theme still applies for this page.
-			}
-			syncThemeButtons();
-		});
-	}
-
-	syncThemeButtons();
+	label();
 </script>

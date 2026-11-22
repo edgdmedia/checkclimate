@@ -106,7 +106,9 @@ const classes = {
 				/>
 				<div>
 					{variant !== "news" && (
-						<span class="story__cat">{metaLine(post) || category?.label}</span>
+						<span class="story__cat">
+							{variant === "rail" ? category?.label : metaLine(post) || category?.label}
+						</span>
 					)}
 					<Heading class="story__title">
 						{prefix && <span class="story__kicker">{prefix} </span>}

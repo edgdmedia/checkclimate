@@ -16,22 +16,18 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 16px;
-	min-height: 44px;
+	gap: 8px 16px;
+	min-height: 40px;
 	flex-wrap: wrap;
 	padding-block: 6px;
 }
 
-.topbar__left,
-.topbar__right {
+.topbar__left {
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	gap: 8px 20px;
 	flex-wrap: wrap;
-}
-
-.topbar__right {
-	gap: 16px;
+	min-width: 0;
 }
 
 .topbar__date {
@@ -53,69 +49,98 @@
 	color: var(--brand-amber);
 }
 
-/* Theme toggle */
+/* Weather reading in the top bar (WeatherCard.astro; filled client-side
+   from /api/weather) */
 
-.theme-toggle {
-	display: inline-flex;
-	border: 1px solid rgba(255, 255, 255, 0.5);
-	border-radius: var(--radius-pill);
-	overflow: hidden;
-}
-
-.theme-toggle__btn {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	border: 0;
-	padding: 4px 14px;
-	background: transparent;
-	color: var(--on-brand);
-	font-family: inherit;
-	font-size: 13px;
-	font-weight: 500;
-	line-height: 20px;
-	cursor: pointer;
-}
-
-.theme-toggle__btn[aria-pressed="true"] {
-	background: var(--leaf);
-	color: #000000;
-}
-
-.theme-toggle__btn:focus-visible {
-	outline: 2px solid var(--brand-amber);
-	outline-offset: -2px;
-}
-
-/* Weather (populated client-side by the island) */
-
-.weather {
-	display: inline-flex;
+.wcard {
+	display: flex;
 	align-items: center;
 	gap: 8px;
-	flex-wrap: wrap;
+	min-width: 0;
+	/* Keeps its space while loading so the bar doesn't shift. */
+	visibility: hidden;
 }
 
-/* `hidden` must win over the flex display above: the line stays invisible
-   until the island has a real reading. */
-.weather[hidden] {
+.wcard--ready {
+	visibility: visible;
+}
+
+.wcard__icon {
+	display: inline-flex;
+	color: var(--brand-amber);
+}
+
+.wcard__icon [hidden] {
 	display: none;
 }
 
-.weather__icon {
-	color: var(--brand-amber);
+.wcard__temp {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.wcard__text {
+	display: flex;
+	gap: 8px;
+	min-width: 0;
+	white-space: nowrap;
+}
+
+.wcard__place {
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.wcard__meta {
+	opacity: 0.8;
+}
+
+.wcard__meta::before {
+	content: "· ";
+}
+
+.wcard svg {
 	flex: none;
 }
 
-.weather__temp {
-	font-weight: 700;
+/* Light/dark switch, floating above back-to-top */
+
+.theme-fab {
+	position: fixed;
+	inset-inline-end: calc(24px + (var(--fab-size) - 44px) / 2);
+	inset-block-end: calc(24px + var(--fab-size) + 12px);
+	width: 44px;
+	height: 44px;
+	display: grid;
+	place-items: center;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--radius-pill);
+	background: var(--surface-raised);
+	color: var(--ink);
+	box-shadow: var(--shadow-primary);
+	cursor: pointer;
+	z-index: 40;
 }
 
-.weather__detail {
-	color: rgba(255, 255, 255, 0.8);
+.theme-fab:hover {
+	color: var(--link);
 }
 
-/* Masthead */
+.theme-fab:focus-visible {
+	outline: 2px solid var(--brand-amber);
+	outline-offset: 2px;
+}
+
+.theme-fab__to-light,
+[data-theme="dark"] .theme-fab__to-dark {
+	display: none;
+}
+
+[data-theme="dark"] .theme-fab__to-light {
+	display: contents;
+}
 
 .masthead {
 	background: var(--surface-raised);
@@ -126,22 +151,32 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 24px;
-	padding-block: 18px;
-	flex-wrap: wrap;
+	gap: 16px 24px;
+	padding-block: 16px;
+}
+
+.masthead__actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
 .masthead__brand {
 	display: flex;
 	flex-direction: column;
+	/* Without this the column flexbox stretches the logo to the tagline's
+	   width while its height stays fixed, distorting the 3:1 lockup. */
+	align-items: flex-start;
 	gap: 6px;
 	color: inherit;
 	text-decoration: none;
 }
 
 .masthead__logo {
-	height: 48px;
+	height: 56px;
 	width: auto;
+	max-width: 100%;
+	object-fit: contain;
 }
 
 .masthead__logo--dark {
@@ -163,12 +198,6 @@
 	font-weight: 500;
 }
 
-.masthead__actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-
 .searchbox {
 	display: flex;
 	align-items: center;
@@ -178,7 +207,7 @@
 	border: 1px solid var(--border);
 	border-radius: var(--radius-pill);
 	background: var(--surface-muted);
-	width: 260px;
+	width: 300px;
 }
 
 .searchbox__icon {
@@ -310,15 +339,19 @@
 
 @media (max-width: 900px) {
 	.catnav__inner {
-		flex-direction: column;
-		align-items: stretch;
+		flex-wrap: wrap;
 		gap: 0;
 		padding-block: 10px;
 	}
 
+	/* The opened list takes its own full-width row under the toggle. */
+	.catnav__list {
+		order: 3;
+		flex-basis: 100%;
+	}
+
 	.catnav__toggle {
 		display: inline-flex;
-		align-self: flex-start;
 	}
 
 	.catnav__list {
@@ -350,7 +383,6 @@
 	background: var(--surface-footer);
 	color: var(--ink-body);
 	padding-block: 56px 28px;
-	margin-block-start: 64px;
 }
 
 .site-footer__grid {
@@ -491,6 +523,12 @@
 	}
 }
 
+@media (max-width: 760px) {
+	.wcard__text {
+		display: none;
+	}
+}
+
 @media (max-width: 600px) {
 	:root {
 		--wrap-gutter: 16px;
@@ -500,16 +538,21 @@
 		height: 40px;
 	}
 
+	.topbar__social {
+		display: none;
+	}
+
+	.theme-fab {
+		inset-inline-end: calc(16px + (var(--fab-size) - 44px) / 2);
+		inset-block-end: calc(16px + var(--fab-size) + 12px);
+	}
+
 	.btn--claim span {
 		display: none;
 	}
 
 	.btn--claim {
 		padding-inline: 14px;
-	}
-
-	.topbar__social {
-		display: none;
 	}
 
 	.site-footer {

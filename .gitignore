@@ -25,3 +25,9 @@ coverage/
 node-compile-cache/
 tsx-*/
 uploads/.neon
+
+# Production backups written by the one-off migration scripts (full post
+# content; keep them locally, not in git).
+migration/*-backup-*.json
+# Reference copy of the old WordPress weather plugin; it embeds an API key.
+docs/edgd-weather/

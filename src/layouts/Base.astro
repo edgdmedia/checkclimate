@@ -10,6 +10,7 @@ import { getSiteLocale } from "../utils/locale";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import BackToTop from "../components/BackToTop.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 import "../styles/global.css";
 import "../styles/site.css";
 
@@ -27,6 +28,8 @@ interface Props {
 	content?: { collection: string; id: string; slug?: string | null };
 	/** Trail for BreadcrumbList structured data, root first. */
 	breadcrumbs?: Array<{ label: string; href?: string }>;
+	/** Full-screen page with no header, footer or floating buttons (the /admin door). */
+	bare?: boolean;
 }
 
 const {
@@ -42,6 +45,7 @@ const {
 	author,
 	content,
 	breadcrumbs,
+	bare = false,
 } = Astro.props;
 
 const [settingsResult, primaryResult, footerResult] = await Promise.all([
@@ -105,11 +109,16 @@ const breadcrumbJsonLd =
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light">
+<html lang={lang} data-theme="light" class="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{fullTitle}</title>
+		<link rel="icon" href="/favicon.ico" sizes="48x48" />
+		<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+		<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="theme-color" content="#003c25" />
 		<EmDashHead page={pageCtx} />
 		{breadcrumbJsonLd && (
 			<script type="application/ld+json" is:inline set:html={breadcrumbJsonLd} />
@@ -121,18 +130,16 @@ const breadcrumbJsonLd =
 			href="/feed/"
 		/>
 		<script is:inline>
-			// Set the theme before paint. An explicit choice wins; otherwise follow
-			// the operating system.
+			// Set the theme before paint. Light by default; dark only when the
+			// reader picked it with the toggle (the OS setting is ignored).
 			(function () {
 				try {
-					var saved = localStorage.getItem("theme");
-					var theme =
-						saved === "light" || saved === "dark"
-							? saved
-							: window.matchMedia("(prefers-color-scheme: dark)").matches
-								? "dark"
-								: "light";
+					var theme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
 					document.documentElement.setAttribute("data-theme", theme);
+					// EmDash's image CSS reads a .light/.dark class and otherwise
+					// falls back to the OS setting.
+					document.documentElement.classList.remove("light", "dark");
+					document.documentElement.classList.add(theme);
 				} catch (error) {
 					document.documentElement.setAttribute("data-theme", "light");
 				}
@@ -141,21 +148,28 @@ const breadcrumbJsonLd =
 	</head>
 	<body>
 		<EmDashBodyStart page={pageCtx} />
-		<a href="#main" class="skip-link">Skip to content</a>
-		<SiteHeader
-			siteTitle={siteTitle}
-			siteTagline={siteTagline}
-			items={primaryResult.data?.items ?? []}
-		/>
+		{!bare && <a href="#main" class="skip-link">Skip to content</a>}
+		{!bare && (
+			<SiteHeader
+				siteTitle={siteTitle}
+				siteTagline={siteTagline}
+				items={primaryResult.data?.items ?? []}
+			/>
+		)}
 		<main id="main" tabindex="-1">
 			<slot />
 		</main>
-		<SiteFooter
-			siteTitle={siteTitle}
-			sections={primaryResult.data?.items ?? []}
-			items={footerResult.data?.items ?? []}
-		/>
-		<BackToTop />
+		{!bare && (
+			<>
+				<SiteFooter
+					siteTitle={siteTitle}
+					sections={primaryResult.data?.items ?? []}
+					items={footerResult.data?.items ?? []}
+				/>
+				<ThemeToggle />
+				<BackToTop />
+			</>
+		)}
 		<EmDashBodyEnd page={pageCtx} />
 	</body>
 </html>

@@ -1,7 +1,8 @@
 ---
 /**
- * Category tabs for the Top Stories section. Each tab filters the stories
- * rendered server-side; the JS only toggles the active panel.
+ * Category tabs for the Top Stories section. Each tab's stories are rendered
+ * server-side into a `tabpanel-<slug>` panel; the script only switches which
+ * panel shows (click, or arrow keys / Home / End per the ARIA tabs pattern).
  */
 interface Tab {
 	label: string;
@@ -18,7 +19,7 @@ const { tabs } = Astro.props;
 
 {
 	tabs.length > 0 && (
-		<div role="tablist" aria-label="Top stories by category" class="tabs">
+		<div role="tablist" aria-label="Top stories by category" class="tabs" data-tabs>
 			{tabs.map((tab, i) => (
 				<button
 					type="button"
@@ -26,6 +27,7 @@ const { tabs } = Astro.props;
 					id={`tab-${tab.slug}`}
 					aria-controls={`tabpanel-${tab.slug}`}
 					aria-selected={i === 0 ? "true" : "false"}
+					tabindex={i === 0 ? 0 : -1}
 					data-tab={tab.slug}
 				>
 					{tab.label}
@@ -35,22 +37,80 @@ const { tabs } = Astro.props;
 	)
 }
 
+<script>
+	for (const list of document.querySelectorAll<HTMLElement>("[data-tabs]")) {
+		const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+
+		function select(tab: HTMLButtonElement, focus = false): void {
+			for (const other of tabs) {
+				const active = other === tab;
+				other.setAttribute("aria-selected", active ? "true" : "false");
+				other.tabIndex = active ? 0 : -1;
+				const panel = document.getElementById(other.getAttribute("aria-controls") ?? "");
+				if (panel) panel.hidden = !active;
+			}
+			if (focus) tab.focus();
+			tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+		}
+
+		list.addEventListener("click", (event) => {
+			const tab = (event.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
+			if (tab) select(tab);
+		});
+
+		list.addEventListener("keydown", (event) => {
+			const index = tabs.indexOf(document.activeElement as HTMLButtonElement);
+			if (index < 0) return;
+			const next = {
+				ArrowRight: tabs[(index + 1) % tabs.length],
+				ArrowLeft: tabs[(index - 1 + tabs.length) % tabs.length],
+				Home: tabs[0],
+				End: tabs[tabs.length - 1],
+			}[event.key];
+			if (next) {
+				event.preventDefault();
+				select(next, true);
+			}
+		});
+	}
+</script>
+
 <style>
 	.tabs {
 		display: flex;
-		gap: 10px;
-		flex-wrap: wrap;
+		flex-direction: row;
+		gap: 6px;
+		overflow-x: auto;
+		scrollbar-width: none;
+		padding: 4px;
+		border-radius: var(--radius);
+		background: var(--surface-muted);
+	}
+
+	.tabs::-webkit-scrollbar {
+		display: none;
 	}
 
 	.tabs button {
-		height: 44px;
-		padding-inline: 18px;
+		flex: none;
+		height: 40px;
+		padding-inline: 16px;
 		border-radius: var(--radius-small);
 		border: 1px solid transparent;
 		background: transparent;
 		color: var(--ink-muted);
-		font: 700 16px var(--font-display);
+		font: 700 15px var(--font-display);
+		white-space: nowrap;
 		cursor: pointer;
+	}
+
+	.tabs button:hover {
+		color: var(--ink);
+	}
+
+	.tabs button:focus-visible {
+		outline: 2px solid var(--brand-amber);
+		outline-offset: 2px;
 	}
 
 	.tabs button[aria-selected="true"] {

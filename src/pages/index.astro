@@ -4,22 +4,15 @@
  * and the tag terms; everything else is assembled from that in memory.
  */
 import type { Post } from "../utils/content";
+import { categoryOf, kickerOf, postPath, titleWithoutKicker } from "../utils/content";
 import {
-	categoryOf,
-	isFactCheck,
-	kickerOf,
-	postPath,
-	titleWithoutKicker,
-} from "../utils/content";
-import {
-	getSiteSettingsWithCacheHint,
-	getTaxonomyTermsWithCacheHint,
+    getSiteSettingsWithCacheHint,
+    getTaxonomyTermsWithCacheHint,
 } from "emdash";
 import { getEmDashCollection } from "emdash";
 import AlertBanner from "../components/AlertBanner.astro";
 import Base from "../layouts/Base.astro";
 import CategoryTabs from "../components/CategoryTabs.astro";
-import ClaimCard from "../components/ClaimCard.astro";
 import FactCheckBand from "../components/FactCheckBand.astro";
 import HeroStory from "../components/HeroStory.astro";
 import SectionHeading from "../components/SectionHeading.astro";
@@ -28,27 +21,46 @@ import StoryList from "../components/StoryList.astro";
 
 const HOME_WINDOW = 24;
 
-const [recent, alert, settings, tagTerms] = await Promise.all([
-	getEmDashCollection("posts", {
-		orderBy: { published_at: "desc" },
-		limit: HOME_WINDOW,
-		offset: 0,
-	}),
-	getEmDashCollection("posts", {
-		where: { kicker: "alert" },
-		orderBy: { published_at: "desc" },
-		limit: 1,
-		offset: 0,
-	}),
-	getSiteSettingsWithCacheHint(),
-	getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
-]);
+const [recent, alert, checks, opinionPosts, settings, tagTerms] =
+    await Promise.all([
+        getEmDashCollection("posts", {
+            orderBy: { published_at: "desc" },
+            limit: HOME_WINDOW,
+            offset: 0,
+        }),
+        getEmDashCollection("posts", {
+            // "Show as alert" is a boolean column (stored 0/1); EmDash filters take strings.
+            where: { alert: "1" },
+            orderBy: { published_at: "desc" },
+            limit: 1,
+            offset: 0,
+        }),
+        // Fact checks are posts whose type (the kicker field) is fact_check. They publish
+        // less often than news, so they get their own query rather than being
+        // filtered out of the recent window (which can hold none).
+        getEmDashCollection("posts", {
+            where: { kicker: "fact_check" },
+            orderBy: { published_at: "desc" },
+            limit: 5,
+            offset: 0,
+        }),
+        getEmDashCollection("posts", {
+            where: { kicker: "opinion" },
+            orderBy: { published_at: "desc" },
+            limit: 3,
+            offset: 0,
+        }),
+        getSiteSettingsWithCacheHint(),
+        getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
+    ]);
 
 if (Astro.cache?.enabled) {
-	Astro.cache.set(recent.cacheHint);
-	Astro.cache.set(alert.cacheHint);
-	Astro.cache.set(settings.cacheHint);
-	Astro.cache.set(tagTerms.cacheHint);
+    Astro.cache.set(recent.cacheHint);
+    Astro.cache.set(alert.cacheHint);
+    Astro.cache.set(checks.cacheHint);
+    Astro.cache.set(opinionPosts.cacheHint);
+    Astro.cache.set(settings.cacheHint);
+    Astro.cache.set(tagTerms.cacheHint);
 }
 
 const posts = recent.entries as Post[];
@@ -56,238 +68,259 @@ const alertPost = (alert.entries as Post[])[0];
 
 const siteTitle = settings.data?.title ?? "Check Climate Africa";
 const siteTagline =
-	settings.data?.tagline ?? "Disseminating Critical Climate Information";
+    settings.data?.tagline ?? "Disseminating Critical Climate Information";
 
 const [hero, ...rest] = posts;
 const latest = rest.slice(0, 4);
-const factChecks = posts.filter(isFactCheck);
-const news = posts.filter((post) => categoryOf(post)?.slug === "news").slice(0, 6);
+const factChecks = checks.entries as Post[];
+const news = posts
+    .filter((post) => kickerOf(post) === "news")
+    .slice(0, 6);
 
 // Top Stories tabs: one per category that has stories in this window.
 const tabs = posts
-	.map((post) => categoryOf(post))
-	.filter((term, index, all): term is NonNullable<typeof term> =>
-		term ? all.findIndex((other) => other?.slug === term.slug) === index : false,
-	)
-	.slice(0, 5)
-	.map((term) => ({
-		label: term.label,
-		slug: term.slug,
-		count: posts.filter((post) => categoryOf(post)?.slug === term.slug).length,
-	}));
+    .map((post) => categoryOf(post))
+    .filter((term, index, all): term is NonNullable<typeof term> =>
+        term
+            ? all.findIndex((other) => other?.slug === term.slug) === index
+            : false,
+    )
+    .slice(0, 5)
+    .map((term) => ({
+        label: term.label,
+        slug: term.slug,
+        count: posts.filter((post) => categoryOf(post)?.slug === term.slug)
+            .length,
+    }));
 
 function storiesFor(slug: string): Post[] {
-	return posts
-		.filter((post) => categoryOf(post)?.slug === slug)
-		.slice(0, 3);
+    return posts.filter((post) => categoryOf(post)?.slug === slug).slice(0, 3);
 }
 
 const topics = tagTerms.data.slice(0, 10);
-const opinion = factChecks.slice(0, 3);
+const opinion = opinionPosts.entries as Post[];
 ---
 
 <Base title={siteTitle} description={siteTagline}>
-	{alertPost && <AlertBanner post={alertPost} />}
+    <section class="wrap lead" aria-label="Lead stories">
+        <div class="lead__grid">
+            {hero ? (
+                <HeroStory post={hero} />
+            ) : (
+                <div class="empty">Nothing published yet.</div>
+            )}
+            <StoryList posts={latest} title="Latest" />
+        </div>
+    </section>
 
-	<section class="wrap lead" aria-label="Lead stories">
-		<div class="lead__grid">
-			{hero ? (
-				<HeroStory post={hero} />
-			) : (
-				<div class="empty">Nothing published yet.</div>
-			)}
-			<StoryList posts={latest} title="Latest" />
-		</div>
-	</section>
+    {alertPost && <AlertBanner post={alertPost} />}
 
-	{factChecks.length > 0 && <FactCheckBand posts={posts} />}
+    {factChecks.length > 0 && <FactCheckBand posts={factChecks} />}
 
-	{tabs.length > 0 && (
-		<section class="wrap topstories" aria-labelledby="ts-title">
-			<SectionHeading id="ts-title" title="Top Stories" />
-			<CategoryTabs tabs={tabs} />
-			{tabs.map((tab, index) => (
-				<div
-					id={`tabpanel-${tab.slug}`}
-					role="tabpanel"
-					aria-labelledby={`tab-${tab.slug}`}
-					class="cards"
-					hidden={index !== 0}
-				>
-					{storiesFor(tab.slug).map((post) => (
-						<StoryCard post={post} variant="card" headingLevel={3} />
-					))}
-				</div>
-			))}
-		</section>
-	)}
+    {tabs.length > 0 && (
+        <section class="wrap topstories" aria-labelledby="ts-title">
+            <div class="topstories__head">
+                <SectionHeading id="ts-title" title="Top Stories" />
+                <CategoryTabs tabs={tabs} />
+            </div>
+            {tabs.map((tab, index) => (
+                <div
+                    id={`tabpanel-${tab.slug}`}
+                    role="tabpanel"
+                    aria-labelledby={`tab-${tab.slug}`}
+                    class="cards"
+                    hidden={index !== 0}
+                >
+                    {storiesFor(tab.slug).map((post) => (
+                        <StoryCard
+                            post={post}
+                            variant="card"
+                            headingLevel={3}
+                        />
+                    ))}
+                </div>
+            ))}
+        </section>
+    )}
 
-	<section class="wrap news" aria-labelledby="news-title">
-		<div class="news__grid">
-			<div>
-				<SectionHeading
-					id="news-title"
-					title="News"
-					rule
-					moreHref="/category/news/"
-				/>
-				{news.length === 0 ? (
-					<div class="empty">No news stories in this window.</div>
-				) : (
-					<div class="newslist">
-						{news.map((post) => (
-							<StoryCard post={post} variant="news" headingLevel={3} />
-						))}
-					</div>
-				)}
-			</div>
-			<aside class="news__side" aria-label="Browse">
-				<div class="panel">
-					<h2 class="panel__title">Browse by topic</h2>
-					<div class="chips">
-						{topics.map((tag) => (
-							<a href={`/tag/${tag.slug}/`} class="chip">{tag.label}</a>
-						))}
-					</div>
-				</div>
-				<div class="opinion">
-					<span class="opinion__eyebrow">Opinion</span>
-					{opinion.map((post, index) => (
-						<a
-							href={postPath(post)}
-							class:list={index === 0 ? "opinion__lead" : "opinion__row"}
-						>
-							<strong>{titleWithoutKicker(post)}</strong>
-						</a>
-					))}
-					<a href="/category/opinion/" class="opinion__more">All opinion →</a>
-				</div>
-			</aside>
-		</div>
-	</section>
-
-	<section class="wrap submit" aria-label="Send us a claim">
-		<ClaimCard />
-	</section>
+    <section class="wrap news" aria-labelledby="news-title">
+        <div class="news__grid">
+            <div>
+                <SectionHeading
+                    id="news-title"
+                    title="News"
+                    rule
+                    moreHref="/category/news/"
+                />
+                {news.length === 0 ? (
+                    <div class="empty">No news stories in this window.</div>
+                ) : (
+                    <div class="newslist">
+                        {news.map((post) => (
+                            <StoryCard
+                                post={post}
+                                variant="news"
+                                headingLevel={3}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+            <aside class="news__side" aria-label="Browse">
+                <div class="panel">
+                    <h2 class="panel__title">Browse by topic</h2>
+                    <div class="chips">
+                        {topics.map((tag) => (
+                            <a href={`/tag/${tag.slug}/`} class="chip">
+                                {tag.label}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+                {opinion.length > 0 && (
+                    <div class="opinion">
+                        <span class="opinion__eyebrow">Opinion</span>
+                        {opinion.map((post, index) => (
+                            <a
+                                href={postPath(post)}
+                                class:list={
+                                    index === 0
+                                        ? "opinion__lead"
+                                        : "opinion__row"
+                                }
+                            >
+                                <strong>{titleWithoutKicker(post)}</strong>
+                            </a>
+                        ))}
+                        <a href="/category/opinion/" class="opinion__more">
+                            All opinion →
+                        </a>
+                    </div>
+                )}
+            </aside>
+        </div>
+    </section>
 </Base>
 
 <style>
-	.lead {
-		padding-block: 32px 48px;
-	}
+    .lead {
+        padding-block: 32px 48px;
+    }
 
-	.lead__grid {
-		display: grid;
-		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-		gap: 30px;
-	}
+    .lead__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 30px;
+    }
 
-	.topstories {
-		padding-block: 8px 40px;
-	}
+    .topstories {
+        padding-block: 56px 64px;
+    }
 
-	.topstories :global(.sechead) {
-		margin-bottom: 14px;
-	}
+    /* Heading on the left, category tabs beside it; the tabs scroll
+       sideways on narrow screens instead of wrapping under the heading. */
+    .topstories__head {
+        display: flex;
+        align-items: center;
+        gap: 12px 24px;
+        margin-bottom: 20px;
+    }
 
-	.news {
-		padding-block: 40px 56px;
-	}
+    .topstories__head :global(.sechead) {
+        margin: 0;
+        flex: none;
+    }
 
-	.news__grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: 40px;
-	}
+    .topstories__head :global(.tabs) {
+        margin-inline-start: auto;
+        min-width: 0;
+    }
 
-	.news__side {
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-	}
+    @media (max-width: 760px) {
+        .topstories__head {
+            flex-direction: column;
+            align-items: stretch;
+        }
 
-	.opinion {
-		padding: 24px;
-		border-radius: var(--radius);
-		background: var(--weather-surface);
-		color: var(--on-brand);
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-	}
+        .topstories__head :global(.tabs) {
+            margin-inline-start: 0;
+        }
+    }
 
-	.opinion__eyebrow {
-		font-size: 12px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		font-weight: 900;
-		color: var(--brand-amber);
-	}
+    .news {
+        padding-block: 40px 56px;
+    }
 
-	.opinion a {
-		color: var(--on-brand);
-		text-decoration: none;
-	}
+    .news__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 40px;
+    }
 
-	.opinion a:hover {
-		color: var(--brand-amber);
-	}
+    .news__side {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
 
-	.opinion__lead strong {
-		font-size: 20px;
-		line-height: 26px;
-		font-weight: 700;
-	}
+    .opinion {
+        padding: 24px;
+        border-radius: var(--radius);
+        background: var(--weather-surface);
+        color: var(--on-brand);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
 
-	.opinion__row {
-		padding-top: 14px;
-		border-top: 1px solid rgba(255, 255, 255, 0.2);
-	}
+    .opinion__eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 900;
+        color: var(--brand-amber);
+    }
 
-	.opinion__row strong {
-		font-size: 16px;
-		line-height: 22px;
-		font-weight: 500;
-	}
+    .opinion a {
+        color: var(--on-brand);
+        text-decoration: none;
+    }
 
-	.opinion__more {
-		font-size: 14px;
-		font-weight: 700;
-		color: var(--brand-amber);
-	}
+    .opinion a:hover {
+        color: var(--brand-amber);
+    }
 
-	.submit {
-		padding-bottom: 64px;
-	}
+    .opinion__lead strong {
+        font-size: 20px;
+        line-height: 26px;
+        font-weight: 700;
+    }
 
-	@media (max-width: 900px) {
-		.lead__grid,
-		.news__grid {
-			grid-template-columns: minmax(0, 1fr);
-		}
-	}
+    .opinion__row {
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .opinion__row strong {
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 500;
+    }
+
+    .opinion__more {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--brand-amber);
+    }
+
+    .submit {
+        padding-bottom: 64px;
+    }
+
+    @media (max-width: 900px) {
+        .lead__grid,
+        .news__grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 </style>
-
-<script>
-	// Top Stories tabs: every panel is already in the HTML, so switching is a
-	// pure visibility toggle and the page stays cacheable.
-	const tabButtons = document.querySelectorAll<HTMLButtonElement>(
-		'[role="tab"][data-tab]',
-	);
-	for (const button of tabButtons) {
-		button.addEventListener("click", () => {
-			const slug = button.dataset.tab;
-			for (const other of tabButtons) {
-				other.setAttribute(
-					"aria-selected",
-					other === button ? "true" : "false",
-				);
-			}
-			for (const panel of document.querySelectorAll<HTMLElement>(
-				'[role="tabpanel"]',
-			)) {
-				panel.hidden = panel.id !== `tabpanel-${slug}`;
-			}
-		});
-	}
-</script>
