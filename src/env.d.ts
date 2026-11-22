@@ -43,6 +43,26 @@ interface KVNamespaceLike {
 	delete(key: string): Promise<void>;
 }
 
+/** The slice of the Workers Images binding the share cards use. */
+interface ImagesHandleLike {
+	transform(options: Record<string, unknown>): ImagesHandleLike;
+	draw(
+		overlay: ImagesHandleLike | ReadableStream<Uint8Array>,
+		options?: { left?: number; top?: number; right?: number; bottom?: number; opacity?: number },
+	): ImagesHandleLike;
+	output(options: { format: string; quality?: number }): Promise<{
+		response(options?: { headers?: HeadersInit }): Response;
+	}>;
+}
+
+interface ImagesBindingLike {
+	input(stream: ReadableStream<Uint8Array>): ImagesHandleLike;
+	text(
+		content: string,
+		options: { font: { url: string }; color?: string; size?: number },
+	): ImagesHandleLike;
+}
+
 /** wrangler.jsonc bindings plus the plain-text vars and secrets. */
 interface Env {
 	ASSETS: { fetch: (input: string | URL | Request) => Promise<Response> };
@@ -51,7 +71,7 @@ interface Env {
 	MEDIA: R2BucketLike;
 	HYPERDRIVE: HyperdriveLike;
 	HYPERDRIVE_CACHED: HyperdriveLike;
-	IMAGES: unknown;
+	IMAGES: ImagesBindingLike;
 	EMDASH_SITE_URL: string;
 	NEON_DATABASE_URL: string;
 	NEON_DEV_DATABASE_URL: string;

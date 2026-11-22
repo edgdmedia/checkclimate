@@ -26,6 +26,7 @@ import Breadcrumb from "../../../../components/Breadcrumb.astro";
 import Byline from "../../../../components/Byline.astro";
 import ClaimCard from "../../../../components/ClaimCard.astro";
 import ShareBar from "../../../../components/ShareBar.astro";
+import ShareCardDownload from "../../../../components/ShareCardDownload.astro";
 import Sources from "../../../../components/Sources.astro";
 import StoryCard from "../../../../components/StoryCard.astro";
 import StoryMedia from "../../../../components/StoryMedia.astro";
@@ -45,7 +46,11 @@ const category = categoryOf(post);
 const byline = primaryByline(post);
 const date = publishedAt(post);
 const url = absoluteUrl(Astro.url.origin, postPath(post));
-const image = imageUrl(Astro.url.origin, data.featured_image);
+// A fact check with a claim and a verdict previews as its share card.
+const hasShareCard = factCheck && typeof data.claim === "string" && Boolean(data.claim) && Boolean(data.verdict) && Boolean(data.slug);
+const image = hasShareCard
+	? new URL(`/share/wide/${data.slug}.png`, Astro.url.origin).toString()
+	: imageUrl(Astro.url.origin, data.featured_image);
 const tags = tagsOf(post);
 const { contactEmail } = await siteConfig();
 
@@ -173,18 +178,15 @@ const relatedPosts = (related.entries as Post[])
 					.
 				</p>
 
-				{factCheck && (
-					<div class="article-inline-claim">
-						<ClaimCard variant="forest" />
-					</div>
-				)}
-
 				<Comments collection="posts" contentId={data.id} />
 			</div>
 
 			<aside class="article-side" aria-label="More from Check Climate">
-				{!factCheck && <ClaimCard />}
-				<div>
+				{hasShareCard && (
+					<ShareCardDownload slug={data.slug!} variant="sidebar" />
+				)}
+				<ClaimCard />
+				<div class="article-side__more">
 					<h2 class="panel__label">More in {category?.label ?? "Climate"}</h2>
 					{relatedPosts.map((item) => (
 						<StoryCard post={item} variant="text" headingLevel={3} />
@@ -314,10 +316,6 @@ const relatedPosts = (related.entries as Post[])
 
 	.prose {
 		max-width: 720px;
-	}
-
-	.article-inline-claim {
-		margin-top: 36px;
 	}
 
 	.article-side {
