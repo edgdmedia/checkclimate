@@ -16,7 +16,7 @@
 			"sortOrder": 0,
 			"label": "Posts",
 			"labelSingular": "Post",
-			"urlPattern": "/{year}/{month}/{day}/{slug}",
+			"urlPattern": "/{year}/{month}/{day}/{slug}/",
 			"supports": [
 				"drafts",
 				"revisions",
@@ -132,7 +132,7 @@
 			"hidden": true,
 			"label": "Pages",
 			"labelSingular": "Page",
-			"urlPattern": "/{slug}",
+			"urlPattern": "/{slug}/",
 			"supports": [
 				"drafts",
 				"revisions",

@@ -77,7 +77,18 @@ async function weather(request: Request, ctx: WaitUntil): Promise<Response> {
 export default {
 	...handler,
 	fetch(request: Request, env: Env, ctx: WaitUntil) {
-		if (new URL(request.url).pathname === WEATHER_PATH && request.method === "GET") {
+		const url = new URL(request.url);
+		// www → bare domain, before Astro: the page cache keys on the path
+		// alone, so a redirect produced inside Astro would be stored and then
+		// served on the bare domain too (a redirect loop).
+		if (url.hostname === "www.checkclimate.africa") {
+			url.hostname = "checkclimate.africa";
+			return new Response(null, {
+				status: 301,
+				headers: { location: url.toString(), "cache-control": "public, max-age=86400" },
+			});
+		}
+		if (url.pathname === WEATHER_PATH && request.method === "GET") {
 			return weather(request, ctx);
 		}
 		return handler.fetch(request, env, ctx);
