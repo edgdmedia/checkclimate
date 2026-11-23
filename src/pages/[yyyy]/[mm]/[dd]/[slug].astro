@@ -6,16 +6,16 @@
  */
 import type { Post } from "../../../../utils/content";
 import {
-	absoluteUrl,
-	categoryOf,
-	excerptOf,
-	imageUrl,
-	isFactCheck,
-	postPath,
-	primaryByline,
-	publishedAt,
-	tagsOf,
-	titleWithoutKicker,
+    absoluteUrl,
+    categoryOf,
+    excerptOf,
+    imageUrl,
+    isFactCheck,
+    postPath,
+    primaryByline,
+    publishedAt,
+    tagsOf,
+    titleWithoutKicker,
 } from "../../../../utils/content";
 import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
@@ -47,338 +47,358 @@ const byline = primaryByline(post);
 const date = publishedAt(post);
 const url = absoluteUrl(Astro.url.origin, postPath(post));
 // A fact check with a claim and a verdict previews as its share card.
-const hasShareCard = factCheck && typeof data.claim === "string" && Boolean(data.claim) && Boolean(data.verdict) && Boolean(data.slug);
+const hasShareCard =
+    factCheck &&
+    typeof data.claim === "string" &&
+    Boolean(data.claim) &&
+    Boolean(data.verdict) &&
+    Boolean(data.slug);
 const image = hasShareCard
-	? new URL(`/share/wide/${data.slug}.png`, Astro.url.origin).toString()
-	: imageUrl(Astro.url.origin, data.featured_image);
+    ? new URL(`/share/wide/${data.slug}.png`, Astro.url.origin).toString()
+    : imageUrl(Astro.url.origin, data.featured_image);
 const tags = tagsOf(post);
 const { contactEmail } = await siteConfig();
 
 // Related: same category, minus this story.
 const related = category
-	? await getEmDashCollection("posts", {
-			where: { category: category.slug },
-			orderBy: { published_at: "desc" },
-			limit: 4,
-			offset: 0,
-		})
-	: await getEmDashCollection("posts", {
-			orderBy: { published_at: "desc" },
-			limit: 4,
-			offset: 0,
-		});
+    ? await getEmDashCollection("posts", {
+          where: { category: category.slug },
+          orderBy: { published_at: "desc" },
+          limit: 4,
+          offset: 0,
+      })
+    : await getEmDashCollection("posts", {
+          orderBy: { published_at: "desc" },
+          limit: 4,
+          offset: 0,
+      });
 
 if (Astro.cache?.enabled) {
-	Astro.cache.set(result.cacheHint);
-	Astro.cache.set(related.cacheHint);
+    Astro.cache.set(result.cacheHint);
+    Astro.cache.set(related.cacheHint);
 }
 
 const relatedPosts = (related.entries as Post[])
-	.filter((item) => item.data.id !== data.id)
-	.slice(0, 3);
+    .filter((item) => item.data.id !== data.id)
+    .slice(0, 3);
 ---
 
 <Base
-	title={title}
-	description={excerptOf(post)}
-	image={image}
-	type="article"
-	publishedTime={date.toISOString()}
-	author={byline.name}
-	content={{ collection: "posts", id: data.id, slug: data.slug }}
+    title={title}
+    description={excerptOf(post)}
+    image={image}
+    type="article"
+    publishedTime={date.toISOString()}
+    author={byline.name}
+    content={{ collection: "posts", id: data.id, slug: data.slug }}
 >
-	<article>
-		{
-			factCheck ? (
-				<section class="fchead">
-					<div class="wrap">
-						<Breadcrumb
-							items={[
-								{ label: "Home", href: "/" },
-								{
-									label: category?.label ?? "Fact Check",
-									href: category
-										? `/category/${category.slug}/`
-										: "/category/fact-check/",
-								},
-							]}
-							onBrand
-						/>
-						<div class="fchead__inner">
-							<span class="fchead__eyebrow">Fact check</span>
-							<h1 class="fchead__title">{title}</h1>
-							<div class="fchead__meta">
-								<strong>{byline.name}</strong>
-								<span>{date.toDateString()}</span>
-							</div>
-							<div class="fchead__share">
-								<ShareBar url={url} title={title} onBrand />
-							</div>
-						</div>
-						<VerdictPanel
-							claim={data.claim}
-							claimSource={data.claim_source}
-							verdict={data.verdict}
-							verdictSummary={data.verdict_summary}
-							verdictNote={data.verdict_note}
-						/>
-					</div>
-				</section>
-			) : (
-				<div class="wrap article-head">
-					<Breadcrumb
-						items={[
-							{ label: "Home", href: "/" },
-							...(category
-								? [
-										{
-											label: category.label,
-											href: `/category/${category.slug}/`,
-										},
-									]
-								: []),
-						]}
-					/>
-					<div class="article-head__inner">
-						{category && <span class="cat-pill">{category.label}</span>}
-						<h1 class="article-head__title">{title}</h1>
-						<div class="article-head__meta">
-							<Byline name={byline.name} slug={byline.slug} date={date} />
-							<ShareBar url={url} title={title} />
-						</div>
-					</div>
-					{data.featured_image && (
-						<figure class="article-head__figure">
-							<StoryMedia
-								image={data.featured_image}
-								seed={data.id}
-								alt=""
-								priority
-								width={1400}
-								height={600}
-								class="article-head__media"
-							/>
-						</figure>
-					)}
-				</div>
-			)
-		}
+    <article>
+        {factCheck ? (
+            <section class="fchead">
+                <div class="wrap">
+                    <Breadcrumb
+                        items={[
+                            { label: "Home", href: "/" },
+                            {
+                                label: category?.label ?? "Fact Check",
+                                href: category
+                                    ? `/category/${category.slug}/`
+                                    : "/category/fact-check/",
+                            },
+                        ]}
+                        onBrand
+                    />
+                    <div class="fchead__inner">
+                        <span class="fchead__eyebrow">Fact check</span>
+                        <h1 class="fchead__title">{title}</h1>
+                        <div class="fchead__meta">
+                            <strong>{byline.name}</strong>
+                            <span>{date.toDateString()}</span>
+                        </div>
+                        <div class="fchead__share">
+                            <ShareBar url={url} title={title} onBrand />
+                        </div>
+                    </div>
+                    <VerdictPanel
+                        claim={data.claim}
+                        claimSource={data.claim_source}
+                        verdict={data.verdict}
+                        verdictSummary={data.verdict_summary}
+                        verdictNote={data.verdict_note}
+                    />
+                </div>
+            </section>
+        ) : (
+            <div class="wrap article-head">
+                <Breadcrumb
+                    items={[
+                        { label: "Home", href: "/" },
+                        ...(category
+                            ? [
+                                  {
+                                      label: category.label,
+                                      href: `/category/${category.slug}/`,
+                                  },
+                              ]
+                            : []),
+                    ]}
+                />
+                <div class="article-head__inner">
+                    {category && <span class="cat-pill">{category.label}</span>}
+                    <h1 class="article-head__title">{title}</h1>
+                    <div class="article-head__meta">
+                        <Byline
+                            name={byline.name}
+                            slug={byline.slug}
+                            date={date}
+                        />
+                        <ShareBar url={url} title={title} />
+                    </div>
+                </div>
+                {data.featured_image && (
+                    <figure class="article-head__figure">
+                        <StoryMedia
+                            image={data.featured_image}
+                            seed={data.id}
+                            alt=""
+                            priority
+                            width={1400}
+                            height={600}
+                            class="article-head__media"
+                        />
+                    </figure>
+                )}
+            </div>
+        )}
 
-		<div class="wrap article-body">
-			<div class="prose">
-				{factCheck && <AtAGlance value={data.at_a_glance} />}
-				<PortableText value={data.content} />
-				{factCheck && <Sources value={data.sources} />}
-				<TagList tags={tags} />
-				<p class="correction">
-					Spotted an error?{" "}
-					<a href={`mailto:${contactEmail}?subject=Correction`}>
-						Tell our editors
-					</a>
-					.
-				</p>
+        <div class="wrap article-body">
+            <div class="prose">
+                {factCheck && <AtAGlance value={data.at_a_glance} />}
+                <PortableText value={data.content} />
+                {factCheck && <Sources value={data.sources} />}
+                <TagList tags={tags} />
+                <p class="correction">
+                    Spotted an error?{" "}
+                    <a href={`mailto:${contactEmail}?subject=Correction`}>
+                        Tell our editors
+                    </a>
+                    .
+                </p>
 
-				<Comments collection="posts" contentId={data.id} />
-			</div>
+                <Comments collection="posts" contentId={data.id} />
+            </div>
 
-			<aside class="article-side" aria-label="More from Check Climate">
-				{hasShareCard && (
-					<ShareCardDownload slug={data.slug!} variant="sidebar" />
-				)}
-				<ClaimCard />
-				<div class="article-side__more">
-					<h2 class="panel__label">More in {category?.label ?? "Climate"}</h2>
-					{relatedPosts.map((item) => (
-						<StoryCard post={item} variant="text" headingLevel={3} />
-					))}
-				</div>
-				{factCheck && (
-					<div class="panel panel--outline">
-						<h2 class="panel__label">How we fact check</h2>
-						<p>
-							Every claim is checked against primary data, official
-							statements and named experts before we publish a verdict.
-						</p>
-						<a href="/about-us/" class="more">Our standards →</a>
-					</div>
-				)}
-			</aside>
-		</div>
-	</article>
+            <aside class="article-side" aria-label="More from Check Climate">
+                {hasShareCard && (
+                    <ShareCardDownload slug={data.slug!} variant="sidebar" />
+                )}
+                <ClaimCard />
+                <div class="article-side__more">
+                    <h2 class="panel__label">
+                        More in {category?.label ?? "Climate"}
+                    </h2>
+                    {relatedPosts.map((item) => (
+                        <StoryCard
+                            post={item}
+                            variant="text"
+                            headingLevel={3}
+                        />
+                    ))}
+                </div>
+                {factCheck && (
+                    <div class="panel panel--outline">
+                        <h2 class="panel__label">How we fact check</h2>
+                        <p>
+                            Every claim is checked against primary data,
+                            official statements and named experts before we
+                            publish a verdict.
+                        </p>
+                        <a href="/about-us/" class="more">
+                            Our standards →
+                        </a>
+                    </div>
+                )}
+            </aside>
+        </div>
+    </article>
 
-	{
-		relatedPosts.length > 0 && (
-			<section class="related" aria-labelledby="related-title">
-				<div class="wrap">
-					<h2 id="related-title" class="related__title">
-						{factCheck ? "More fact checks" : `More in ${category?.label}`}
-					</h2>
-					<div class="cards">
-						{relatedPosts.map((item) => (
-							<StoryCard post={item} variant="card" headingLevel={3} />
-						))}
-					</div>
-				</div>
-			</section>
-		)
-	}
+    {relatedPosts.length > 0 && (
+        <section class="related" aria-labelledby="related-title">
+            <div class="wrap">
+                <h2 id="related-title" class="related__title">
+                    {factCheck
+                        ? "More fact checks"
+                        : `More in ${category?.label}`}
+                </h2>
+                <div class="cards">
+                    {relatedPosts.map((item) => (
+                        <StoryCard
+                            post={item}
+                            variant="card"
+                            headingLevel={3}
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+    )}
 </Base>
 
 <style>
-	.fchead {
-		background: var(--brand-forest);
-		color: var(--on-brand);
-		padding-block: 28px 40px;
-	}
+    .fchead {
+        background: var(--brand-forest);
+        color: var(--on-brand);
+        padding-block: 28px 40px;
+    }
 
-	.fchead__inner {
-		max-width: 920px;
-		margin-top: 22px;
-	}
+    .fchead__inner {
+        max-width: 920px;
+        margin-top: 22px;
+    }
 
-	.fchead__eyebrow {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 13px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		font-weight: 900;
-		color: var(--brand-amber);
-	}
+    .fchead__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 900;
+        color: var(--brand-amber);
+    }
 
-	.fchead__title {
-		margin: 12px 0 18px;
-		font-size: 46px;
-		line-height: 52px;
-		font-weight: 900;
-		letter-spacing: -0.01em;
-		color: var(--on-brand);
-	}
+    .fchead__title {
+        margin: 12px 0 18px;
+        font-size: 46px;
+        line-height: 52px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        color: var(--on-brand);
+    }
 
-	.fchead__meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px 18px;
-		font-size: 14px;
-		line-height: 20px;
-		color: var(--on-image);
-	}
+    .fchead__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--on-image);
+    }
 
-	.fchead__meta strong {
-		color: #ffffff;
-		font-weight: 700;
-	}
+    .fchead__meta strong {
+        color: #ffffff;
+        font-weight: 700;
+    }
 
-	.article-head {
-		padding-top: 28px;
-	}
+    .article-head {
+        padding-top: 28px;
+    }
 
-	.article-head__inner {
-		margin-top: 20px;
-	}
+    .article-head__inner {
+        margin-top: 20px;
+    }
 
-	.article-head__title {
-		max-width: 900px;
-		margin: 14px 0 18px;
-		font-size: 46px;
-		line-height: 52px;
-		font-weight: 900;
-		letter-spacing: -0.01em;
-		color: var(--ink);
-	}
+    .article-head__title {
+        /** max-width: 900px; **/
+        margin: 14px 0 18px;
+        font-size: 46px;
+        line-height: 52px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+    }
 
-	.article-head__meta {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		flex-wrap: wrap;
-		padding: 14px 0;
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-	}
+    .article-head__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 14px 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
 
-	.article-head__figure {
-		margin: 28px 0 0;
-	}
+    .article-head__figure {
+        margin: 28px 0 0;
+    }
 
-	.article-head__media {
-		aspect-ratio: 21 / 9;
-	}
+    .article-head__media {
+        aspect-ratio: 21 / 9;
+    }
 
-	.article-body {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 320px;
-		gap: 56px;
-		padding-block: 40px 56px;
-	}
+    .article-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 56px;
+        padding-block: 40px 56px;
+    }
 
-	.prose {
-		max-width: 720px;
-	}
+    .prose {
+        max-width: 720px;
+    }
 
-	.article-side {
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-	}
+    .article-side {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
 
-	.article-side > div {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
+    .article-side > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 
-	.article-side .panel {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		align-items: flex-start;
-	}
+    .article-side .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
 
-	.correction {
-		margin: 28px 0 0;
-		font-size: 15px;
-		line-height: 24px;
-		color: var(--ink-muted);
-	}
+    .correction {
+        margin: 28px 0 0;
+        font-size: 15px;
+        line-height: 24px;
+        color: var(--ink-muted);
+    }
 
-	.correction a {
-		color: var(--link);
-		text-decoration: underline;
-	}
+    .correction a {
+        color: var(--link);
+        text-decoration: underline;
+    }
 
-	.related {
-		background: var(--surface-muted);
-		padding-block: 48px 56px;
-	}
+    .related {
+        background: var(--surface-muted);
+        padding-block: 48px 56px;
+    }
 
-	.related__title {
-		margin: 0 0 22px;
-		font-size: 30px;
-		line-height: 36px;
-		font-weight: 700;
-		color: var(--ink);
-	}
+    .related__title {
+        margin: 0 0 22px;
+        font-size: 30px;
+        line-height: 36px;
+        font-weight: 700;
+        color: var(--ink);
+    }
 
-	@media (max-width: 900px) {
-		.article-body {
-			grid-template-columns: minmax(0, 1fr);
-		}
+    @media (max-width: 900px) {
+        .article-body {
+            grid-template-columns: minmax(0, 1fr);
+        }
 
-		.article-head__title,
-		.fchead__title {
-			font-size: 34px;
-			line-height: 40px;
-		}
-	}
+        .article-head__title,
+        .fchead__title {
+            font-size: 34px;
+            line-height: 40px;
+        }
+    }
 
-	@media (max-width: 600px) {
-		.article-head__title,
-		.fchead__title {
-			font-size: 28px;
-			line-height: 34px;
-		}
-	}
+    @media (max-width: 600px) {
+        .article-head__title,
+        .fchead__title {
+            font-size: 28px;
+            line-height: 34px;
+        }
+    }
 </style>

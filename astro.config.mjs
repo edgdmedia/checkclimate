@@ -84,7 +84,8 @@ const localPluginAliases = Object.fromEntries([
  * tags name the collections a page renders.
  */
 const cachedPage = (tags) => ({
-	maxAge: 300,
+	// Publishing purges by tag, so a long edge lifetime is safe.
+	maxAge: 3600,
 	swr: 86_400,
 	tags: [...tags, "all"],
 });
@@ -125,7 +126,7 @@ export default defineConfig({
 		// Static pages, hardcoded in src/pages/ (StaticPage layout).
 		"/about-us": cachedPage(["pages"]),
 		"/contact-us": cachedPage(["pages"]),
-		"/privacy-policy-2": cachedPage(["pages"]),
+		"/privacy-policy": cachedPage(["pages"]),
 		"/accessibility-statement": cachedPage(["pages"]),
 		// Feeds and discovery files.
 		"/feed": cachedPage(["posts"]),

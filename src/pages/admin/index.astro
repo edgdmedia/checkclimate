@@ -9,7 +9,8 @@
  */
 import Base from "../../layouts/Base.astro";
 import Icon from "../../components/Icon.astro";
-import logoDark from "../../assets/brand/check-climate-lockup-reverse.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const logoDark = { src: "/brand/logo-dark.webp", width: 336, height: 112 };
 
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
 const adminUrl = "/_emdash/admin";

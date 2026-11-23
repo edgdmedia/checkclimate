@@ -14,7 +14,8 @@ import ClaimCard from "./ClaimCard.astro";
 import SectionHeading from "./SectionHeading.astro";
 import StoryCard from "./StoryCard.astro";
 import StoryMedia from "./StoryMedia.astro";
-import mark from "../assets/brand/check-climate-mark-simple.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const mark = { src: "/brand/mark.webp", width: 96, height: 96 };
 
 interface Props {
 	posts: Post[];
@@ -39,7 +40,7 @@ const list = rest.slice(0, 4);
 					moreLabel="See all fact checks →"
 					onBrand
 				>
-					<img slot="eyebrow-icon" src={mark.src} width={22} height={22} alt="" />
+					<img slot="eyebrow-icon" src={mark.src} width={22} height={22} alt="" loading="lazy" />
 				</SectionHeading>
 				<div class="fcgrid">
 					<a href={postPath(lead)} class="story fcband__lead">
