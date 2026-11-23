@@ -1,7 +1,9 @@
 ---
 import type { MenuItem } from "emdash";
-import logoLight from "../assets/brand/check-climate-lockup.png";
-import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const logoLight = { src: "/brand/logo-light.webp", width: 336, height: 112 };
+/** Small WebP copy in public/brand (displayed at half this size). */
+const logoDark = { src: "/brand/logo-dark.webp", width: 336, height: 112 };
 import { SECTIONS, siteConfig } from "../utils/site";
 
 interface Props {

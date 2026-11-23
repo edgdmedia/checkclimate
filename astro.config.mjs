@@ -84,7 +84,8 @@ const localPluginAliases = Object.fromEntries([
  * tags name the collections a page renders.
  */
 const cachedPage = (tags) => ({
-	maxAge: 300,
+	// Publishing purges by tag, so a long edge lifetime is safe.
+	maxAge: 3600,
 	swr: 86_400,
 	tags: [...tags, "all"],
 });

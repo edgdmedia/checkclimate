@@ -13,7 +13,8 @@ import ClaimCard from "./ClaimCard.astro";
 import Icon from "./Icon.astro";
 import Pagination from "./Pagination.astro";
 import StoryCard from "./StoryCard.astro";
-import mark from "../assets/brand/check-climate-mark-simple.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const mark = { src: "/brand/mark.webp", width: 96, height: 96 };
 
 interface Filter {
 	label: string;

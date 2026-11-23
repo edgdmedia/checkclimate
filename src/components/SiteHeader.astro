@@ -5,8 +5,10 @@
  * floats above back-to-top (Base.astro).
  */
 import type { MenuItem } from "emdash";
-import logoLight from "../assets/brand/check-climate-lockup.png";
-import logoDark from "../assets/brand/check-climate-lockup-reverse.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const logoLight = { src: "/brand/logo-light.webp", width: 336, height: 112 };
+/** Small WebP copy in public/brand (displayed at half this size). */
+const logoDark = { src: "/brand/logo-dark.webp", width: 336, height: 112 };
 import CategoryNav from "./CategoryNav.astro";
 import Icon from "./Icon.astro";
 import WeatherCard from "./WeatherCard.astro";
@@ -57,6 +59,7 @@ const locale = getSiteLocale() ?? "en-GB";
 					src={logoDark.src}
 					width={logoDark.width}
 					height={logoDark.height}
+					loading="lazy"
 					alt="Check Climate"
 				/>
 				<span class="masthead__tagline">{siteTagline}</span>

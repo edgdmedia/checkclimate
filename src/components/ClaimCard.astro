@@ -4,7 +4,8 @@
  * article sidebars. Amber is a fill only: black text on it, never white.
  */
 import { CLAIM_URL } from "../utils/site";
-import mark from "../assets/brand/check-climate-mark-simple.png";
+/** Small WebP copy in public/brand (displayed at half this size). */
+const mark = { src: "/brand/mark.webp", width: 96, height: 96 };
 
 interface Props {
 	variant?: "amber" | "forest";
