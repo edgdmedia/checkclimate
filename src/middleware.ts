@@ -160,6 +160,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	if (pathname === "/feed" || pathname === "/feed.xml") {
 		return moved("/feed/", context.url);
 	}
+	// The WordPress privacy page slug was privacy-policy-2.
+	if (pathname === "/privacy-policy-2" || pathname === "/privacy-policy-2/") {
+		return moved("/privacy-policy/", context.url);
+	}
 	if (pathname === "/sitemap_index.xml" || /-sitemap\.xml$/.test(pathname)) {
 		return moved("/sitemap.xml", context.url);
 	}
@@ -196,5 +200,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		return moved(`${pathname}/`, context.url);
 	}
 
-	return next();
+	const response = await next();
+
+	// EmDash writes sitemap <loc>s without the trailing slash (it adds one only
+	// under Astro's trailingSlash: "always", which would also hit its API
+	// routes). Page URLs here always end in "/", so add it to listed pages —
+	// not to images or other files.
+	if (/^\/sitemap-[a-z0-9_-]+\.xml$/.test(pathname) && response.status === 200) {
+		const xml = await response.text();
+		const fixed = xml.replace(/<loc>([^<]*?)<\/loc>/g, (whole, loc: string) => {
+			const last = loc.slice(loc.lastIndexOf("/") + 1);
+			return loc.endsWith("/") || last.includes(".") ? whole : `<loc>${loc}/</loc>`;
+		});
+		return new Response(fixed, { status: response.status, headers: response.headers });
+	}
+
+	return response;
 });

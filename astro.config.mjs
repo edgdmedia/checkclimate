@@ -125,7 +125,7 @@ export default defineConfig({
 		// Static pages, hardcoded in src/pages/ (StaticPage layout).
 		"/about-us": cachedPage(["pages"]),
 		"/contact-us": cachedPage(["pages"]),
-		"/privacy-policy-2": cachedPage(["pages"]),
+		"/privacy-policy": cachedPage(["pages"]),
 		"/accessibility-statement": cachedPage(["pages"]),
 		// Feeds and discovery files.
 		"/feed": cachedPage(["posts"]),

@@ -622,7 +622,7 @@
 				{
 					"type": "custom",
 					"label": "Privacy Policy",
-					"url": "/privacy-policy-2/"
+					"url": "/privacy-policy/"
 				},
 				{
 					"type": "custom",
@@ -2393,7 +2393,7 @@
 			},
 			{
 				"id": "page-privacy-policy",
-				"slug": "privacy-policy-2",
+				"slug": "privacy-policy",
 				"status": "published",
 				"data": {
 					"title": "Privacy policy",
