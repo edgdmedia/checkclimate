@@ -125,16 +125,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	const { pathname } = context.url;
 	const isGet = context.request.method === "GET" || context.request.method === "HEAD";
 
-	// The site lives on the bare domain; www links (old WordPress URLs,
-	// shares, bookmarks) move there with the path and query intact.
-	if (context.url.hostname === "www.checkclimate.africa") {
-		const target = new URL(context.url);
-		target.hostname = "checkclimate.africa";
-		return new Response(null, {
-			status: 301,
-			headers: { location: target.toString(), "cache-control": "public, max-age=86400" },
-		});
-	}
 
 	// /wp-admin, /wp-admin/anything, /wp-login.php, /login → /admin/
 	const isLegacyAdmin =
