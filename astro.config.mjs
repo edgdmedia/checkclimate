@@ -134,7 +134,11 @@ export default defineConfig({
 		"/sitemap.xml": cachedPage(["posts", "pages"]),
 		"/sitemap_index.xml": cachedPage(["posts", "pages"]),
 		"/robots.txt": cachedPage(["posts", "pages"]),
-		// Any other single-segment path is a CMS page.
+		// /_image and /share/*.png are endpoint routes: Astro cache hints do
+		// not apply to them. They set their own long-lived Cache-Control
+		// headers (the adapter's image endpoint uses one-year immutable plus
+		// the Worker cache), and the middleware no longer 301s /_image into
+		// the slow handler. Any other single-segment path is a CMS page.
 		"/[slug]": cachedPage(["pages"]),
 		// Not cached on purpose: /search (query dependent), /submit-a-claim and
 		// every POST (the claim form), /admin, /_emdash/*, /404.

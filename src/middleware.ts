@@ -13,16 +13,25 @@
  */
 import { env } from "cloudflare:workers";
 import { defineMiddleware } from "astro/middleware";
-// Bundled at build time by the WordPress import (scripts/post-import.ts writes it).
-import uploadMap from "../migration/media-url-map.json";
+
+/**
+ * Old WordPress upload path → R2 object, bundled at build time by
+ * scripts/post-import.ts. Imported lazily: the 154 KB of JSON would
+ * otherwise be parsed into the middleware chunk on every cold start, even
+ * though only /wp-content/uploads/* requests ever look at it.
+ */
+let uploadRedirects: Promise<Record<string, string>> | undefined;
+function uploadsMap(): Promise<Record<string, string>> {
+	return (uploadRedirects ??= import("../migration/media-url-map.json").then(
+		(m) => (m.default ?? {}) as Record<string, string>,
+	));
+}
 
 /** Old admin and login entries all land on the branded /admin/ page. */
 const LEGACY_ADMIN = ["/wp-admin", "/wp-login.php", "/login"];
 
 /** Dead menu endpoints from the old theme: gone for good, say so. */
 const GONE_PREFIX = "/megamenu/";
-
-const uploadRedirects = (uploadMap as Record<string, string>) ?? {};
 
 function withQuery(target: string, url: URL): string {
 	const query = url.search;
@@ -114,6 +123,11 @@ function needsSlash(pathname: string): boolean {
 	if (pathname.endsWith("/")) return false;
 	if (pathname.startsWith("/_emdash")) return false;
 	if (pathname.startsWith("/api/")) return false;
+	// Astro's own endpoints key their work off the exact path and the query
+	// string: a slash redirect costs a second Worker request per image and
+	// lands the transform on the wrong (non-cached) handler.
+	if (pathname === "/_image" || pathname.startsWith("/_astro/")) return false;
+	if (pathname.startsWith("/cdn-cgi/")) return false;
 	// The not-found page is a rewrite target: redirecting it would turn every
 	// missing slug into a 301 → 404 chain.
 	if (pathname === "/404") return false;
@@ -149,7 +163,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 	// /wp-content/uploads/2024/05/file.jpg → the R2 object that replaced it.
 	if (pathname.startsWith("/wp-content/uploads/")) {
-		const target = uploadRedirects[pathname] ?? uploadRedirects[pathname.slice(1)];
+		const map = await uploadsMap();
+		const target = map[pathname] ?? map[pathname.slice(1)];
 		if (target) return moved(target, context.url);
 		// Unmapped: the importer never saw this file. Old image hotlinks and
 		// scanners land here; answer statically rather than render a page.

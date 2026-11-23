@@ -24,6 +24,9 @@
 	"observability": {
 		"enabled": true
 	},
+	// Production CPU/heap profiles and readable stack traces need uploaded
+	// source maps; wrangler 4.119 only uploads them when set explicitly.
+	"upload_source_maps": true,
 	// Two Hyperdrive configs over the same Neon database:
 	// HYPERDRIVE (caching disabled) for admin/writes/migrations, and
 	// HYPERDRIVE_CACHED (query caching on) for anonymous public reads.
