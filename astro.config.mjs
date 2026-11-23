@@ -84,9 +84,12 @@ const localPluginAliases = Object.fromEntries([
  * tags name the collections a page renders.
  */
 const cachedPage = (tags) => ({
-	// Publishing purges by tag, so a long edge lifetime is safe.
-	maxAge: 3600,
-	swr: 86_400,
+	// Publishing purges by tag (EmDash invalidates [collection, id] network-wide
+	// on publish/unpublish/edit), so the TTL is not a freshness control — it is
+	// only the safety net for a failed purge. One day between renders per page
+	// keeps cold-path CPU off the p50 as long as publishing keeps purging.
+	maxAge: 86_400,
+	swr: 604_800,
 	tags: [...tags, "all"],
 });
 
