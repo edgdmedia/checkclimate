@@ -43,8 +43,9 @@ function moved(location: string, url: URL, status = 301): Response {
 		status,
 		headers: {
 			location: withQuery(location, url),
-			// Redirects are stable; let Cloudflare and browsers keep them.
-			"cache-control": "public, max-age=86400",
+			// Redirects are stable; keep them at the edge for a month. A
+			// stale entry costs one render, not correctness.
+			"cache-control": "public, max-age=2592000",
 		},
 	});
 }
@@ -80,7 +81,9 @@ function staticNotFound(): Response {
 		status: 404,
 		headers: {
 			"content-type": "text/html; charset=utf-8",
-			"cache-control": "public, max-age=86400",
+			// Scanner paths rotate, but any given one repeats across the
+			// internet for months; a day was too short a memory.
+			"cache-control": "public, max-age=2592000",
 			"x-robots-tag": "noindex",
 		},
 	});
@@ -155,7 +158,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 			status: 410,
 			headers: {
 				"content-type": "text/html; charset=utf-8",
-				"cache-control": "public, max-age=86400",
+				"cache-control": "public, max-age=2592000",
 				"x-robots-tag": "noindex",
 			},
 		});

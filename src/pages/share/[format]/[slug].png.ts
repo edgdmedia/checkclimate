@@ -61,7 +61,7 @@ async function photo(origin: string, image: unknown): Promise<ReadableStream<Uin
 function respond(bytes: ArrayBuffer, slug: string, format: ShareFormat, download: boolean): Response {
 	const headers: Record<string, string> = {
 		"content-type": "image/png",
-		"cache-control": "public, max-age=3600, stale-while-revalidate=86400",
+		"cache-control": "public, max-age=86400, stale-while-revalidate=604800",
 	};
 	if (download) headers["content-disposition"] = `attachment; filename="checkclimate-${slug}-${format}.png"`;
 	return new Response(bytes, { headers });

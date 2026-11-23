@@ -85,7 +85,7 @@ export default {
 			url.hostname = "checkclimate.africa";
 			return new Response(null, {
 				status: 301,
-				headers: { location: url.toString(), "cache-control": "public, max-age=86400" },
+				headers: { location: url.toString(), "cache-control": "public, max-age=2592000" },
 			});
 		}
 		if (url.pathname === WEATHER_PATH && request.method === "GET") {

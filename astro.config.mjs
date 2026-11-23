@@ -86,10 +86,13 @@ const localPluginAliases = Object.fromEntries([
 const cachedPage = (tags) => ({
 	// Publishing purges by tag (EmDash invalidates [collection, id] network-wide
 	// on publish/unpublish/edit), so the TTL is not a freshness control — it is
-	// only the safety net for a failed purge. One day between renders per page
-	// keeps cold-path CPU off the p50 as long as publishing keeps purging.
-	maxAge: 86_400,
-	swr: 604_800,
+	// only the safety net for a failed purge. With purge working, a page is
+	// re-rendered on publish or on LRU eviction, and a re-render costs one DB
+	// pass; 30 days + a year of stale-while-revalidate keeps that rarest.
+	// Astro's permissions cap is one year; Cloudflare honours Cache-Control up
+	// to the same, and Workers Cache evicts long before that under pressure.
+	maxAge: 2_592_000,
+	swr: 31_536_000,
 	tags: [...tags, "all"],
 });
 
@@ -182,9 +185,18 @@ export default defineConfig({
 				binding: "HYPERDRIVE",
 				cachedBinding: "HYPERDRIVE_CACHED",
 				migrationConnectionStringEnv: "NEON_DATABASE_URL",
+				// Matched to the cached Hyperdrive config's max_age (raised to
+				// 600 s in the dashboard/API): after a write, anonymous public
+				// reads use the uncached binding for this window, so publish
+				// freshness never depends on the query cache expiring first.
+				preferUncachedAfterWriteMs: 600_000,
 			}),
 			storage: r2({ binding: "MEDIA" }),
-			objectCache: kvCache({ binding: "CACHE", defaultTtl: 86_400 }),
+			// One year: the KV maximum. EmDash overwrites its own keys on
+			// writes, so this only bounds re-reads of settings/schema data
+			// that change even less often than posts. A KV miss costs one
+			// Hyperdrive query on a cold Neon — accepted.
+			objectCache: kvCache({ binding: "CACHE", defaultTtl: 31_536_000 }),
 			plugins: localPlugins,
 			siteUrl,
 			toolbar: "client",
