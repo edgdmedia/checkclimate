@@ -39,6 +39,9 @@ NODE_BIN="$HOME/.local/share/fnm/aliases/default/bin"
 if [ -d "$NODE_BIN" ]; then
 	export PATH="$NODE_BIN:$PATH"
 fi
+# corepack asks before downloading the pnpm version package.json pins; the
+# forced-command login has no terminal to answer it.
+export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 if ! command -v node >/dev/null 2>&1; then
 	echo "node is not on the PATH. Install Node 24 for the $USER user (docs/vps-runbook.md)." >&2
