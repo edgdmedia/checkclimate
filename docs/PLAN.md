@@ -1,6 +1,13 @@
 # Check Climate Africa: WordPress → Astro + EmDash
 
-Status: plan v2, 2026-11-19. Stack changed from VPS to **Cloudflare Workers (free) + Neon via Hyperdrive + R2 + KV**.
+Status: plan v3, 2026-11-24. Stack moved from Cloudflare Workers (free) + Neon via
+Hyperdrive + R2 + KV to the shared edgdmedia **VPS: Node + SQLite behind
+Cloudflare, media still in R2**. Reason: the free account quotas (10 ms CPU per
+request, 100k requests/day, Hyperdrive 100k queries/day, Neon ~191.9 compute
+hours/month, KV 1,000 writes/day) are nearly spent for November. The Worker
+stays deployed as the rollback until the owner says the box is final.
+Migration plan: `docs/superpowers/plans/2026-11-24-vps-migration.md`; owner's
+operating manual: `docs/vps-runbook.md`.
 Owner: edgdmedia. Repo: github.com/edgdmedia/checkclimate.
 
 ## Goal
@@ -9,8 +16,9 @@ Replace the WordPress site at https://www.checkclimate.africa with an Astro + Em
 
 - follows the approved design (`design/`),
 - keeps every existing URL working (SEO),
-- runs on Cloudflare Workers (free plan) in the Security Focus Cloudflare account, with no server to maintain,
-- keeps all media in Cloudflare R2.
+- runs on the owner's VPS (`169.58.2.239`) as one Node process behind nginx, with Cloudflare still the edge cache,
+- keeps all media in Cloudflare R2 (unchanged bucket),
+- needs no per-request quota accounting: database reads on the box are free.
 
 For now the site lives on its `*.workers.dev` URL. Later it moves to `checkclimate.africa` (apex, no www).
 
@@ -46,65 +54,81 @@ The `.dc.html` files are mockups (custom format with `{{holes}}`, `<sc-for>`, `<
 
 ```
 Browser
-  → Workers Cache (cacheCloudflare + routeRules; EmDash purges by tag on publish)
-    → Worker `checkclimate` (Astro 7 + EmDash, @astrojs/cloudflare, placement near Neon)
-      → KV `CACHE`          object cache (kvCache, long TTL)
-      → Hyperdrive          HYPERDRIVE (caching off: admin, writes)  +  HYPERDRIVE_CACHED (anonymous reads)
-          → Neon Postgres   project `checkclimate`, aws-eu-central-1 (Frankfurt)
-      → R2 `checkclimate-media`   media (later on media.checkclimate.africa)
-      → Cron */15 * * * *         scheduled publishing
+  → Cloudflare zone cache (Cache Rule makes HTML eligible; purge by Cache-Tag)
+    → nginx on 169.58.2.239 (Cloudflare IPs only via geo $realip_remote_addr, Origin Certificate)
+      → 127.0.0.1:4331  node ./dist/server/entry.mjs   (systemd, user checkclimate, one process)
+        → SQLite  /home/checkclimate/data/emdash.db (WAL) + EmDash memoryCache in-process
+        → R2 `checkclimate-media`   media, over the S3 API (same bucket, same keys)
+        → sessions /home/checkclimate/data/sessions (fsLite, outside the checkout)
+        → in-process scheduler      scheduled publishing (no cron trigger anywhere)
 ```
 
-`astro.config.mjs`:
+`astro.config.mjs` (full detail in the migration plan, Tasks 4–9):
 
 ```js
-import cloudflare from "@astrojs/cloudflare";
-import { cacheCloudflare } from "@astrojs/cloudflare/cache";
-import emdash from "emdash/astro";
-import { hyperdrive, r2, kvCache } from "@emdash-cms/cloudflare";
+import node from "@astrojs/node";
+import emdash, { local, memoryCache, s3 } from "emdash/astro";
+import { sqlite } from "emdash/db";
 
 export default defineConfig({
   output: "server",
-  adapter: cloudflare(),
-  cache: { provider: cacheCloudflare() },
-  routeRules: { /* public routes only, see "Caching" */ },
+  adapter: node({ mode: "standalone" }),
+  // No `cache:` and no `routeRules`: a provider makes EmDash skip its own query
+  // cache and strips Cache-Tag. Caching is headers + the zone Cache Rule.
+  session: { driver: sessionDrivers.fsLite({ base: process.env.SESSION_DIR }) },
   integrations: [
     emdash({
-      database: hyperdrive({ binding: "HYPERDRIVE", cachedBinding: "HYPERDRIVE_CACHED" }),
-      storage: r2({ binding: "MEDIA" /* publicUrl: "https://media.checkclimate.africa" once the zone is on Cloudflare */ }),
-      objectCache: kvCache({ binding: "CACHE", defaultTtl: 86400 }),
+      database: sqlite({ url: `file:${process.env.DATABASE_PATH}` }),
+      storage: s3(),                 // R2 over its S3 API; local() when S3_BUCKET is unset
+      objectCache: memoryCache({ defaultTtl: 3600, revalidate: 0, maxEntries: 5000 }),
+      trustedProxyHeaders: ["cf-connecting-ip", "x-forwarded-for"],
       toolbar: "client",
-      plugins: [/* resend-email, site-settings */],
+      plugins: [/* resend-email, site-settings, post-editor, cloudflare-purge */],
     }),
   ],
 });
 ```
 
-`wrangler.jsonc` (account = **Security Focus**, `9c8aaa232a52d145430685011e9fff9c`; shared free quotas with other projects in that account): `nodejs_compat`, `hyperdrive` ×2 (with `localConnectionString` to a Neon **dev** branch), `r2_buckets` MEDIA, `kv_namespaces` CACHE (`kv_cache_id`) and SESSION (`kv_session_id`, Astro sessions), `triggers.crons: ["*/15 * * * *"]`, `placement` near Frankfurt, `workers_dev: true`, `observability` on. Entry `src/worker.ts` re-exports the `scheduled` handler from `@emdash-cms/cloudflare/worker`. Requires `pg` ≥ 8.16.3. Verify with `emdash doctor`.
+### What each piece replaces
 
-### Why two Hyperdrive bindings
-
-The EmDash docs recommend a primary binding with caching **disabled** (admin, logged-in requests, writes, migrations) and a cached binding on the same database for anonymous public reads. That keeps editors from seeing stale data and still lets most public reads skip Neon.
-
-### Caching
-
-- **Workers Cache** in front of the Worker via `cacheCloudflare()`. Every public route gets a `routeRules` entry (lifetime + tags); EmDash purges by tag on publish. Never cache `/_emdash/*`, `/admin`, form POSTs, search, or anything session-dependent. Don't use a root `/[...slug]` rule (it would match `/_emdash/`).
-- Guard every hint: `if (Astro.cache?.enabled && hint) Astro.cache.set(hint)`. Dev has caching off, so cache code is only verified on a deployed Worker.
-- If Workers Cache isn't available on the free account, fall back to the Cache API in outer middleware, purged on publish.
-- **KV object cache** with a 24h TTL. KV free allows **1,000 writes a day**, so keep TTLs long and don't write per request.
-
-### Free-plan limits and how we watch them
-
-| Limit (free) | Mitigation | Watch |
+| Workers (plan v2) | The box (plan v3) | Why |
 |---|---|---|
-| Workers 100k requests/day (per account) | Own account for this client; cached pages use almost no CPU | Workers analytics |
-| **Workers 10 ms CPU per request** | Page cache; heavy jobs (import) run locally, never on the Worker | **Error 1102 / exceededCpu** on uncached pages and the admin |
-| Hyperdrive 100k queries/day | Only cache misses reach the DB | Hyperdrive dashboard |
-| Neon 100 CU-hours/month, 1 GB storage | Scales to zero; media is in R2 | Neon console |
-| KV 1,000 writes/day | Long TTLs | KV metrics |
-| R2 10 GB, no egress fees | Fixed set of image sizes | R2 metrics |
+| `@astrojs/cloudflare`, `src/worker.ts` | `@astrojs/node` standalone | the 10 ms CPU cap and 100k requests/day are gone |
+| Hyperdrive ×2 → Neon Postgres | SQLite file | no query quota, no compute hours, no transatlantic round trips; FTS search comes back |
+| `kvCache(CACHE)` | `memoryCache` | one warm process is a real cross-request cache; KV's 1,000 writes/day is irrelevant |
+| `sessionDrivers.cloudflareKVBinding(SESSION)` | `sessionDrivers.fsLite` | a deploy must not log editors out, so the store sits outside the checkout |
+| `cacheCloudflare()` + `routeRules` + 16 `Astro.cache.set` hints | `Cache-Control` + `Cache-Tag` in middleware | Astro strips `Cache-Tag` when its provider serves the page, and a provider disables EmDash's query cache |
+| EmDash's Workers-cache tag purge | `plugins/cloudflare-purge` → `POST /zones/:id/purge_cache` | the edge is now the only shared cache |
+| Cron `*/15 * * * *` + `createScheduledHandler()` | the in-process scheduler | **delete the Worker's cron after cutover** or it keeps reading Neon |
+| `env.IMAGES` for share cards | sharp + opentype.js (glyph paths) | no Images binding off-Workers |
+| Postgres ILIKE search | EmDash `search()` (FTS5) | faster, and it is what the transfer import re-enables |
+| Workers `ratelimits`, `caches.default` | `src/lib/kv-lite.ts` (TTL map) | one process, so a Map is honest |
+| `r2({ binding: "MEDIA" })` | `s3()` + `src/utils/media-store.ts` | nothing to move: same bucket, same keys, same `/​_emdash/api/media/file/` URLs |
 
-Pilot gate: run a few days on workers.dev with real content and crawler traffic. If 1102 errors appear on uncached pages, the fallback is Turso via `libsql()` with indexes on category/tag queries (after confirming it runs on Workers).
+### Caching rules
+
+- Middleware: public 200 → `public, max-age=300, s-maxage=2592000` + `Cache-Tag`
+  (collections for the path + chrome + `all`); 404 → 60 s; `/_emdash/*`, `/admin`,
+  `/search`, `/submit-a-claim`, any `astro-session` cookie → `private, no-store`;
+  media files → 1 year `immutable`. No `stale-while-revalidate` (Cloudflare ignores
+  it when `s-maxage` is present).
+- A **zone Cache Rule is required**: Cloudflare never caches HTML by default.
+  Eligible for cache, edge TTL "use cache-control header if present".
+- Purge by tag works on the Free plan (5 requests/minute, so the plugin retries 429s
+  and debounces draft autosaves).
+
+### What the box costs
+
+Nothing per read. The constraints move to the box itself: one process (SQLite has a
+single writer and the scheduler must not run twice), the shared nginx/Virtualmin
+setup (`conf.d/` wins over Virtualmin's vhost; `listen 169.58.2.239:443`), disk for
+the database plus 14 days of backups, and the nightly `sqlite3 .backup` → private
+R2 bucket (`checkclimate-backups`, rclone `no_head = true`). R2 stays free of
+egress fees. Watch: `systemctl status checkclimate`, `journalctl -u checkclimate`,
+and disk in the dashboard already on the box.
+
+Rollback for 14 days: re-attach the custom hostname to the `checkclimate` Worker
+(and its `www` redirect), keep Neon and the KV namespaces alive.
 
 ## Content model
 
@@ -160,16 +184,21 @@ Pilot gate: run a few days on workers.dev with real content and crawler traffic.
 | 2 | Schema + seed | opencode | done |
 | 3 | Layout, components, templates | opencode | in progress (uncommitted work kept) |
 | 4 | Dynamic features | opencode | todo |
-| 5 | Workers deploy wiring: caching, cron, Resend plugin, GitHub Actions, runbook | opencode | todo |
-| 6 | Provision: R2 `checkclimate-media`, KV `checkclimate-cache` + `checkclimate-session` (done, ids in `.cf-ids.json`); Neon prod + dev branches, Hyperdrive ×2, secrets | Claude | Neon waiting on `neonctl auth` |
-| 7 | First deploy to workers.dev with seed | Claude | todo |
-| 8 | Content import (local → Neon prod + R2), fix-up, verify | Claude + owner | todo |
-| 9 | Pilot: watch 1102 errors, Hyperdrive queries, Neon CU-hours for a few days | Claude + owner | todo |
-| 10 | Domain: move zone to CF, apex `checkclimate.africa`, www→apex, `media.` for R2 | later | todo |
+| 5 | Workers deploy wiring: caching, cron, Resend plugin, GitHub Actions, runbook | opencode | done, **superseded by the VPS plan** |
+| 6 | Provision: R2 `checkclimate-media`, KV cache + session, Neon + Hyperdrive ×2 | owner | done; R2 stays, the rest retire after the rollback window |
+| 7 | Deploy to workers.dev, then the apex | owner | done — live on checkclimate.africa |
+| 8 | Content import (WordPress → Neon + R2), fix-up, verify | opencode + owner | done 2026-11-20 |
+| 9 | Pilot on the free plan | owner | done: quotas nearly spent in month one → **migrate to the VPS** |
+| 10 | VPS migration: Node + SQLite, edge cache, data copy, staging, cutover | opencode + owner | **in progress** — `docs/superpowers/plans/2026-11-24-vps-migration.md` |
 
 ## Content migration (posts, pages, images)
 
-**Rule: never run the import on the deployed Worker.** The import's analyze/convert steps exceed the free plan's 10 ms CPU (Error 1102), and a retry loop burns quotas. Run it from local `astro dev`, which has no CPU cap, with bindings pointed at the real resources:
+The WordPress import below **ran on 2026-11-20** and is kept as the record of how
+the content got in. The current copy is a different one: Neon Postgres → SQLite,
+through EmDash's site transfer, per the migration plan (Task 16). Same rule as
+always: never run either import on the deployed Worker — the analyze/convert steps
+exceed the free plan's 10 ms CPU (Error 1102) and a retry loop burns quotas. Both
+ends of the transfer run from local `astro dev`:
 
 1. Local dev uses Hyperdrive `localConnectionString` = **Neon prod branch** (direct URL) for the import session only, and the `MEDIA` R2 binding with `"remote": true`, so imported rows land in Neon and images land in the real R2 bucket.
 2. On WordPress: install the **EmDash Exporter** plugin, create an application password, and allow `/wp-json/` (security plugin) for the import.
@@ -183,11 +212,14 @@ Pilot gate: run a few days on workers.dev with real content and crawler traffic.
 
 ## Deploys
 
-- GitHub Actions: `dev` → typecheck, test, build. `main` → `pnpm astro build && pnpm wrangler deploy` (always build first: deploy reads `dist/server/wrangler.json`). Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
-- Worker secrets (names in `docs/RUNBOOK.md`, values never in the repo): `EMDASH_ENCRYPTION_KEY`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`. Run `wrangler secret list` after any Worker create/rename.
-- First boot runs EmDash migrations on Neon. Deployment migrations use the direct Neon URL (`migrationConnectionStringEnv`).
+- GitHub Actions: `dev` → typecheck, test, `pnpm build:vps`. `main` → SSH to the box as the `checkclimate` user, whose key is pinned to a forced `scripts/deploy-vps.sh` (pull `--ff-only`, `pnpm install --frozen-lockfile`, source `/etc/checkclimate.build.env`, `pnpm build:vps`, restart, smoke-test `127.0.0.1:4331`). Then **purge everything at the edge** — the purge plugin only fires on content changes, so a template fix would otherwise hide behind 30-day cached pages. Secrets: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_KNOWN_HOSTS`, `CLOUDFLARE_PURGE_TOKEN`.
+- The old Workers pipeline is parked as `.github/workflows/deploy-workers.yml.disabled` for the rollback window.
+- Runtime config lives in `/etc/checkclimate.env` (root 600, mode 600: `EMDASH_ENCRYPTION_KEY`, `RESEND_API_KEY`, `TURNSTILE_*`, `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_API_TOKEN`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`). Values never in the repo. **`EMDASH_ENCRYPTION_KEY` must stay the value the Worker uses** — the plugin settings copied by the transfer are ciphertext sealed with it.
+- First boot runs EmDash migrations on the SQLite file; the service must stay a single process.
 
 ## Open items
 
-- VPS: not used any more.
-- Domain move and email sending domain: later (phase 10).
+- Cutover, staging checks and the owner's server steps: `docs/superpowers/plans/2026-11-24-vps-migration.md` Tasks 17–21; the manual is `docs/vps-runbook.md`.
+- Keep the Worker, Hyperdrive, KV and Neon for 14 days after cutover as the rollback; delete the Worker's **cron triggers** at cutover; never delete the R2 media bucket.
+- Domain is already apex `checkclimate.africa` with `www` redirecting; `media.` subdomain was never needed (media serves through `/​_emdash/api/media/file/`).
+- Email sending domain `notify.checkclimate.africa` (Resend) is unaffected by the move.
