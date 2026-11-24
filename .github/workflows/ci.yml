@@ -1,12 +1,12 @@
 name: CI
 
-# Every push and pull request to `dev`: the checks that must pass before a
-# change is merged. This workflow never deploys and never talks to Cloudflare
-# or Neon, so it needs no secrets.
+# Every push to `dev` or `vps` and every pull request: the checks that must
+# pass before a change is merged. This workflow never deploys and needs no
+# secrets. Deploying is deploy.yml, on pushes to `main`.
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, vps]
   pull_request:
     branches: [dev, main]
 
@@ -43,17 +43,14 @@ jobs:
       - name: Test
         run: pnpm test
 
-      # `astro build` also compiles the Worker bundle, which is where a bad
-      # binding reference or an unsupported Node API shows up.
-      - name: Build
-        run: pnpm build
+      # The same standalone Node build the box runs (scripts/deploy-vps.sh),
+      # with local media storage so it needs no R2 credentials.
+      - name: Build for the box
+        run: pnpm build:vps
         env:
           # The build bakes the public origin into the sitemap, feeds and
-          # canonical URLs. Same value as production; not a secret.
+          # canonical URLs, and refuses localhost. Not a secret.
           EMDASH_SITE_URL: https://checkclimate.africa
-
-      - name: Check the Worker bundle
-        run: pnpm exec wrangler deploy --dry-run
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DATABASE_PATH: /home/checkclimate/data/emdash.db
+          SESSION_DIR: /home/checkclimate/data/sessions
+          EMDASH_STORAGE: local

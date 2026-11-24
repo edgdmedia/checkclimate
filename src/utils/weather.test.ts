@@ -35,15 +35,9 @@ describe("gridOf", () => {
 describe("placeOf", () => {
 	const none = new URLSearchParams();
 
-	it("uses Cloudflare's location when present", () => {
-		expect(
-			placeOf({ city: "Lagos", country: "NG", latitude: "6.45", longitude: "3.39" }, none),
-		).toEqual({ city: "Lagos", country: "NG", latitude: 6.45, longitude: 3.39 });
-	});
-
-	it("falls back to the page's place", () => {
+	it("uses the place the page passed", () => {
 		const params = new URLSearchParams({ lat: "8.4966", lon: "4.5426", city: "Ilorin", country: "NG" });
-		expect(placeOf(undefined, params)).toEqual({
+		expect(placeOf(params)).toEqual({
 			city: "Ilorin",
 			country: "NG",
 			latitude: 8.4966,
@@ -51,9 +45,20 @@ describe("placeOf", () => {
 		});
 	});
 
+	it("names a browser-located visitor by area, not by city", () => {
+		// The card clears `city` when it substitutes its own coordinates.
+		const params = new URLSearchParams({ lat: "-1.2921", lon: "36.8219", city: "", country: "" });
+		expect(placeOf(params)).toEqual({
+			city: "Your area",
+			country: "",
+			latitude: -1.2921,
+			longitude: 36.8219,
+		});
+	});
+
 	it("rejects missing or out-of-range coordinates", () => {
-		expect(placeOf(undefined, none)).toBeNull();
-		expect(placeOf(undefined, new URLSearchParams({ lat: "200", lon: "0" }))).toBeNull();
+		expect(placeOf(none)).toBeNull();
+		expect(placeOf(new URLSearchParams({ lat: "200", lon: "0" }))).toBeNull();
 	});
 });
 

@@ -1,24 +1,44 @@
-import cloudflare from "@astrojs/cloudflare";
-import { cacheCloudflare } from "@astrojs/cloudflare/cache";
+import node from "@astrojs/node";
 import react from "@astrojs/react";
-import { hyperdrive, kvCache, r2 } from "@emdash-cms/cloudflare";
-import emdash from "emdash/astro";
+import emdash, { local, memoryCache, s3 } from "emdash/astro";
+import { sqlite } from "emdash/db";
 import { defineConfig, sessionDrivers } from "astro/config";
 import { fileURLToPath } from "node:url";
 import { Features } from "lightningcss";
-import { loadEnv } from "vite";
 
-const mode = process.env.NODE_ENV === "production" ? "production" : "development";
-const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
+/**
+ * This site runs as one Node process on the owner's VPS, behind nginx and
+ * Cloudflare. The database is a SQLite file on that box, media stays in the
+ * R2 bucket it has always used, and the page cache is Cloudflare's edge.
+ * The Workers deployment lives on `main` as the rollback.
+ */
 
-const siteUrl = env.EMDASH_SITE_URL || "https://checkclimate.africa";
+// The SQLite path is baked at BUILD time (EmDash reads it here, not at
+// request time), so scripts/deploy-vps.sh sources /etc/checkclimate.build.env
+// before `pnpm build` as well as systemd reading /etc/checkclimate.env to run
+// it. Locally the default keeps dev inside the gitignored data/ directory.
+const databasePath = process.env.DATABASE_PATH ?? "./data/emdash.db";
+// Admin sessions must outlive a deploy, and a deploy replaces the checkout, so
+// the store lives beside the database, not in .astro/.
+const sessionDir = process.env.SESSION_DIR ?? "./.astro/sessions";
 
-// `.env` sets a localhost URL for `astro dev`, and loadEnv reads it during
-// `astro build` too. A build is always for a deployed Worker, so refuse to bake
-// localhost into it: pass EMDASH_SITE_URL explicitly (see the deploy:* scripts).
+// Media: the S3 adapter (R2 over its S3 API) is chosen when S3_BUCKET is set.
+// Without it (laptop, CI) the site falls back to local disk so `pnpm dev`
+// needs no cloud credentials. EMDASH_STORAGE=s3|local forces either.
+const storageDriver = process.env.EMDASH_STORAGE ?? (process.env.S3_BUCKET ? "s3" : "local");
+const storage =
+	storageDriver === "s3"
+		? s3()
+		: local({ directory: "./data/uploads", baseUrl: "/_emdash/api/media/file" });
+
+const siteUrl = process.env.EMDASH_SITE_URL || "https://checkclimate.africa";
+
+// `.env` keeps a localhost URL for `astro dev`, and Vite reads it during
+// `astro build` too. A build is always for the box: refuse to bake localhost
+// into it — pass EMDASH_SITE_URL explicitly (`pnpm deploy:production`).
 if (process.argv.includes("build") && /^https?:\/\/(localhost|127\.0\.0\.1)/.test(siteUrl)) {
 	throw new Error(
-		`EMDASH_SITE_URL is ${siteUrl} for a production build. Run \`pnpm deploy:preview\` or \`pnpm deploy:production\`, or set EMDASH_SITE_URL.`,
+		`EMDASH_SITE_URL is ${siteUrl} for a production build. Run \`pnpm deploy:production\`, or set EMDASH_SITE_URL.`,
 	);
 }
 
@@ -28,7 +48,7 @@ if (process.argv.includes("build") && /^https?:\/\/(localhost|127\.0\.0\.1)/.tes
  *
  * `source` is only used to build the Vite alias below — EmDash resolves plugin
  * entrypoints by module specifier, and these are not published packages.
- * Keep id and version in step with each plugin's `src/index.ts`.
+ * Keep id, entrypoint and capabilities in step with each plugin's own source.
  */
 const localPluginSources = [
 	{
@@ -62,6 +82,16 @@ const localPluginSources = [
 		source: "./plugins/post-editor/src/index.ts",
 		adminSource: "./plugins/post-editor/src/admin.tsx",
 	},
+	{
+		id: "checkclimate-cloudflare-purge",
+		displayName: "Cloudflare purge",
+		description: "Purges the zone cache by Cache-Tag on publish, unpublish, delete, restore and live edit.",
+		version: "1.0.0",
+		format: "native",
+		entrypoint: "@checkclimate/plugin-cloudflare-purge",
+		capabilities: ["content:read", "users:read", "bylines:read"],
+		source: "./plugins/cloudflare-purge/index.mjs",
+	},
 ];
 
 const localPlugins = localPluginSources.map(({ source, adminSource, ...descriptor }) => descriptor);
@@ -79,20 +109,20 @@ const localPluginAliases = Object.fromEntries([
 ]);
 
 /**
- * Public routes only. Anything session-dependent (search, forms, `/admin`,
- * `/_emdash/*`) must never appear here. EmDash purges by tag on publish, so the
- * tags name the collections a page renders.
+ * No `cache:` provider and no `routeRules`, deliberately.
+ *
+ *   - With an Astro cache provider configured, EmDash stops using its own query
+ *     cache: a home render goes from one database pass to ~14.
+ *   - Astro strips `Cache-Tag` from a page its provider serves, and `Cache-Tag`
+ *     is precisely how a publish purges the edge.
+ *
+ * Caching here is `Cache-Control` + `Cache-Tag` in src/middleware.ts, the zone
+ * Cache Rule (docs/vps-runbook.md) and the purge plugin. The in-process query
+ * cache below is what keeps the database quiet.
  */
-const cachedPage = (tags) => ({
-	// Publishing purges by tag, so a long edge lifetime is safe.
-	maxAge: 3600,
-	swr: 86_400,
-	tags: [...tags, "all"],
-});
-
 export default defineConfig({
 	output: "server",
-	adapter: cloudflare(),
+	adapter: node({ mode: "standalone" }),
 	// WordPress URLs end in a slash, but EmDash's internal API routes are
 	// registered without one and Astro refuses to redirect non-GET requests.
 	// Serve both forms and let src/middleware.ts issue the canonical 301 for
@@ -103,64 +133,14 @@ export default defineConfig({
 		layout: "constrained",
 		responsiveStyles: true,
 	},
-	// Astro sessions live in a KV namespace so admin sign-in survives isolates.
 	session: {
-		driver: sessionDrivers.cloudflareKVBinding({ binding: "SESSION" }),
-	},
-	// Workers Cache in front of the Worker. Dev keeps caching disabled.
-	cache: {
-		provider: cacheCloudflare(),
-	},
-	routeRules: {
-		// Home and the paginated story archives.
-		"/": cachedPage(["posts", "pages"]),
-		"/posts": cachedPage(["posts"]),
-		"/posts/page/[n]": cachedPage(["posts"]),
-		"/[yyyy]/[mm]/[dd]/[slug]": cachedPage(["posts"]),
-		"/category/[slug]": cachedPage(["posts"]),
-		"/category/[slug]/page/[n]": cachedPage(["posts"]),
-		"/tag/[slug]": cachedPage(["posts"]),
-		"/tag/[slug]/page/[n]": cachedPage(["posts"]),
-		"/author/[slug]": cachedPage(["posts"]),
-		"/author/[slug]/page/[n]": cachedPage(["posts"]),
-		// Static pages, hardcoded in src/pages/ (StaticPage layout).
-		"/about-us": cachedPage(["pages"]),
-		"/contact-us": cachedPage(["pages"]),
-		"/privacy-policy": cachedPage(["pages"]),
-		"/accessibility-statement": cachedPage(["pages"]),
-		// Feeds and discovery files.
-		"/feed": cachedPage(["posts"]),
-		"/category/[slug]/feed": cachedPage(["posts"]),
-		"/sitemap.xml": cachedPage(["posts", "pages"]),
-		"/sitemap_index.xml": cachedPage(["posts", "pages"]),
-		"/robots.txt": cachedPage(["posts", "pages"]),
-		// Any other single-segment path is a CMS page.
-		"/[slug]": cachedPage(["pages"]),
-		// Not cached on purpose: /search (query dependent), /submit-a-claim and
-		// every POST (the claim form), /admin, /_emdash/*, /404.
+		driver: sessionDrivers.fsLite({ base: sessionDir }),
 	},
 	vite: {
 		// In-repo plugin entrypoints resolve by alias instead of a published
 		// package. Same map as `localPlugins`, so they cannot drift apart.
 		resolve: {
 			alias: localPluginAliases,
-		},
-		// `pg` (node-postgres) is CommonJS. The Workers build inlines it, but the
-		// dev runner otherwise externalises node_modules and evaluates them with
-		// `require`, which workerd does not provide. Pre-bundle it for SSR so dev
-		// matches the build.
-		optimizeDeps: {
-			include: ["pg"],
-		},
-		ssr: {
-			noExternal: true,
-		},
-		environments: {
-			ssr: {
-				resolve: {
-					noExternal: true,
-				},
-			},
 		},
 		css: {
 			lightningcss: { exclude: Features.LightDark },
@@ -169,15 +149,17 @@ export default defineConfig({
 	integrations: [
 		react(),
 		emdash({
-			// Primary binding has query caching disabled (admin, writes,
-			// migrations). The cached binding serves anonymous public reads.
-			database: hyperdrive({
-				binding: "HYPERDRIVE",
-				cachedBinding: "HYPERDRIVE_CACHED",
-				migrationConnectionStringEnv: "NEON_DATABASE_URL",
-			}),
-			storage: r2({ binding: "MEDIA" }),
-			objectCache: kvCache({ binding: "CACHE", defaultTtl: 86_400 }),
+			database: sqlite({ url: `file:${databasePath}` }),
+			storage,
+			// One long-lived process, so this is a real cross-request cache:
+			// `revalidate: 0` means "trust it until a write invalidates it", which
+			// is exactly EmDash's own behaviour after content:afterSave, and the
+			// edge purge happens at the same moment.
+			objectCache: memoryCache({ defaultTtl: 3600, revalidate: 0, maxEntries: 5000 }),
+			// Client IP for EmDash's auth rate limits and the comment endpoint.
+			// Safe to trust these headers only because nginx answers 403 to
+			// anything that did not come through Cloudflare.
+			trustedProxyHeaders: ["cf-connecting-ip", "x-forwarded-for"],
 			plugins: localPlugins,
 			siteUrl,
 			toolbar: "client",

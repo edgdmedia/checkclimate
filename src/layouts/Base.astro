@@ -53,11 +53,10 @@ const [settingsResult, primaryResult, footerResult] = await Promise.all([
 	getMenuWithCacheHint("primary"),
 	getMenuWithCacheHint("footer"),
 ]);
-if (Astro.cache?.enabled) {
-	Astro.cache.set(settingsResult.cacheHint);
-	Astro.cache.set(primaryResult.cacheHint);
-	Astro.cache.set(footerResult.cacheHint);
-}
+// The three results come back with EmDash cache hints; this deployment has no
+// Astro cache provider, so they are not set anywhere — the edge decides by
+// path (src/lib/cache-tags.ts) and EmDash's own query cache is invalidated on
+// write. See the note in src/components/Archive.astro.
 
 const settings = settingsResult.data ?? {};
 const siteTitle = settings.title ?? "Check Climate Africa";

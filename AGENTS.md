@@ -6,15 +6,15 @@ The full plan is `docs/PLAN.md`. Read it first. This file is the rules.
 ## Hard rules
 
 - **Package manager: pnpm only.** Never npm or yarn. Pin `packageManager` in `package.json`.
-- **Target: Cloudflare Workers (free plan) + Neon Postgres via Hyperdrive + R2 + KV.** Use `@astrojs/cloudflare`, `wrangler.jsonc`, and `hyperdrive()`, `r2()`, `kvCache()` from `@emdash-cms/cloudflare` exactly as `docs/PLAN.md` "Architecture" shows. **No D1, no SQLite, no `@astrojs/node`, no VPS files.**
-- **10 ms CPU per request on the free plan.** Keep request work small: no heavy loops over all posts per request, no per-request image processing, paginate every list, and select only the fields a template needs. Long jobs (import, fix-up scripts) run locally, never on the Worker.
-- **Media lives in R2** through the `MEDIA` binding.
-- **Caching: Workers Cache** via `cacheCloudflare()` with a `routeRules` entry for every public route. Guard every hint: `if (Astro.cache?.enabled && hint) Astro.cache.set(hint)`. Never cache `/_emdash/*`, `/admin`, search, form POSTs or session-dependent responses. No root `/[...slug]` rule. `toolbar: "client"`.
-- **KV free = 1,000 writes/day.** Long object-cache TTLs; never write KV per request.
-- Always `pnpm astro build && pnpm wrangler deploy`, never deploy alone (deploy reads `dist/server/wrangler.json`). Don't run deploy yourself unless the task says so.
+- **Target: the shared edgdmedia VPS (`169.58.2.239`, `server.edgdmedia.com`).** Astro + EmDash on Node 24 with `@astrojs/node` (`mode: "standalone"`), SQLite through `sqlite()` from `emdash/db`, media in R2 through `s3()`, one process under systemd behind nginx, Cloudflare as the edge cache. **No Workers adapter, no Hyperdrive, no Neon, no KV, no cron trigger** in the shipped config — the Workers build stays reachable on `main` as the rollback until the owner says the box is final.
+- **Reads are free, so cache at the edge, not the CPU.** Paginate every list, select only the fields a template needs, and keep exactly one Node process (SQLite has a single writer and EmDash's scheduler runs in-process). Long jobs (content copy, fix-up scripts) run on the laptop.
+- **Media lives in R2**, the same `checkclimate-media` bucket, reached over its S3 API (`S3_*` env). Never delete the bucket.
+- **Caching: HTTP headers + a Cloudflare Cache Rule.** Middleware sets `Cache-Control` and `Cache-Tag` (`src/lib/cache-tags.ts`); `plugins/cloudflare-purge` purges by tag on publish. **Never configure an Astro `cache` provider or `routeRules` on this branch**: with a provider, EmDash skips its own query cache (14 queries per home render instead of 1) and Astro strips `Cache-Tag`. `toolbar: "client"`.
+- **EmDash's in-process query cache is the database-saver:** `memoryCache({ defaultTtl: 3600, revalidate: 0 })`. Runtime config comes from `/etc/checkclimate.env` (systemd `EnvironmentFile`); build-time config (`EMDASH_SITE_URL`, `DATABASE_PATH`, `SESSION_DIR`, `S3_BUCKET`) from `/etc/checkclimate.build.env` — both, because the paths are baked at build.
+- Deploys are `pnpm build:vps && wrangler-free`: the box pulls `main` and runs `scripts/deploy-vps.sh` (see `docs/vps-runbook.md`). Never deploy from this laptop unless the task says so, and never re-enable the Workers workflow without removing the box one.
 - **Keep WordPress URLs**: posts at `/[yyyy]/[mm]/[dd]/[slug]/`, `/category/[slug]/`, `/tag/[slug]/`, `/author/[slug]/`, `/feed/`.
 - Never commit secrets. Ship `.env.example` with names only. `.env`, `*.db`, `data/`, `.astro/`, `dist/`, `node_modules/` are gitignored.
-- Do not push to GitHub and do not deploy. Commit locally on branch `dev`, one commit per phase, with a clear message.
+- Do not push to GitHub and do not deploy. Commit locally, one commit per phase, with a clear message. The VPS migration is on branch `vps`; `dev`/`main` stay on the Workers build until the owner cuts over.
 - Do not ship the `design/*.dc.html` files. They are mockups to read, not code to copy.
 
 ## Read these before coding
@@ -24,7 +24,8 @@ EmDash changes fast. Check current APIs before using them:
 1. Skills (read the SKILL.md and the references they point to):
    - `~/.claude/skills/building-emdash-site/SKILL.md` (+ `references/*.md`) — schema, seed, queries, Portable Text, menus, taxonomies, images
    - `~/.claude/skills/wordpress-theme-to-emdash/SKILL.md` (+ `phases/*.md`, `references/concept-mapping.md`)
-   - `~/.claude/skills/deploying-emdash-cloudflare/SKILL.md` and **`vps.md`** — the VPS setup and every known trap
+   - `~/.claude/skills/deploying-emdash-cloudflare/vps.md` — the Node + SQLite setup and every known trap (the SKILL.md's Workers sections no longer apply to this branch)
+   - EmDash docs `/guides/site-transfer` (Postgres → SQLite copy), `/deployment/nodejs`, `/deployment/storage` — fetch via Context7 `/websites/emdashcms`
    - `~/.claude/skills/emdash-cli/SKILL.md` — CLI for seeds, types, export/import
    - `~/.claude/skills/creating-plugins/SKILL.md` — for the purge, Resend and settings plugins
 2. Docs via the Context7 MCP: library `/websites/emdashcms` (and `/emdash-cms/emdash` for source). Also Astro docs via Context7. Prefer these over memory.
@@ -46,8 +47,8 @@ EmDash changes fast. Check current APIs before using them:
 ```bash
 pnpm install
 pnpm dev            # Astro 7 dev may run as a background daemon; logs in .astro/dev.log
-pnpm build
-pnpm preview       # wrangler dev against the built Worker
+pnpm build:vps      # standalone Node server in dist/server
+pnpm start          # node ./dist/server/entry.mjs (what systemd runs on the box)
 pnpm typecheck
 pnpm test
 ```
@@ -56,7 +57,7 @@ If dev starts failing oddly after `pnpm add` or a config change: stop dev, `rm -
 
 ## Definition of done for each phase
 
-- `pnpm build` passes and `pnpm typecheck` is clean.
+- `pnpm build:vps` passes and `pnpm typecheck` is clean.
 - The pages for that phase render in dev with seed data, in light and dark, at 1440px and 375px.
-- No console errors. No `wp-content` URLs in templates.
-- Commit on `dev`.
+- No console errors. No `wp-content` URLs in templates. No `cloudflare:workers` import.
+- Commit on `vps`.

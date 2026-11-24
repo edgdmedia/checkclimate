@@ -1,10 +1,10 @@
-import { env } from "cloudflare:workers";
+import { runtime } from "../runtime";
 
 /**
  * Transactional email over Resend.
  *
- * Deliberately tiny: one function, the REST API, no SDK. The Worker's CPU
- * budget is 10 ms per request, and a fetch to api.resend.com is I/O, not CPU.
+ * Deliberately tiny: one function, the REST API, no SDK. The fetch to
+ * api.resend.com is I/O, so it costs the request only wall-clock time.
  *
  * Sending is best effort for public forms: a claim must never be lost because
  * an email failed, so callers get a result object instead of a throw, and the
@@ -34,11 +34,11 @@ export interface EmailResult {
 const FALLBACK_FROM = "Check Climate Africa <newsroom@checkclimate.africa>";
 
 export function emailConfigured(): boolean {
-	return Boolean(env.RESEND_API_KEY);
+	return Boolean(runtime.resendApiKey);
 }
 
 export function defaultFrom(): string {
-	return env.EMAIL_FROM || FALLBACK_FROM;
+	return runtime.emailFrom || FALLBACK_FROM;
 }
 
 /**
@@ -50,7 +50,7 @@ function asArray(to: string | string[]): string[] {
 }
 
 export async function sendEmail(input: EmailInput): Promise<EmailResult> {
-	const apiKey = env.RESEND_API_KEY;
+	const apiKey = runtime.resendApiKey;
 	if (!apiKey) {
 		return { ok: false, error: "RESEND_API_KEY is not set" };
 	}

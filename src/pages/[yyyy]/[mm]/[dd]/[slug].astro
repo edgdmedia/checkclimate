@@ -73,10 +73,8 @@ const related = category
           offset: 0,
       });
 
-if (Astro.cache?.enabled) {
-    Astro.cache.set(result.cacheHint);
-    Astro.cache.set(related.cacheHint);
-}
+// EmDash's cache hints are not set: no Astro cache provider on this host. See
+// src/layouts/Base.astro.
 
 const relatedPosts = (related.entries as Post[])
     .filter((item) => item.data.id !== data.id)

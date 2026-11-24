@@ -1,7 +1,7 @@
 import { handleContentCreate, handleMediaCreate, handleMediaDelete } from "emdash";
 import { getDb } from "emdash/runtime";
 import { z } from "zod";
-import { env } from "cloudflare:workers";
+import { deleteObject, putObject } from "./media-store";
 import { sendEmail } from "./email";
 import { siteConfig } from "./site";
 import { verifyTurnstile } from "./turnstile";
@@ -198,11 +198,13 @@ async function storeAttachment(
 	const bytes = await file.arrayBuffer();
 	const storageKey = `claims/${String(now.getFullYear())}${String(now.getMonth() + 1).padStart(2, "0")}/${crypto.randomUUID()}-${safeName(file.name)}.${ext}`;
 	const filename = file.name.slice(0, 120);
-	const put = await env.MEDIA.put(storageKey, bytes, {
-		httpMetadata: { contentType: file.type },
-		customMetadata: { source: "claim-form", filename },
-	});
-	if (!put) return "We could not save that file. Please try again.";
+	const saved = await putObject(
+		storageKey,
+		new Uint8Array(bytes),
+		file.type,
+		{ source: "claim-form", filename },
+	);
+	if (!saved) return "We could not save that file. Please try again.";
 
 	const url = `/_emdash/api/media/file/${storageKey}`;
 	const registered = db
@@ -260,7 +262,7 @@ async function discardAttachment(
 		if (db && attachment.id !== attachment.storageKey) {
 			await handleMediaDelete(db, attachment.id);
 		}
-		await env.MEDIA.delete(attachment.storageKey);
+		await deleteObject(attachment.storageKey);
 	} catch (error) {
 		console.error("[claims] cleanup failed:", error);
 	}

@@ -1,0 +1,76 @@
+# Check Climate Africa — the Node process that serves the site.
+#
+# Install as /etc/systemd/system/checkclimate.service (root-owned, 644),
+# then:  systemctl daemon-reload && systemctl enable --now checkclimate
+#
+# The app runs as the `checkclimate` user (the one Virtualmin created for
+# this site). It reads its configuration from /etc/checkclimate.env, which
+# systemd reads as root before dropping privileges.
+
+[Unit]
+Description=Check Climate Africa (Astro + EmDash on Node)
+Documentation=file:/home/checkclimate/app/docs/vps-runbook.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=checkclimate
+Group=checkclimate
+WorkingDirectory=/home/checkclimate/app
+
+# Runtime configuration: secrets included. Mode 600, owned by root.
+EnvironmentFile=/etc/checkclimate.env
+
+# The process listens on the loopback only. The web server (nginx, the one
+# Webmin/Virtualmin already runs) proxies to it. Pick a port no other
+# service on this box uses — check with:  ss -ltnp
+#
+# The port itself lives in /etc/checkclimate.env (PORT=), which systemd
+# reads after this file and which therefore wins. It has to be the same
+# port as in deploy/nginx-proxy.conf.
+Environment=HOST=127.0.0.1
+Environment=NODE_ENV=production
+
+# Node 24 for the `checkclimate` user only (installed with fnm under
+# /home/checkclimate, so the other sites on this server keep their own
+# Node). `fnm default 24` makes aliases/default a link to the installed
+# version, so this path survives a Node upgrade. Not `which node`: that prints
+# a per-shell fnm_multishells path that is gone after logout.
+ExecStart=/home/checkclimate/.local/share/fnm/aliases/default/bin/node ./dist/server/entry.mjs
+
+Restart=always
+RestartSec=5
+# A failed start should not become a restart loop that hides the error.
+StartLimitIntervalSec=120
+StartLimitBurst=5
+# The first start against a fresh database runs EmDash's core migrations
+# before the port opens. Give that room instead of killing it halfway,
+# which can leave the migration lock held.
+TimeoutStartSec=120
+
+# Give the process time to finish a request when systemd stops it.
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Hardening. The app writes only to its data directory (the database, the
+# sessions); everything else on the box stays read-only.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/home/checkclimate/data /home/checkclimate/app/.astro
+# The process reads the environment file, which is root-owned: systemd has
+# already read it, so the process itself does not need it.
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=checkclimate
+
+[Install]
+WantedBy=multi-user.target

@@ -54,14 +54,9 @@ const [recent, alert, checks, opinionPosts, settings, tagTerms] =
         getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
     ]);
 
-if (Astro.cache?.enabled) {
-    Astro.cache.set(recent.cacheHint);
-    Astro.cache.set(alert.cacheHint);
-    Astro.cache.set(checks.cacheHint);
-    Astro.cache.set(opinionPosts.cacheHint);
-    Astro.cache.set(settings.cacheHint);
-    Astro.cache.set(tagTerms.cacheHint);
-}
+// No Astro cache hints: this deployment has no cache provider (see
+// src/layouts/Base.astro), so the edge cache is driven by the path-based tags
+// in src/lib/cache-tags.ts.
 
 const posts = recent.entries as Post[];
 const alertPost = (alert.entries as Post[])[0];

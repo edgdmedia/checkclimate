@@ -252,9 +252,8 @@ export async function postsView(page: number): Promise<ArchiveView> {
 }
 
 /**
- * Search results. EmDash's full-text index is SQLite-only, so this runs a
- * parameterised ILIKE query over the same connection (src/utils/search.ts).
- * Never cached: the page depends on `?q=` and on the reader, not on content.
+ * Search results. Never cached: the page depends on `?q=` and on the reader, not
+ * on content. src/utils/search.ts finds the ids and pages them here.
  */
 export async function searchView(
 	query: string,

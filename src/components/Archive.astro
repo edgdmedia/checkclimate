@@ -32,7 +32,7 @@ interface Props {
 	hasMore: boolean;
 	basePath: string;
 	countLabel: string;
-	/** Cache hints from the queries that produced this page. */
+	/** The archive helpers return these; nothing reads them on this host. */
 	cacheHints?: CacheHint[];
 	/** Show the "Submit a claim" CTA in the header band. */
 	showClaim?: boolean;
@@ -57,7 +57,6 @@ const {
 	hasMore,
 	basePath,
 	countLabel,
-	cacheHints = [],
 	showClaim = true,
 	filters = [],
 	searchTerm = null,
@@ -67,10 +66,11 @@ const {
 	seo,
 } = Astro.props;
 
-// Content changed at least once, so the route is only cacheable per page.
-if (Astro.cache?.enabled) {
-	for (const hint of cacheHints) Astro.cache.set(hint);
-}
+// No Astro cache hints on this host: the page cache is Cloudflare's edge, and
+// src/middleware.ts + src/lib/cache-tags.ts decide what it keeps. EmDash's
+// in-process query cache is what keeps the database quiet, and it invalidates
+// itself on a write. The `cacheHints` prop stays because the archive helpers
+// still hand the hints back.
 
 const otherSections = SECTIONS.filter(
 	(section) => section.label !== excludeSection,

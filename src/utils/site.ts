@@ -6,7 +6,7 @@
  * stored value means live in `site-settings.ts`, next to the defaults; this
  * file does the lookup and keeps it for a minute.
  */
-import { env } from "cloudflare:workers";
+import { runtime } from "../runtime";
 import { getPluginSettings } from "emdash";
 import { SITE_SETTINGS_ID } from "../../plugins/site-settings/src/index";
 import {
@@ -26,9 +26,9 @@ export const ABOUT_URL = "/about-us/";
 export const SEARCH_URL = "/search/";
 
 /**
- * One options-table lookup per minute per isolate. Settings change a few times
- * a year, and the pages that read them are edge-cached for five minutes
- * anyway; an editor's change is visible well inside that.
+ * One options-table lookup per minute per process. Settings change a few times
+ * a year, and the pages that read them are cached at the edge for 30 days and
+ * purged on publish anyway; an editor's change is visible well inside that.
  */
 const SETTINGS_TTL_MS = 60_000;
 let cached: { value: SiteConfig; at: number } | null = null;
@@ -37,9 +37,9 @@ let pending: Promise<SiteConfig> | null = null;
 async function load(): Promise<SiteConfig> {
 	try {
 		const config = mergeSiteConfig(await getPluginSettings(SITE_SETTINGS_ID));
-		// A Worker var pins the inbox above the admin form: useful when the desk
-		// address is an alias only the operator may change.
-		const pinned = typeof env.CLAIMS_INBOX === "string" ? env.CLAIMS_INBOX.trim() : "";
+		// The environment pins the inbox above the admin form: useful when the
+		// desk address is an alias only the operator may change.
+		const pinned = runtime.claimsInbox;
 		return pinned ? { ...config, claimsInbox: pinned } : config;
 	} catch (error) {
 		// A settings read must never take a page down.

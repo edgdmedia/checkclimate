@@ -6,7 +6,7 @@ import { TYPE_SECTIONS } from "../../../../utils/content";
 import { findTerm } from "../../../../utils/archive";
 
 /** A feed per section: /category/fact-check/feed/ and friends. */
-export const GET: APIRoute = async ({ params, site, url, cache }) => {
+export const GET: APIRoute = async ({ params, site, url }) => {
 	const slug = decodeSlug(params.slug) ?? "";
 	const origin = (site ?? new URL(url.origin)).toString();
 
@@ -24,11 +24,6 @@ export const GET: APIRoute = async ({ params, site, url, cache }) => {
 		origin,
 		where: typeSection ? { kicker: typeSection.type } : { category: slug },
 	});
-
-	if (cache?.enabled) {
-		cache.set(terms.cacheHint);
-		if (feed.cacheHint) cache.set(feed.cacheHint);
-	}
 
 	return feedResponse(feed.body);
 };

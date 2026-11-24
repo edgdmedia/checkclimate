@@ -1,20 +1,24 @@
-name: Deploy
-
-# `main` is the production site. Pushing there (usually a merge from `dev`)
-# builds the Worker and deploys it to Cloudflare.
+# main: check, then deploy to the VPS, then purge Cloudflare's cache.
 #
-# Wrangler reads its configuration from dist/server/wrangler.json, which only
-# `astro build` produces — so the build is part of this job and never skipped.
+# A push (or a merged pull request) to main runs typecheck + tests + the box
+# build here first; only if they pass does it log in to the box. The build
+# that ships is the one the box makes itself (scripts/deploy-vps.sh), which
+# then smoke-tests the origin and fails this run if the site is down.
 #
-# Required repository secrets:
-#   CLOUDFLARE_API_TOKEN   — a token scoped to Workers Scripts: Edit, for the
-#                            Security Focus account only
-#   CLOUDFLARE_ACCOUNT_ID  — the account id (also set as a repository variable
-#                            so CI's dry run can resolve the account)
+# The deploy is one SSH login as the `checkclimate` user. On the server the
+# key is pinned in ~/.ssh/authorized_keys with a forced command, so it can run
+# the deploy script and nothing else (docs/vps-runbook.md, "Deploy a change").
 #
-# Worker *runtime* secrets (EMDASH_ENCRYPTION_KEY, RESEND_API_KEY,
-# TURNSTILE_SECRET_KEY) are not handled here: they are set with
-# `wrangler secret put` and survive redeploys. See docs/RUNBOOK.md.
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   VPS_HOST                169.58.2.239
+#   VPS_SSH_KEY             the private half of the deploy key
+#   VPS_KNOWN_HOSTS         the server's host key line (ssh-keyscan -t ed25519 <host>)
+#   CLOUDFLARE_PURGE_TOKEN  a token with Zone → Cache Purge on checkclimate.africa
+#   CLOUDFLARE_ZONE_ID      the checkclimate.africa zone id (a secret here; a
+#                           repository variable of the same name also works)
+#
+# The Workers pipeline this replaced is deploy-workers.yml.disabled (rollback).
+name: deploy
 
 on:
   push:
@@ -24,53 +28,66 @@ on:
 permissions:
   contents: read
 
+# Never two deploys at once; a newer push waits for the running one.
 concurrency:
-  group: deploy-production
+  group: deploy-main
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Build and deploy to Cloudflare Workers
+  check:
     runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://checkclimate.africa
     steps:
       - uses: actions/checkout@v5
-
       - uses: pnpm/action-setup@v4
         with:
           run_install: false
-
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
-      - name: Install
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm astro build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Build for the box
+        run: pnpm build:vps
         env:
           EMDASH_SITE_URL: https://checkclimate.africa
+          DATABASE_PATH: /home/checkclimate/data/emdash.db
+          SESSION_DIR: /home/checkclimate/data/sessions
+          EMDASH_STORAGE: local
 
-      - name: Deploy
-        run: pnpm wrangler deploy
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy over SSH
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$SSH_KEY" ] || [ -z "$HOST" ] || [ -z "$KNOWN_HOSTS" ]; then
+            echo "::error::VPS_HOST, VPS_SSH_KEY and VPS_KNOWN_HOSTS must all be set"; exit 1
+          fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server's forced command runs the deploy; nothing is sent.
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes checkclimate@"$HOST"
 
-      # Fail loudly if the Worker cannot see its own bindings: a missing secret
-      # is a 1102/500 waiting for the first reader.
-      - name: Check secrets are attached
-        run: pnpm wrangler secret list
+      - name: Purge Cloudflare's cache
+        # Pages stay at the edge for 30 days and only a publish purges them,
+        # so without this a template change would not show until each page
+        # expired.
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
+          ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID || vars.CLOUDFLARE_ZONE_ID }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$ZONE" ]; then
+            echo "::warning::CLOUDFLARE_PURGE_TOKEN or CLOUDFLARE_ZONE_ID is not set; purge by hand (Caching → Purge Everything)"; exit 0
+          fi
+          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE/purge_cache" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | grep -q '"success":true' && echo "edge cache purged"

@@ -1,20 +1,23 @@
 /**
- * The only place this plugin touches the runtime environment.
+ * The only place this plugin touches the environment.
  *
- * `cloudflare:workers` exists in the Worker and in `wrangler dev`; the vitest
- * suite aliases this module to a stub (see vitest.config.ts), which keeps the
- * transport itself a plain function of its arguments.
+ * On the box the process environment comes from `/etc/checkclimate.env`
+ * (systemd reads it as an `EnvironmentFile`); in `astro dev` from `.env`, which
+ * `scripts/with-env.mjs` copies into the process before Astro starts. It is
+ * read at call time, never at build time, so a key rotation needs a restart and
+ * not a rebuild.
  */
-import { env } from "cloudflare:workers";
+const value = (key) => {
+	const raw = globalThis.process?.env?.[key];
+	return typeof raw === "string" ? raw.trim() : "";
+};
 
 /** Resend API key, or "" when mail is not configured. */
 export function resendApiKey() {
-	const key = typeof env.RESEND_API_KEY === "string" ? env.RESEND_API_KEY.trim() : "";
-	return key;
+	return value("RESEND_API_KEY");
 }
 
 /** Default From: header, e.g. `Check Climate Africa <newsroom@checkclimate.africa>`. */
 export function resendFrom() {
-	const from = typeof env.EMAIL_FROM === "string" ? env.EMAIL_FROM.trim() : "";
-	return from;
+	return value("EMAIL_FROM");
 }

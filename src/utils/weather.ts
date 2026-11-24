@@ -1,9 +1,12 @@
 /**
- * Weather strip logic, shared by the Worker endpoint (/api/weather) and its
- * tests. This replaces the WordPress "EDGD Weather" plugin, which looked up
- * the visitor's city from their IP (ipapi.co) and asked OpenWeatherMap.
- * On Cloudflare the city and coordinates already arrive with the request
- * (`request.cf`), and Open-Meteo needs no API key.
+ * Weather strip logic, shared by the endpoint (/api/weather) and its tests.
+ * This replaces the WordPress "EDGD Weather" plugin, which looked up the
+ * visitor's city from their IP (ipapi.co) and asked OpenWeatherMap.
+ *
+ * The page passes the site-settings place as the query string, and
+ * `src/components/WeatherCard.astro` may replace the coordinates with the
+ * browser's own geolocation when the visitor has already granted it — there is
+ * no server-side IP geolocation on this host. Open-Meteo needs no API key.
  */
 
 export type Condition =
@@ -137,44 +140,25 @@ export function readingOf(place: Place, body: unknown): Reading | null {
 	};
 }
 
-/** The subset of `request.cf` the strip uses. */
-interface CfLocation {
-	city?: unknown;
-	country?: unknown;
-	latitude?: unknown;
-	longitude?: unknown;
-}
-
 function coordinate(value: unknown): number | null {
 	const number = typeof value === "string" ? Number(value) : value;
 	return typeof number === "number" && Number.isFinite(number) ? number : null;
 }
 
 /**
- * The visitor's place from Cloudflare's request data, falling back to the
- * place the page passed (the site-settings city) when Cloudflare has no
- * coordinates, as in local dev.
+ * The place to report, from what the page passed (the site-settings city) or
+ * from the browser's geolocation, which the card substitutes into the same
+ * query string when the visitor has already allowed it.
  */
-export function placeOf(cf: CfLocation | undefined, fallback: URLSearchParams): Place | null {
-	const latitude = coordinate(cf?.latitude);
-	const longitude = coordinate(cf?.longitude);
-	if (latitude !== null && longitude !== null) {
-		return {
-			city: typeof cf?.city === "string" && cf.city ? cf.city : "Your area",
-			country: typeof cf?.country === "string" ? cf.country : "",
-			latitude,
-			longitude,
-		};
-	}
-
-	const fallbackLat = coordinate(fallback.get("lat"));
-	const fallbackLon = coordinate(fallback.get("lon"));
-	if (fallbackLat === null || fallbackLon === null) return null;
-	if (Math.abs(fallbackLat) > 90 || Math.abs(fallbackLon) > 180) return null;
+export function placeOf(fallback: URLSearchParams): Place | null {
+	const latitude = coordinate(fallback.get("lat"));
+	const longitude = coordinate(fallback.get("lon"));
+	if (latitude === null || longitude === null) return null;
+	if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return null;
 	return {
-		city: (fallback.get("city") ?? "").slice(0, 60),
+		city: (fallback.get("city") ?? "").slice(0, 60) || "Your area",
 		country: (fallback.get("country") ?? "").slice(0, 3),
-		latitude: fallbackLat,
-		longitude: fallbackLon,
+		latitude,
+		longitude,
 	};
 }
