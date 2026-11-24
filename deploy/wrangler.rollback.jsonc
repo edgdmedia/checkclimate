@@ -1,3 +1,15 @@
+// ROLLBACK ONLY — the Cloudflare Workers configuration from plan v2.
+//
+// It is kept so the old deployment can be brought back during the two weeks
+// after cutover, but it does NOT build from this branch: its entry point
+// (`src/worker.ts`) and the Workers adapter live on `main`. To roll back:
+//
+//   git switch main && pnpm install && pnpm build && pnpm exec wrangler deploy
+//   # then re-attach the custom hostname checkclimate.africa to the Worker
+//
+// The live site on the `vps` branch is one Node process on the edgdmedia box;
+// see docs/vps-runbook.md. Never run both at once: they would read the same
+// content and two schedulers would double-publish.
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "checkclimate",
