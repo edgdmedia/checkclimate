@@ -14,8 +14,8 @@
 #   VPS_SSH_KEY             the private half of the deploy key
 #   VPS_KNOWN_HOSTS         the server's host key line (ssh-keyscan -t ed25519 <host>)
 #   CLOUDFLARE_PURGE_TOKEN  a token with Zone → Cache Purge on checkclimate.africa
-# Repository variable:
-#   CLOUDFLARE_ZONE_ID      the checkclimate.africa zone id (not a secret)
+#   CLOUDFLARE_ZONE_ID      the checkclimate.africa zone id (a secret here; a
+#                           repository variable of the same name also works)
 #
 # The Workers pipeline this replaced is deploy-workers.yml.disabled (rollback).
 name: deploy
@@ -83,7 +83,7 @@ jobs:
         # expired.
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
-          ZONE: ${{ vars.CLOUDFLARE_ZONE_ID }}
+          ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID || vars.CLOUDFLARE_ZONE_ID }}
         run: |
           if [ -z "$TOKEN" ] || [ -z "$ZONE" ]; then
             echo "::warning::CLOUDFLARE_PURGE_TOKEN or CLOUDFLARE_ZONE_ID is not set; purge by hand (Caching → Purge Everything)"; exit 0
