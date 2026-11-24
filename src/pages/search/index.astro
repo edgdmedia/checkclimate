@@ -1,8 +1,9 @@
 ---
 /**
- * Search results. EmDash's full-text index is SQLite-only, so this runs the
- * Postgres ILIKE query in src/utils/search.ts and renders through the same
- * Archive shell as every other list. Paginates with ?page=N, never cached.
+ * Search results. Paginated with ?page=N and never cached: the page depends on
+ * the query string, and src/middleware.ts only lets private paths through. The
+ * matching is src/utils/search.ts — the full-text index when it exists, a scan
+ * when it does not.
  */
 import Archive from "../../components/Archive.astro";
 import { pageFromParam, searchView } from "../../utils/archive";
