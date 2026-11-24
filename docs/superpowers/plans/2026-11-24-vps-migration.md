@@ -1599,11 +1599,14 @@ All against `https://vps.checkclimate.africa`:
   files; add the apex to `server_name` (already there in the committed file).
 - [ ] Cloudflare: delete the custom hostname from the `checkclimate` Worker, add
   `A @ → 169.58.2.239` proxied, keep `AAAA` out unless the box has v6, add the
-  apex to the Cache Rule (Task 18), point `www` at the box too
-  (`A www → 169.58.2.239` proxied, or a proxied CNAME to the apex). The
-  www → apex 301 is the middleware's, and nginx lists `www` for it: **don't**
-  also add a Redirect Rule, and remove any existing one that would fight it.
-  Then **Purge Everything**.
+  apex to the Cache Rule (Task 18). **www is a Cloudflare Redirect Rule**
+  (owner decision): Rules → Redirect Rules, `(http.host eq
+  "www.checkclimate.africa")` → dynamic `concat("https://checkclimate.africa",
+  http.request.uri.path)`, 301, preserve query string. `www` needs a
+  **proxied** DNS record for the rule to fire (e.g. `CNAME www →
+  checkclimate.africa`, orange cloud); it never reaches the box, and nginx
+  serves the apex only. (The middleware's www redirect stays as a fallback to
+  the same target, so the two cannot loop.) Then **Purge Everything**.
 - [ ] Smoke test: apex 200 with `cf-cache-status: MISS` then `HIT`; every route
   from Task 19; **passkey** login at `/_emdash/admin` now works (same domain).
 - [ ] **Delete the Worker's cron triggers** — otherwise 96 runs a day keep
