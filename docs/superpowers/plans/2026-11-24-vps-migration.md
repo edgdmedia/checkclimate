@@ -28,6 +28,8 @@ On the box, reads are free and there is one warm process, so all four stop being
 | Virtualmin site/user `checkclimate` on `169.58.2.239` (or root does it) | every file in `deploy/` |
 | Zone id of `checkclimate.africa` (Security Focus account) | `/etc/checkclimate.env`, `CLOUDFLARE_ZONE_ID` |
 | R2 API token, Object Read & Write, scoped to `checkclimate-media` | `/etc/checkclimate.env`, `S3_*` |
+| **New** private R2 bucket `checkclimate-backups` (does not exist yet; same account; no custom domain, no `r2.dev`) | created in Task 17 Step 7 |
+| A second R2 API token, Object Read & Write, scoped to `checkclimate-backups` only | rclone config for the backup cron, not `/etc/checkclimate.env` |
 | Cloudflare token with Zone → Cache Purge | `/etc/checkclimate.env` + repo secret `CLOUDFLARE_PURGE_TOKEN` |
 | A free port on the box (4331 assumed; `ss -ltnp` proves it) | `deploy/*` |
 | SSH public key installed for the `checkclimate` user | laptop + GitHub secret |
@@ -1538,7 +1540,21 @@ secret, §17 troubleshooting), plus the `deploy/` files this task installs.
 - [ ] **Step 6:** staging DNS `A vps → 169.58.2.239` (**proxied**), the zone
   Cache Rule (Task 18), rebuild with `EMDASH_SITE_URL=https://vps.checkclimate.africa`,
   and run the checks in Task 19.
-- [ ] **Step 7:** nightly backup cron + rclone remote to `checkclimate-backups`.
+- [ ] **Step 7: backups off the box.** The bucket doesn't exist yet.
+  1. Create it (owner, on a logged-in laptop or the dashboard):
+     `CLOUDFLARE_ACCOUNT_ID=9c8aaa232a52d145430685011e9fff9c pnpm exec wrangler r2 bucket create checkclimate-backups`,
+     then check it appears in `wrangler r2 bucket list`. Leave public access
+     off: no custom domain, no `r2.dev`.
+  2. Optional: an object lifecycle rule that deletes objects after 30 days,
+     so off-site copies outlast the 14 kept on the box.
+  3. Make a separate R2 API token (Object Read & Write, this bucket only).
+     The site's `S3_*` token never gets access to backups, and the backup token
+     never gets access to media.
+  4. Configure the rclone remote with `provider = Cloudflare` and
+     `no_head = true`, install the nightly cron, run `scripts/backup-vps.sh`
+     once by hand, and confirm the object appears with `rclone ls`.
+  Do this **before** Task 22: once media is on a public domain, backups must
+  already be somewhere private.
 
 ### Task 18: The Cloudflare Cache Rule (nothing works without it)
 
@@ -1622,8 +1638,9 @@ image bytes and `/_image` sharp work off the shared box.
 - [ ] **Decide on `claims/` first.** An R2 custom domain makes the whole
   `checkclimate-media` bucket public, including claim-evidence uploads under
   `claims/`. Either accept that, or move new claim uploads to a private bucket
-  before attaching the domain. Backups are already in their own private bucket
-  (Task 14).
+  before attaching the domain. Confirm the nightly backup is landing in the
+  private `checkclimate-backups` bucket (Task 17 Step 7) first; never put
+  backups in `checkclimate-media`.
 - [ ] R2 → `checkclimate-media` → Settings → Custom Domains →
   `media.checkclimate.africa`. Never `r2.dev`.
 - [ ] Images → Transformations → enable for the zone (Free: 5,000 unique
