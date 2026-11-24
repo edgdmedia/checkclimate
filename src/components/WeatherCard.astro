@@ -6,10 +6,11 @@
  * show.
  *
  * The page stays the same for every visitor (and cacheable at the edge); the
- * browser asks /api/weather, which reads the visitor's city from Cloudflare
- * (src/worker.ts). The site-settings place goes along as the fallback. The
- * card keeps its space while loading (no layout shift) and is removed if the
- * reading fails, rather than showing placeholder numbers.
+ * browser asks /api/weather, which answers for the place in the query string:
+ * the site-settings city, upgraded to the visitor's own coordinates when the
+ * tab already has geolocation permission. The card keeps its space while
+ * loading (no layout shift) and is removed if the reading fails, rather than
+ * showing placeholder numbers.
  */
 import Icon from "./Icon.astro";
 import { siteConfig } from "../utils/site";
@@ -66,8 +67,8 @@ const conditionIcons = [
 		label: string;
 	}
 
-	/** Half an hour per tab, matching the Worker's cache. */
-	const CACHE_KEY = "cca-weather-v2";
+	/** Half an hour per tab, matching the endpoint's cache. */
+	const CACHE_PREFIX = "cca-weather-v3";
 	const CACHE_MS = 30 * 60 * 1000;
 
 	function set(card: HTMLElement, field: string, text: string): void {
@@ -102,9 +103,9 @@ const conditionIcons = [
 		card.classList.add("wcard--ready");
 	}
 
-	function cached(): Reading | null {
+	function cached(key: string): Reading | null {
 		try {
-			const raw = sessionStorage.getItem(CACHE_KEY);
+			const raw = sessionStorage.getItem(key);
 			if (!raw) return null;
 			const entry = JSON.parse(raw) as { at: number; reading: Reading };
 			if (Date.now() - entry.at > CACHE_MS) return null;
@@ -114,19 +115,52 @@ const conditionIcons = [
 		}
 	}
 
-	async function load(card: HTMLElement): Promise<void> {
-		const hit = cached();
-		if (hit) {
-			paint(card, hit);
-			return;
-		}
-
-		const query = new URLSearchParams({
+	/**
+	 * The place to ask for: the site-settings city from the markup, unless the
+	 * tab already has geolocation. It is checked, never requested, so nothing
+	 * prompts; a visitor who has allowed location gets their own reading and
+	 * everyone else gets the newsroom's city.
+	 */
+	async function place(card: HTMLElement): Promise<URLSearchParams> {
+		const params = new URLSearchParams({
 			lat: card.dataset.lat ?? "",
 			lon: card.dataset.lon ?? "",
 			city: card.dataset.city ?? "",
 			country: card.dataset.country ?? "",
 		});
+		if (!navigator.permissions || !navigator.geolocation) return params;
+		try {
+			if ((await navigator.permissions.query({ name: "geolocation" })).state !== "granted") {
+				return params;
+			}
+			const point = await new Promise<GeolocationPosition | null>((resolve) =>
+				navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), {
+					timeout: 1500,
+					maximumAge: 600_000,
+				}),
+			);
+			if (!point) return params;
+			// Same 0.1° grid the endpoint caches on, and an empty city so the
+			// reading says "Your area" rather than the newsroom's town.
+			params.set("lat", point.coords.latitude.toFixed(1));
+			params.set("lon", point.coords.longitude.toFixed(1));
+			params.set("city", "");
+			params.set("country", "");
+		} catch {
+			// Permissions can throw on a non-standard name; the settings city is fine.
+		}
+		return params;
+	}
+
+	async function load(card: HTMLElement): Promise<void> {
+		const query = await place(card);
+		const key = `${CACHE_PREFIX}:${query.get("lat")},${query.get("lon")}`;
+		const hit = cached(key);
+		if (hit) {
+			paint(card, hit);
+			return;
+		}
+
 		try {
 			const response = await fetch(`/api/weather?${query}`, {
 				signal: AbortSignal.timeout(8000),
@@ -135,7 +169,7 @@ const conditionIcons = [
 			const reading = (await response.json()) as Reading;
 			if (typeof reading.temp !== "number") throw new Error("bad reading");
 			try {
-				sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), reading }));
+				sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), reading }));
 			} catch {
 				// Private mode or a full quota: the reading still paints.
 			}
