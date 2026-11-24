@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { runtime } from "../runtime";
 
 /**
  * Cloudflare Turnstile, server side.
@@ -13,11 +13,11 @@ const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverif
 
 /** The public site key for the widget, or "" when Turnstile is not configured. */
 export function turnstileSiteKey(): string {
-	return env.TURNSTILE_SITE_KEY ?? env.EMDASH_TURNSTILE_SITE_KEY ?? "";
+	return runtime.turnstileSiteKey;
 }
 
 export function turnstileSecretKey(): string {
-	return env.TURNSTILE_SECRET_KEY ?? env.EMDASH_TURNSTILE_SECRET_KEY ?? "";
+	return runtime.turnstileSecretKey;
 }
 
 /** True when submissions will actually be checked. */
