@@ -1614,6 +1614,37 @@ grep -rnE "cloudflare:workers|@astrojs/cloudflare|@emdash-cms/cloudflare|routeRu
   Worker can be redeployed for 14 days.
 - [ ] `docs/vps-runbook.md` exists and every owner command is one line.
 
+### Task 22: Media on `media.checkclimate.africa` (after cutover)
+
+Follows `deploying-emdash-cloudflare/vps.md` → "Media on its own domain". Takes
+image bytes and `/_image` sharp work off the shared box.
+
+- [ ] **Decide on `claims/` first.** An R2 custom domain makes the whole
+  `checkclimate-media` bucket public, including claim-evidence uploads under
+  `claims/`. Either accept that, or move new claim uploads to a private bucket
+  before attaching the domain. Backups are already in their own private bucket
+  (Task 14).
+- [ ] R2 → `checkclimate-media` → Settings → Custom Domains →
+  `media.checkclimate.africa`. Never `r2.dev`.
+- [ ] Images → Transformations → enable for the zone (Free: 5,000 unique
+  transformations/month per account; fixed sizes, `format=webp`,
+  `onerror=redirect`).
+- [ ] Cache Rule `(http.host eq "media.checkclimate.africa")`: Eligible, Edge
+  TTL 1 year (ignore origin), Browser TTL 1 year.
+- [ ] Site code behind `MEDIA_PUBLIC_URL` (unset on laptop/CI): the image-URL
+  helper maps `/_emdash/api/media/file/<key>` → `https://media.checkclimate.africa/<key>`;
+  the resize helper emits
+  `/cdn-cgi/image/width=W,height=H,fit=cover,gravity=top,format=webp,onerror=redirect/https://media.checkclimate.africa/<key>`
+  with a `2x` srcset entry, no `getImage()`. Add `MEDIA_PUBLIC_URL` to
+  `/etc/checkclimate.env`.
+- [ ] Redirect Rule (301) for rich-text links:
+  `(http.host eq "checkclimate.africa" and starts_with(http.request.uri.path, "/_emdash/api/media/file/"))`
+  → `wildcard_replace(http.request.full_uri, "https://checkclimate.africa/_emdash/api/media/file/*", "https://media.checkclimate.africa/${1}")`.
+- [ ] Before switching on: `https://media.checkclimate.africa/<key>` → 200.
+  After (restart + Purge Everything): no `/_emdash/api/media` or `/_image?` in
+  pages; `/cdn-cgi/image/…` is `image/webp`, MISS then HIT; an old media path
+  301s to the media host.
+
 ---
 
 ## Self-review notes (author, 2026-11-24)
