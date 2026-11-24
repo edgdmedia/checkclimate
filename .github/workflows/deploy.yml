@@ -1,0 +1,93 @@
+# main: check, then deploy to the VPS, then purge Cloudflare's cache.
+#
+# A push (or a merged pull request) to main runs typecheck + tests + the box
+# build here first; only if they pass does it log in to the box. The build
+# that ships is the one the box makes itself (scripts/deploy-vps.sh), which
+# then smoke-tests the origin and fails this run if the site is down.
+#
+# The deploy is one SSH login as the `checkclimate` user. On the server the
+# key is pinned in ~/.ssh/authorized_keys with a forced command, so it can run
+# the deploy script and nothing else (docs/vps-runbook.md, "Deploy a change").
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   VPS_HOST                169.58.2.239
+#   VPS_SSH_KEY             the private half of the deploy key
+#   VPS_KNOWN_HOSTS         the server's host key line (ssh-keyscan -t ed25519 <host>)
+#   CLOUDFLARE_PURGE_TOKEN  a token with Zone → Cache Purge on checkclimate.africa
+# Repository variable:
+#   CLOUDFLARE_ZONE_ID      the checkclimate.africa zone id (not a secret)
+#
+# The Workers pipeline this replaced is deploy-workers.yml.disabled (rollback).
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never two deploys at once; a newer push waits for the running one.
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Build for the box
+        run: pnpm build:vps
+        env:
+          EMDASH_SITE_URL: https://checkclimate.africa
+          DATABASE_PATH: /home/checkclimate/data/emdash.db
+          SESSION_DIR: /home/checkclimate/data/sessions
+          EMDASH_STORAGE: local
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$SSH_KEY" ] || [ -z "$HOST" ] || [ -z "$KNOWN_HOSTS" ]; then
+            echo "::error::VPS_HOST, VPS_SSH_KEY and VPS_KNOWN_HOSTS must all be set"; exit 1
+          fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server's forced command runs the deploy; nothing is sent.
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes checkclimate@"$HOST"
+
+      - name: Purge Cloudflare's cache
+        # Pages stay at the edge for 30 days and only a publish purges them,
+        # so without this a template change would not show until each page
+        # expired.
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
+          ZONE: ${{ vars.CLOUDFLARE_ZONE_ID }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$ZONE" ]; then
+            echo "::warning::CLOUDFLARE_PURGE_TOKEN or CLOUDFLARE_ZONE_ID is not set; purge by hand (Caching → Purge Everything)"; exit 0
+          fi
+          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE/purge_cache" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | grep -q '"success":true' && echo "edge cache purged"
