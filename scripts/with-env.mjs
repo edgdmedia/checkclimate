@@ -1,11 +1,15 @@
 /**
- * Run a command with the project's local environment loaded.
+ * Run a command with the project's local environment in `process.env`.
  *
- * Wrangler reads `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_<BINDING>` from
- * `process.env`, but neither Astro nor Vite copies `.env` into the process
- * environment. This wrapper loads `.env`, `.env.local` and `.dev.vars`, maps
- * `NEON_DEV_DATABASE_URL` onto both Hyperdrive bindings, then spawns the command
- * with the merged environment.
+ * Astro/Vite put `.env` values on `import.meta.env`, not on `process.env`, and
+ * this app's runtime config (`src/runtime.ts`) and `astro.config.mjs` read
+ * `process.env` — the way they must, because on the box the environment comes
+ * from systemd's `EnvironmentFile`, where `import.meta.env` does not exist.
+ *
+ * So local dev goes through this wrapper: it loads `.env`, `.env.local` and
+ * `.env.vps.local` (box-shaped values for testing the SQLite/S3 path on the
+ * laptop) into the process environment, then spawns the command. Nothing is
+ * printed, and real environment variables always win over the files.
  *
  * Usage: node scripts/with-env.mjs astro dev
  */
@@ -14,7 +18,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const files = [".env", ".env.local", ".dev.vars"];
+const files = [".env", ".env.local", ".env.vps.local"];
 
 /** Minimal dotenv parser: KEY=VALUE, optional quotes, # comments. */
 function parseEnv(text) {
@@ -45,14 +49,6 @@ for (const file of files) {
 }
 
 const env = { ...fileEnv, ...process.env };
-
-const neonDev = env.NEON_DEV_DATABASE_URL;
-if (neonDev) {
-	// Both bindings point at the same database locally; Hyperdrive pooling and
-	// query caching do not apply in local development anyway.
-	env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE = neonDev;
-	env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE_CACHED = neonDev;
-}
 
 const [command, ...args] = process.argv.slice(2);
 if (!command) {
