@@ -38,7 +38,10 @@ import { purgeConfig } from "./env.mjs";
 
 const ID = "checkclimate-cloudflare-purge";
 const VERSION = "1.0.0";
-const CAPABILITIES = ["content:read"];
+// content:read for the content hooks, users:read for comment:afterModerate and
+// bylines:read for byline:afterSave — each is the capability the hook
+// reference names for that hook.
+const CAPABILITIES = ["content:read", "users:read", "bylines:read"];
 
 // Cloudflare's Free plan allows 5 purge requests a minute; a bulk import is
 // many, so a rate-limited answer is retried with a backoff.
@@ -105,6 +108,23 @@ export function createPlugin(options = {}) {
 			"content:afterRestore": {
 				handler: async (event, ctx) => {
 					await purgeEntry(event, ctx, "restore");
+				},
+			},
+			// An approval changes what the article page shows (src/components/
+			// Comments.astro renders the approved list), and a byline edit changes
+			// every page that names the author. Neither is a content save, so the
+			// hooks above would leave both stale at the edge for 30 days.
+			"comment:afterModerate": {
+				handler: async (event, ctx) => {
+					if (event.newStatus === "pending" || event.newStatus === "spam") {
+						if (event.previousStatus !== "approved") return;
+					}
+					await purgeTags(["posts"], ctx, "comment");
+				},
+			},
+			"byline:afterSave": {
+				handler: async (event, ctx) => {
+					await purgeTags(["posts", "pages"], ctx, "byline");
 				},
 			},
 		},

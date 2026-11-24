@@ -89,7 +89,7 @@ const localPluginSources = [
 		version: "1.0.0",
 		format: "native",
 		entrypoint: "@checkclimate/plugin-cloudflare-purge",
-		capabilities: ["content:read"],
+		capabilities: ["content:read", "users:read", "bylines:read"],
 		source: "./plugins/cloudflare-purge/index.mjs",
 	},
 ];
