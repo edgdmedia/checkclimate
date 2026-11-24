@@ -46,6 +46,11 @@ const CATEGORY_FEED = /^\/category\/[^/]+\/feed\/?$/;
  */
 const PRIVATE_PATH = /^\/(_emdash|_astro|_image|admin|login|search|submit-a-claim|api)(\/|$)/;
 
+/** True for anything that must never reach the edge cache. */
+export function isPrivatePath(pathname: string): boolean {
+	return PRIVATE_PATH.test(pathname);
+}
+
 /** The collections a public path shows, or `[]` when it must not be cached. */
 export function collectionsForPath(pathname: string): string[] {
 	if (PRIVATE_PATH.test(pathname)) return [];
