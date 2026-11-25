@@ -83,6 +83,9 @@ export function edgeImageUrl(value: unknown, size: EdgeSize, base = runtime.medi
 		size.height ? `height=${Math.round(size.height)}` : null,
 		`fit=${size.fit ?? (size.height ? "crop" : "scale-down")}`,
 		"format=webp",
+		// The default (85) made some already-small JPEG originals bigger as
+		// WebP; 75 came out smaller than the original on every sampled image.
+		"quality=75",
 		"onerror=redirect",
 	]
 		.filter(Boolean)
