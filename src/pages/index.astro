@@ -1,10 +1,12 @@
 ---
 /**
- * Home page (design: Main). One window of recent posts plus the newest alert
- * and the tag terms; everything else is assembled from that in memory.
+ * Home page (design: Main). One window of recent posts drives the lead, the
+ * Latest list and which categories get a Top Stories tab; each tab and the
+ * News list then have a query of their own, so they fill up even when the
+ * window holds only a few stories of that kind.
  */
 import type { Post } from "../utils/content";
-import { categoryOf, kickerOf, postPath, titleWithoutKicker } from "../utils/content";
+import { categoryOf, postPath, titleWithoutKicker } from "../utils/content";
 import {
     getSiteSettingsWithCacheHint,
     getTaxonomyTermsWithCacheHint,
@@ -20,8 +22,13 @@ import StoryCard from "../components/StoryCard.astro";
 import StoryList from "../components/StoryList.astro";
 
 const HOME_WINDOW = 24;
+/** Stories per Top Stories tab: three rows of the three-column card grid. */
+const TOP_STORIES_PER_TAB = 9;
+/** News stories: six rows of the two-column list, level with the sidebar. */
+const NEWS_COUNT = 12;
+const TAB_COUNT = 5;
 
-const [recent, alert, checks, opinionPosts, settings, tagTerms] =
+const [recent, alert, checks, opinionPosts, newsPosts, settings, tagTerms] =
     await Promise.all([
         getEmDashCollection("posts", {
             orderBy: { published_at: "desc" },
@@ -50,6 +57,13 @@ const [recent, alert, checks, opinionPosts, settings, tagTerms] =
             limit: 3,
             offset: 0,
         }),
+        // The same filter as /category/news/, which the section links to.
+        getEmDashCollection("posts", {
+            where: { kicker: "news" },
+            orderBy: { published_at: "desc" },
+            limit: NEWS_COUNT,
+            offset: 0,
+        }),
         getSiteSettingsWithCacheHint(),
         getTaxonomyTermsWithCacheHint("tag", { includeCounts: false }),
     ]);
@@ -68,28 +82,41 @@ const siteTagline =
 const [hero, ...rest] = posts;
 const latest = rest.slice(0, 4);
 const factChecks = checks.entries as Post[];
-const news = posts
-    .filter((post) => kickerOf(post) === "news")
-    .slice(0, 6);
+const news = newsPosts.entries as Post[];
 
-// Top Stories tabs: one per category that has stories in this window.
-const tabs = posts
+// Top Stories tabs: one per category that has stories in this window, newest
+// first. Each tab's stories come from that category's own query (the filter
+// /category/<slug>/ uses), not from the window.
+const tabTerms = posts
     .map((post) => categoryOf(post))
     .filter((term, index, all): term is NonNullable<typeof term> =>
         term
             ? all.findIndex((other) => other?.slug === term.slug) === index
             : false,
     )
-    .slice(0, 5)
-    .map((term) => ({
-        label: term.label,
-        slug: term.slug,
-        count: posts.filter((post) => categoryOf(post)?.slug === term.slug)
-            .length,
-    }));
+    .slice(0, TAB_COUNT);
+
+const tabStories = await Promise.all(
+    tabTerms.map(async (term) => {
+        const result = await getEmDashCollection("posts", {
+            where: { category: term.slug },
+            orderBy: { published_at: "desc" },
+            limit: TOP_STORIES_PER_TAB,
+            offset: 0,
+        });
+        return [term.slug, result.entries as Post[]] as const;
+    }),
+);
+const storiesBySlug = new Map(tabStories);
+
+const tabs = tabTerms.map((term) => ({
+    label: term.label,
+    slug: term.slug,
+    count: storiesBySlug.get(term.slug)?.length ?? 0,
+}));
 
 function storiesFor(slug: string): Post[] {
-    return posts.filter((post) => categoryOf(post)?.slug === slug).slice(0, 3);
+    return storiesBySlug.get(slug) ?? [];
 }
 
 const topics = tagTerms.data.slice(0, 10);
