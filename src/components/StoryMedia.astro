@@ -2,9 +2,12 @@
 /**
  * Story thumbnail. Media-library images have no `src`, so EmDash's `Image`
  * resolves the storage key. With no image the design uses a flat brand fill.
+ * With MEDIA_PUBLIC_URL set, the image is resized at Cloudflare's edge on the
+ * media domain (src/utils/media-url.ts) instead of by this process.
  */
 import { Image } from "emdash/ui";
 import { storyFill } from "../utils/site";
+import { withEdgeSource } from "../utils/media-url";
 
 interface Props {
 	image?: unknown;
@@ -32,6 +35,7 @@ const {
 } = Astro.props;
 
 const hasImage = Boolean(image);
+const source = withEdgeSource(image, { width, height });
 ---
 
 <div
@@ -41,7 +45,7 @@ const hasImage = Boolean(image);
 	{
 		hasImage && (
 			<Image
-				image={image as never}
+				image={source as never}
 				alt={alt}
 				width={width}
 				height={height}

@@ -1,0 +1,21 @@
+---
+/**
+ * Images inside article text. EmDash's own image block renders (caption,
+ * link, alignment and its styles stay EmDash's); only the address changes:
+ * with MEDIA_PUBLIC_URL set, the image comes from the media domain, resized
+ * at Cloudflare's edge to at most 1400px wide (never enlarged).
+ */
+import { PTImage } from "emdash/ui";
+import { edgeImageUrl } from "../utils/media-url";
+
+interface Props {
+	node: { asset?: { _ref?: string; url?: string } & Record<string, unknown> } & Record<string, unknown>;
+}
+
+const { node, ...rest } = Astro.props;
+const asset = node?.asset;
+const edge = asset ? edgeImageUrl(asset.url ?? asset._ref, { width: 1400, fit: "scale-down" }) : null;
+const rendered = edge && asset ? { ...node, asset: { ...asset, url: edge, _ref: edge } } : node;
+---
+
+<PTImage node={rendered as never} {...rest} />
