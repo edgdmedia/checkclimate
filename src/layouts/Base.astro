@@ -8,6 +8,7 @@ import {
 import { createPublicPageContext } from "emdash/page";
 import { getSiteLocale } from "../utils/locale";
 import SiteHeader from "../components/SiteHeader.astro";
+import StickyHeader from "../components/StickyHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import BackToTop from "../components/BackToTop.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
@@ -149,11 +150,14 @@ const breadcrumbJsonLd =
 		<EmDashBodyStart page={pageCtx} />
 		{!bare && <a href="#main" class="skip-link">Skip to content</a>}
 		{!bare && (
-			<SiteHeader
-				siteTitle={siteTitle}
-				siteTagline={siteTagline}
-				items={primaryResult.data?.items ?? []}
-			/>
+			<>
+				<SiteHeader
+					siteTitle={siteTitle}
+					siteTagline={siteTagline}
+					items={primaryResult.data?.items ?? []}
+				/>
+				<StickyHeader siteTitle={siteTitle} items={primaryResult.data?.items ?? []} />
+			</>
 		)}
 		<main id="main" tabindex="-1">
 			<slot />

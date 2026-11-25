@@ -1,0 +1,299 @@
+---
+/**
+ * StickyHeader — a slim bar that slides in once the full site header has
+ * scrolled out of view, and slides away again when the header comes back.
+ * One row: a small logo, the primary menu, and a search button that opens a
+ * search field over the row. The full header above is unchanged.
+ *
+ * While hidden it is `inert`, so its duplicate links are neither focusable nor
+ * read out; the script toggles that with the bar.
+ */
+import type { MenuItem } from "emdash";
+import Icon from "./Icon.astro";
+import { SEARCH_URL } from "../utils/site";
+
+interface Props {
+	siteTitle: string;
+	items: MenuItem[];
+}
+
+const { siteTitle, items } = Astro.props;
+const logoLight = { src: "/brand/logo-light.webp", width: 336, height: 112 };
+const logoDark = { src: "/brand/logo-dark.webp", width: 336, height: 112 };
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+function isCurrent(url: string): boolean {
+	try {
+		const target = new URL(url, Astro.url);
+		if (target.origin !== Astro.url.origin) return false;
+		return (target.pathname.replace(/\/+$/, "") || "/") === currentPath;
+	} catch {
+		return false;
+	}
+}
+
+const links = items.map((item) => ({
+	label: item.label,
+	href: item.url ?? "/",
+	target: item.target ?? undefined,
+}));
+---
+
+<div class="stickybar" data-stickybar inert>
+	<div class="wrap stickybar__wrap"><div class="stickybar__inner">
+		<a href="/" class="stickybar__brand" aria-label={`${siteTitle} home`}>
+			<img class="stickybar__logo stickybar__logo--light" src={logoLight.src} width={logoLight.width} height={logoLight.height} alt="" loading="lazy" />
+			<img class="stickybar__logo stickybar__logo--dark" src={logoDark.src} width={logoDark.width} height={logoDark.height} alt="" loading="lazy" />
+		</a>
+
+		<nav class="stickybar__nav" aria-label="Story sections (compact)">
+			<ul>
+				{links.map((link) => (
+					<li>
+						<a
+							href={link.href}
+							target={link.target}
+							rel={link.target === "_blank" ? "noopener noreferrer" : undefined}
+							aria-current={isCurrent(link.href) ? "page" : undefined}
+						>
+							{link.label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<button
+			type="button"
+			class="stickybar__icon"
+			aria-label="Search"
+			aria-expanded="false"
+			aria-controls="stickybar-search"
+			data-stickybar-open
+		>
+			<Icon name="search" size={20} />
+		</button>
+
+		<form id="stickybar-search" class="stickybar__search" action={SEARCH_URL} method="get" role="search">
+			<Icon name="search" size={18} class="stickybar__search-icon" />
+			<label class="sr-only" for="stickybar-q">Search stories and fact checks</label>
+			<input id="stickybar-q" type="search" name="q" placeholder="Search stories and fact checks" autocomplete="off" />
+			<button type="button" class="stickybar__icon" aria-label="Close search" data-stickybar-close>
+				<Icon name="x" size={20} />
+			</button>
+		</form>
+	</div></div>
+</div>
+
+<script>
+	const bar = document.querySelector<HTMLElement>("[data-stickybar]");
+	const header = document.querySelector<HTMLElement>(".site-header");
+	if (bar && header) {
+		const openButton = bar.querySelector<HTMLButtonElement>("[data-stickybar-open]");
+		const closeButton = bar.querySelector<HTMLButtonElement>("[data-stickybar-close]");
+		const input = bar.querySelector<HTMLInputElement>("#stickybar-q");
+
+		const setSearch = (open: boolean) => {
+			bar.classList.toggle("is-searching", open);
+			openButton?.setAttribute("aria-expanded", String(open));
+			if (open) input?.focus();
+			else if (bar.contains(document.activeElement)) openButton?.focus();
+		};
+
+		openButton?.addEventListener("click", () => setSearch(true));
+		closeButton?.addEventListener("click", () => setSearch(false));
+		bar.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && bar.classList.contains("is-searching")) setSearch(false);
+		});
+
+		// Shown exactly while no part of the full header is on screen.
+		new IntersectionObserver(([entry]) => {
+			const shown = !entry.isIntersecting;
+			bar.classList.toggle("is-shown", shown);
+			bar.inert = !shown;
+			if (!shown) bar.classList.remove("is-searching");
+		}).observe(header);
+	}
+</script>
+
+<style>
+	.stickybar {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 30;
+		height: 60px;
+		background: var(--surface-raised);
+		border-bottom: 1px solid var(--border);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+		transform: translateY(-100%);
+		transition: transform 0.2s ease;
+	}
+
+	.stickybar.is-shown {
+		transform: translateY(0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.stickybar {
+			transition: none;
+		}
+	}
+
+	.stickybar__wrap {
+		height: 100%;
+	}
+
+	/* Inside .wrap, so the search field below lines up with the page gutter. */
+	.stickybar__inner {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		height: 100%;
+	}
+
+	.stickybar__brand {
+		flex: none;
+		display: flex;
+	}
+
+	.stickybar__logo {
+		height: 32px;
+		width: auto;
+	}
+
+	.stickybar__logo--dark {
+		display: none;
+	}
+
+	:global([data-theme="dark"]) .stickybar__logo--light {
+		display: none;
+	}
+
+	:global([data-theme="dark"]) .stickybar__logo--dark {
+		display: block;
+	}
+
+	/* The menu scrolls sideways when it does not fit, instead of wrapping. */
+	.stickybar__nav {
+		flex: 1;
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+		mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+	}
+
+	.stickybar__nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	.stickybar__nav ul {
+		display: flex;
+		gap: 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.stickybar__nav a {
+		display: block;
+		padding: 18px 10px;
+		font-size: 15px;
+		line-height: 20px;
+		font-weight: 500;
+		white-space: nowrap;
+		color: var(--ink-muted);
+		text-decoration: none;
+	}
+
+	.stickybar__nav a:hover {
+		color: var(--link);
+	}
+
+	.stickybar__nav a[aria-current="page"] {
+		color: var(--link);
+		font-weight: 700;
+		box-shadow: inset 0 -3px 0 var(--link);
+	}
+
+	.stickybar__icon {
+		flex: none;
+		display: inline-grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border: 0;
+		border-radius: var(--radius-pill);
+		background: transparent;
+		color: var(--ink);
+		cursor: pointer;
+	}
+
+	.stickybar__icon:hover {
+		background: var(--surface-muted);
+	}
+
+	/* Search opens over the whole row. */
+	.stickybar__search {
+		position: absolute;
+		inset: 8px 0;
+		display: none;
+		align-items: center;
+		gap: 8px;
+		padding-inline: 14px 4px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface-muted);
+	}
+
+	.stickybar.is-searching .stickybar__search {
+		display: flex;
+	}
+
+	/* The row underneath must not show through (the current-page underline
+	   sits below the field's edge). */
+	.stickybar.is-searching .stickybar__brand,
+	.stickybar.is-searching .stickybar__nav,
+	.stickybar.is-searching [data-stickybar-open] {
+		visibility: hidden;
+	}
+
+	.stickybar__search:focus-within {
+		outline: 2px solid var(--brand-amber);
+		outline-offset: 2px;
+	}
+
+	.stickybar__search-icon {
+		flex: none;
+		color: var(--ink-muted);
+	}
+
+	.stickybar__search input {
+		flex: 1;
+		min-width: 0;
+		border: 0;
+		background: transparent;
+		outline: none;
+		font: 500 15px/20px var(--font-display);
+		color: var(--ink);
+	}
+
+	.stickybar__search input::placeholder {
+		color: var(--ink-muted);
+	}
+
+	@media (max-width: 600px) {
+		.stickybar__inner {
+			gap: 8px;
+		}
+
+		.stickybar__logo {
+			height: 28px;
+		}
+
+		.stickybar__nav a {
+			padding-inline: 8px;
+			font-size: 14px;
+		}
+	}
+</style>
