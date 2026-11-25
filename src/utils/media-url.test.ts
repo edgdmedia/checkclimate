@@ -34,14 +34,21 @@ describe("media domain URLs", () => {
 
 	it("builds one fixed-order edge transformation, cropping without enlarging", () => {
 		expect(edgeImageUrl(image, { width: 640, height: 427 }, BASE)).toBe(
-			`${BASE}/cdn-cgi/image/width=640,height=427,fit=crop,format=webp,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
+			`${BASE}/cdn-cgi/image/width=640,height=427,fit=crop,format=webp,quality=75,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
 		);
 	});
 
 	it("scales down when only a width is given", () => {
 		expect(edgeImageUrl(image, { width: 1400, fit: "scale-down" }, BASE)).toBe(
-			`${BASE}/cdn-cgi/image/width=1400,fit=scale-down,format=webp,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
+			`${BASE}/cdn-cgi/image/width=1400,fit=scale-down,format=webp,quality=75,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
 		);
+	});
+
+	it("links AVIF, SVG and GIF originals directly instead of a failing transformation", () => {
+		expect(edgeImageUrl({ src: "/_emdash/api/media/file/01M7WWQ7P6YDKWTR3RSJ8EP86M.avif" }, { width: 640, height: 427 }, BASE)).toBe(
+			`${BASE}/01M7WWQ7P6YDKWTR3RSJ8EP86M.avif`,
+		);
+		expect(edgeImageUrl({ src: "/_emdash/api/media/file/a.GIF" }, { width: 640 }, BASE)).toBe(`${BASE}/a.GIF`);
 	});
 
 	it("encodes each path segment of a nested key", () => {
