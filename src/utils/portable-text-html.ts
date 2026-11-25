@@ -24,6 +24,11 @@ interface Options {
 	origin: string;
 	/** Feed readers get absolute links; on-page anchors stay relative. */
 	absoluteLinks?: boolean;
+	/**
+	 * Maps an image's stored URL or key to where it is served from (the media
+	 * domain); null keeps the default media-route URL.
+	 */
+	mediaUrl?: (stored: string) => string | null;
 }
 
 const STYLES: Record<string, string> = {
@@ -137,6 +142,8 @@ function imageSrc(block: Node, options: Options): string | null {
 	const candidates = [textOf(asset.url), textOf(asset._ref), textOf(block.src)];
 	for (const candidate of candidates) {
 		if (!candidate) continue;
+		const mapped = options.mediaUrl?.(candidate);
+		if (mapped) return mapped;
 		if (/^https?:\/\//i.test(candidate)) return candidate;
 		if (candidate.startsWith("/")) return new URL(candidate, options.origin).toString();
 		// A bare storage key: EmDash's media file route serves it.

@@ -10,6 +10,7 @@ import {
 	type Post,
 } from "./content";
 import { portableTextToHtml } from "./portable-text-html";
+import { publicMediaUrl } from "./media-url";
 
 /**
  * RSS 2.0 for the story archive, with a feed per category. WordPress readers
@@ -40,6 +41,8 @@ function itemXml(post: Post, origin: string): string {
 	const html = portableTextToHtml(post.data.content, {
 		origin,
 		absoluteLinks: true,
+		// Feed readers fetch the original from the media domain when it is set.
+		mediaUrl: (stored) => publicMediaUrl(stored),
 	});
 	const authors = bylinesOf(post)
 		.map((byline) => escapeXml(byline.name ?? ""))

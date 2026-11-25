@@ -39,6 +39,12 @@ export const runtime = {
 
 	/** Media objects written outside the library (claims, share cards). */
 	s3Bucket: str("S3_BUCKET"),
+	/**
+	 * The media bucket's own domain (https://media.checkclimate.africa). When
+	 * set, images are linked there and resized at Cloudflare's edge instead of
+	 * by this process; unset (laptop, CI) keeps EmDash's media route.
+	 */
+	mediaPublicUrl: str("MEDIA_PUBLIC_URL").replace(/\/+$/, ""),
 
 	/** HTTP listener. */
 	port: int("PORT", 4331),

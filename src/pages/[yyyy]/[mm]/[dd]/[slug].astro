@@ -21,6 +21,8 @@ import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
 import Comments from "../../../../components/Comments.astro";
 import AtAGlance from "../../../../components/AtAGlance.astro";
+import BodyImage from "../../../../components/BodyImage.astro";
+import { publicMediaUrl } from "../../../../utils/media-url";
 import Base from "../../../../layouts/Base.astro";
 import Breadcrumb from "../../../../components/Breadcrumb.astro";
 import Byline from "../../../../components/Byline.astro";
@@ -55,7 +57,7 @@ const hasShareCard =
     Boolean(data.slug);
 const image = hasShareCard
     ? new URL(`/share/wide/${data.slug}.png`, Astro.url.origin).toString()
-    : imageUrl(Astro.url.origin, data.featured_image);
+    : (publicMediaUrl(data.featured_image) ?? imageUrl(Astro.url.origin, data.featured_image));
 const tags = tagsOf(post);
 const { contactEmail } = await siteConfig();
 
@@ -172,7 +174,7 @@ const relatedPosts = (related.entries as Post[])
         <div class="wrap article-body">
             <div class="prose">
                 {factCheck && <AtAGlance value={data.at_a_glance} />}
-                <PortableText value={data.content} />
+                <PortableText value={data.content} components={{ type: { image: BodyImage } }} />
                 {factCheck && <Sources value={data.sources} />}
                 <TagList tags={tags} />
                 <p class="correction">
