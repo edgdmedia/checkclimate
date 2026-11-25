@@ -34,13 +34,13 @@ describe("media domain URLs", () => {
 
 	it("builds one fixed-order edge transformation, cropping without enlarging", () => {
 		expect(edgeImageUrl(image, { width: 640, height: 427 }, BASE)).toBe(
-			`${BASE}/cdn-cgi/image/width=640,height=427,fit=crop,format=webp,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
+			`${BASE}/cdn-cgi/image/width=640,height=427,fit=crop,format=webp,quality=75,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
 		);
 	});
 
 	it("scales down when only a width is given", () => {
 		expect(edgeImageUrl(image, { width: 1400, fit: "scale-down" }, BASE)).toBe(
-			`${BASE}/cdn-cgi/image/width=1400,fit=scale-down,format=webp,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
+			`${BASE}/cdn-cgi/image/width=1400,fit=scale-down,format=webp,quality=75,onerror=redirect/01M7WGGDAX8EWRQ6S9RA89P3DT.png`,
 		);
 	});
 
