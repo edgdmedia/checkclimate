@@ -18,7 +18,9 @@
  *   1. adds columns the source has and the target lacks (fields created in
  *      the admin after launch), with the source's type;
  *   2. drops the triggers (FTS, media usage, redirects), empties each copied
- *      table and inserts the source rows, then recreates the triggers exactly;
+ *      table and inserts the source rows, then recreates the triggers with the
+ *      fresh site's collection ids swapped for the copied ones, and proves a
+ *      save on every collection passes them (rolled back);
  *   3. checks foreign keys and integrity, and compares row counts;
  *   4. switches search back on (Postgres has none, so the source's
  *      search_config is empty) for the collections the fresh site searched,
@@ -197,6 +199,15 @@ const triggers = db
 	.prepare("select name, sql from sqlite_master where type = 'trigger' and sql is not null order by rowid")
 	.all();
 
+// The media-usage triggers on ec_* have the collection id baked in
+// (`collection_id = '<id>'`). The fresh site made its own collection ids, and
+// the copy replaces them with the source's, so the triggers are recreated with
+// the source id for the same slug; left as they were, every save aborts with
+// "media usage capture inactive".
+const freshCollectionIds = new Map(
+	db.prepare("select slug, id from _emdash_collections").all().map((row) => [row.slug, row.id]),
+);
+
 // Collections the fresh SQLite site searches. Postgres has no FTS, so the
 // source's search_config is empty and the copy switches search off; it is
 // switched back on for these after the copy (step 4).
@@ -235,7 +246,33 @@ try {
 		report.push({ table, targetBefore: before, source: rows.length, merge });
 	}
 
-	for (const { sql } of triggers) db.exec(sql);
+	const copiedIds = new Map(
+		db.prepare("select slug, id from _emdash_collections").all().map((row) => [row.slug, row.id]),
+	);
+	const idSwaps = [...freshCollectionIds]
+		.map(([slug, fresh]) => [fresh, copiedIds.get(slug)])
+		.filter(([fresh, copied]) => copied && copied !== fresh);
+	let repointed = 0;
+	for (const { sql } of triggers) {
+		let rewritten = sql;
+		for (const [fresh, copied] of idSwaps) rewritten = rewritten.split(fresh).join(copied);
+		if (rewritten !== sql) repointed++;
+		db.exec(rewritten);
+	}
+	console.log(`triggers repointed at the copied collection ids: ${repointed}`);
+
+	// A no-op update on one row of every collection fires its update triggers,
+	// so a trigger that would abort an editor's save fails the copy here. Rolled
+	// back to the savepoint: the triggers' own writes (usage work) are dropped.
+	db.exec("savepoint save_check");
+	for (const slug of copiedIds.keys()) {
+		const table = `ec_${slug}`;
+		if (!targetTables.has(table)) continue;
+		db.exec(`update ${quote(table)} set id = id where rowid = (select min(rowid) from ${quote(table)})`);
+	}
+	db.exec("rollback to save_check");
+	db.exec("release save_check");
+	console.log("save check: an update on every collection passes its triggers");
 	db.exec("commit");
 } catch (error) {
 	db.exec("rollback");
@@ -269,6 +306,14 @@ console.table(
 const triggersAfter = db.prepare("select count(*) as n from sqlite_master where type = 'trigger'").get().n;
 if (triggersAfter !== triggers.length) {
 	console.error(`triggers: ${triggersAfter} after, ${triggers.length} before`);
+	failed = true;
+}
+const leftoverIds = [...freshCollectionIds.values()].filter((id) =>
+	db.prepare("select count(*) as n from sqlite_master where type = 'trigger' and instr(sql, ?) > 0").get(id).n > 0 &&
+	!db.prepare("select count(*) as n from _emdash_collections where id = ?").get(id).n,
+);
+if (leftoverIds.length > 0) {
+	console.error("triggers still name the fresh site's collection ids:", leftoverIds);
 	failed = true;
 }
 const foreignKeys = db.prepare("pragma foreign_key_check").all();
