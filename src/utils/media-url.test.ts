@@ -44,6 +44,13 @@ describe("media domain URLs", () => {
 		);
 	});
 
+	it("links AVIF, SVG and GIF originals directly instead of a failing transformation", () => {
+		expect(edgeImageUrl({ src: "/_emdash/api/media/file/01M7WWQ7P6YDKWTR3RSJ8EP86M.avif" }, { width: 640, height: 427 }, BASE)).toBe(
+			`${BASE}/01M7WWQ7P6YDKWTR3RSJ8EP86M.avif`,
+		);
+		expect(edgeImageUrl({ src: "/_emdash/api/media/file/a.GIF" }, { width: 640 }, BASE)).toBe(`${BASE}/a.GIF`);
+	});
+
 	it("encodes each path segment of a nested key", () => {
 		expect(publicMediaUrl({ meta: { storageKey: "claims/202611/a b.png" } }, BASE)).toBe(`${BASE}/claims/202611/a%20b.png`);
 	});

@@ -74,10 +74,18 @@ export interface EdgeSize {
 	fit?: "crop" | "scale-down";
 }
 
+/**
+ * Originals Cloudflare cannot resize: AVIF input fails (`cf-resized: err=9520`)
+ * and SVG/GIF are passed through. Linking the original directly skips a
+ * failed transformation and the extra redirect `onerror` would cost.
+ */
+const NOT_RESIZABLE = /\.(avif|svg|gif)$/i;
+
 /** A resized WebP from Cloudflare's edge, or null when there is none. */
 export function edgeImageUrl(value: unknown, size: EdgeSize, base = runtime.mediaPublicUrl): string | null {
 	const key = storageKeyOf(value);
 	if (!base || !key) return null;
+	if (NOT_RESIZABLE.test(key)) return `${base}/${encodeKey(key)}`;
 	const options = [
 		`width=${Math.round(size.width)}`,
 		size.height ? `height=${Math.round(size.height)}` : null,
